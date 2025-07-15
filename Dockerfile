@@ -9,8 +9,8 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json* ./
-# Disable Husky prepare script for production builds
-RUN npm ci --only=production --ignore-scripts
+# Install all dependencies (including dev dependencies) for build
+RUN npm ci
 
 # Rebuild the source code only when needed
 FROM base AS builder

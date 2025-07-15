@@ -5,8 +5,6 @@ const nextConfig = {
   
   // Experimental features
   experimental: {
-    // Enable app directory features
-    appDir: true,
     // Enable server components
     serverComponentsExternalPackages: [],
   },
@@ -28,17 +26,6 @@ const nextConfig = {
     return config;
   },
   
-  // Redirects
-  async redirects() {
-    return [
-      {
-        source: '/',
-        destination: '/dashboard',
-        permanent: true,
-      },
-    ];
-  },
-  
   // Headers
   async headers() {
     return [
@@ -56,6 +43,10 @@ const nextConfig = {
           {
             key: 'Referrer-Policy',
             value: 'origin-when-cross-origin',
+          },
+          {
+            key: 'Content-Security-Policy',
+            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self'; frame-ancestors 'none';",
           },
         ],
       },
