@@ -8,7 +8,7 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="flex">
-      <Navigation />
+    <Navigation />
       <div className="flex-grow p-6 bg-white rounded-lg shadow-md animate-fadeIn">
         {children}
       </div>
