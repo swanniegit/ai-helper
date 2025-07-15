@@ -13,14 +13,17 @@ export default function Navigation() {
     { key: 'news', href: '/news-feed', label: 'News Feed' },
     { key: 'wellness', href: '/wellness-support', label: 'Wellness Support' },
     { key: 'mentor-linkup', href: '/mentor-linkup', label: 'Mentor Linkup' },
+    { key: 'logout', href: '/logout', label: 'Sign Out' },
   ];
 
   return (
     <aside className="w-64 bg-white p-4 shadow-md rounded-lg mr-4 animate-slideInLeft">
-      <h2 className="text-xl font-bold mb-4 text-gray-800 border-b pb-2 border-blue-200">Dashboard Menu</h2>
+      <h2 className="text-xl font-bold mb-4 text-gray-800 border-b pb-2 border-blue-200">
+        Dashboard Menu
+      </h2>
       <nav>
         <ul>
-          {navItems.map((item) => {
+          {navItems.map(item => {
             const isActive = pathname === item.href;
             return (
               <li key={item.key} className="mb-2">
@@ -41,4 +44,4 @@ export default function Navigation() {
       </nav>
     </aside>
   );
-} 
+}

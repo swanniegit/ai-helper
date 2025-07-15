@@ -167,12 +167,27 @@ The project includes a GitHub Actions workflow that:
 
 ### Environment Variables
 
-Create a `.env.local` file for local development:
+Create a `.env.local` file for local development. You can start by copying
+the provided `.env.example` file:
+
+```bash
+cp .env.example .env.local
+```
+
+Then adjust the values as needed:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3000
 NEXT_TELEMETRY_DISABLED=1
+CUSTOM_KEY=your-custom-key
+NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
 ```
+
+### Authentication (Preview)
+
+Use Supabase credentials to sign in at `/login`. Successful login redirects to
+the dashboard. Visit `/logout` to sign out.
 
 ## 🎯 Development Roadmap
 
