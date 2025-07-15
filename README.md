@@ -6,6 +6,7 @@ A Next.js 14 application demonstrating a role-based AI growth and goal-tracking 
 
 - **Goal Tracking Dashboard** - Visual progress tracking with status indicators
 - **AI Mentor Chat** - Interactive chat interface with simulated AI responses
+- **Learning Path Wizard** - OpenAI-powered roadmap generation after a short quiz
 - **Responsive Design** - Mobile-first approach with Tailwind CSS
 - **Modern Animations** - Smooth transitions and hover effects
 - **TypeScript** - Full type safety throughout the application
@@ -167,13 +168,31 @@ The project includes a GitHub Actions workflow that:
 
 ### Environment Variables
 
-Create a `.env.local` file for local development:
+Create a `.env.local` file for local development. You can start by copying
+the provided `.env.example` file:
+
+```bash
+cp .env.example .env.local
+```
+
+Then adjust the values as needed:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3000
 NEXT_TELEMETRY_DISABLED=1
+CUSTOM_KEY=your-custom-key
+NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+OPENAI_API_KEY=your-openai-api-key
 ```
 
+### Authentication (Preview)
+
+Use Supabase credentials to sign in at `/login`. Successful login redirects to
+the dashboard. Visit `/logout` to sign out.
+
+Try the new learning path wizard at `/learning-paths/new` to generate an
+OpenAI-powered career roadmap.
 ## 🎯 Development Roadmap
 
 ### Phase 1: Foundation ✅
