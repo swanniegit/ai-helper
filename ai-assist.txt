@@ -1,0 +1,170 @@
+Of course. Here is a revamped career progression framework in markdown format. This structure is designed to be easily parsed by an AI to determine skill tracks for both Oracle and PHP developers.
+
+Developer Career Progression Framework
+Plan Vision
+
+To build high-performing development teams by establishing clear, measurable skillsets and providing structured career progression paths. This framework ensures consistency in hiring, evaluation, and professional development for both Oracle and PHP tracks.
+
+Core Pillars
+
+This plan is built on four core pillars to create a holistic development cycle:
+
+Test & Assess: Defining methods to measure proficiency at each level, from hiring assessments to ongoing performance reviews.
+Integrate & Promote: Outlining how skills are embedded into daily work and how growth is formally and informally recognized and rewarded.
+Develop & Train: Identifying specific resources, activities, and training programs to actively build skills for current and future roles.
+Track & Review: Establishing a system for monitoring individual progress against the defined skillsets, facilitating continuous feedback and development planning.
+How to Use This Document
+For Team Leads: Use this as a guide for mentoring, assigning tasks, and conducting performance reviews.
+For HR: Use this to standardize job descriptions, structure interviews, and create targeted development programs.
+For Developers: Use this as a career map to understand expectations and identify opportunities for growth.
+TYPE: Oracle
+Level: Junior Oracle Developer
+
+Focus: Foundational knowledge of SQL and PL/SQL, understanding core database concepts, and operating effectively under supervision.
+
+Skills Expected:
+Core SQL:
+Write proficient SELECT statements, including filtering (WHERE), sorting (ORDER BY), and joining multiple tables (INNER, LEFT, RIGHT JOIN).
+Write INSERT, UPDATE, and DELETE statements.
+Understand and use aggregate functions (COUNT, SUM, AVG, MAX, MIN) with GROUP BY.
+Knowledge of basic data types (VARCHAR2, NUMBER, DATE).
+Core PL/SQL:
+Write anonymous blocks.
+Declare variables and constants.
+Use basic control structures (IF-THEN-ELSE, CASE, LOOP).
+Create simple stored procedures and functions with IN and OUT parameters.
+Understand basic exception handling.
+Database Concepts:
+Understand the structure of a relational database (tables, columns, rows).
+Explain primary keys, foreign keys, and constraints (NOT NULL, UNIQUE, CHECK).
+Understand what an index is and its basic purpose.
+Tool Proficiency:
+Use an IDE like PL/SQL Developer or Oracle SQL Developer to write, execute, and debug code.
+Navigate the database schema to find tables, views, and other objects.
+Version Control:
+Basic Git workflow: clone, commit, push, pull.
+Create and work on feature branches.
+Level: Intermediate Oracle Developer
+
+Focus: Writing complex, performant code independently. Contributing to data model design and mentoring junior developers.
+
+Skills Expected:
+Advanced SQL & PL/SQL:
+Write complex queries with subqueries, UNION, and analytical functions (e.g., ROW_NUMBER, LEAD, LAG).
+Proficiently use PL/SQL collections (associative arrays, nested tables), records, and cursors.
+Create and manage packages, triggers, and materialized views.
+Implement robust error handling and logging.
+Understand and use dynamic SQL (EXECUTE IMMEDIATE).
+Performance Tuning:
+Interpret a basic execution plan (EXPLAIN PLAN).
+Understand the impact of indexes and when to create them.
+Use hints and rewrite queries for better performance.
+Awareness of optimizer statistics.
+Data Modeling & Design:
+Understand normalization concepts (1NF, 2NF, 3NF).
+Contribute to the design of new tables and relationships.
+Choose appropriate data types and constraints.
+Development Best Practices:
+Write reusable, modular, and maintainable code.
+Understand transaction management (COMMIT, ROLLBACK, SAVEPOINT).
+Resolve merge conflicts in Git.
+Level: Senior Oracle Developer
+
+Focus: Architectural design, leadership, and strategic optimization. Owning complex database systems and mentoring the team.
+
+Skills Expected:
+Database Architecture & Design:
+Design and implement scalable, secure, and robust database schemas.
+Understand advanced architectural concepts (partitioning, indexing strategies, data warehousing).
+Evaluate and select appropriate Oracle features for new projects.
+Advanced Performance Tuning:
+In-depth analysis of execution plans, wait events, and session tracing (AWR, ASH).
+Optimize memory (SGA/PGA) and instance parameters.
+Design solutions to address locking conflicts and concurrency issues.
+Advanced Features & Security:
+Expertise in features like Real Application Clusters (RAC), Data Guard, and advanced security options.
+Implement data encryption, VPDs (Virtual Private Databases), and fine-grained access control.
+Manage database jobs and schedulers effectively.
+Leadership & Mentorship:
+Mentor junior and intermediate developers, conduct code reviews, and set coding standards.
+Lead technical design discussions and translate business requirements into technical solutions.
+Interface with system architects, DBAs, and business stakeholders.
+Strategic Planning:
+Plan and lead major database upgrades and data migration projects.
+Identify and advocate for refactoring technical debt.
+Stay current with industry trends and new Oracle features.
+TYPE: PHP
+Level: Junior PHP Developer
+
+Focus: Grasping fundamentals of PHP, a specific framework, and the development lifecycle. Writing clean, functional code for well-defined tasks.
+
+Skills Expected:
+Core PHP & OOP Basics:
+Proficient with variables, control structures, functions, and arrays.
+Can create and use basic classes, properties, and methods.
+Understands public, private, protected visibility.
+Version Control (Git):
+Basic Git workflow: clone, commit, push, pull.
+Can create feature branches and submit pull requests.
+Basic Database & Frontend:
+Write basic SQL queries (SELECT, INSERT, UPDATE, DELETE).
+Understand fundamental HTML, CSS, and basic JavaScript for form validation.
+Problem-Solving & Debugging:
+Use var_dump() and framework debugging tools to investigate issues.
+Can fix simple bugs and implement small features with guidance.
+Level: Intermediate PHP Developer
+
+Focus: Developing features independently, mastering a framework, and understanding software architecture.
+
+Skills Expected:
+Advanced PHP & Framework Mastery:
+Understands and uses Traits, Interfaces, and Abstract Classes.
+Proficient with a framework (e.g., Symfony, Laravel), including routing, authentication, ORM, and dependency injection.
+Complex Database & APIs:
+Writes complex SQL queries with JOINs.
+Can design, build, and consume RESTful APIs.
+Understands API authentication methods (e.g., JWT, OAuth).
+Code Architecture & Testing:
+Applies SOLID principles and common design patterns (e.g., Repository, Factory).
+Writes unit and feature tests with tools like PHPUnit.
+Performance & Communication:
+Aware of caching strategies (e.g., Redis) and security best practices (SQL injection, XSS).
+Effectively communicates technical concepts and participates in code reviews.
+Level: Senior PHP Developer
+
+Focus: Leading technical design, mentoring the team, and ensuring the scalability, performance, and security of the application.
+
+Skills Expected:
+Architectural Design & Scalability:
+Designs scalable system architectures, including microservices vs. monolith trade-offs.
+Presents technical solutions with pros and cons.
+Leads major system upgrades and refactoring efforts.
+Ecosystem Expertise & CI/CD:
+Deep expertise in the framework's internals and the broader PHP ecosystem.
+Designs and maintains CI/CD pipelines (e.g., GitLab CI, GitHub Actions).
+Proficient with containerization (Docker, Kubernetes).
+Leadership & Mentorship:
+Mentors other developers and leads code review processes, setting a high standard for quality.
+Drives technical discussions, motivates the team, and acts as a bridge between business and development.
+Complex Problem Solving & Strategy:
+Tackles ambiguous problems and architects innovative solutions.
+Identifies and prioritizes technical debt.
+Owns application performance and security, using monitoring tools to proactively find and solve issues.
+Recommended Training & Resources
+Oracle Track
+Courses/Certifications:
+Oracle Certified Associate (OCA) - SQL & PL/SQL (Junior/Intermediate)
+Oracle Certified Professional (OCP) - Developer (Intermediate/Senior)
+Online platforms: Oracle University, Udemy, Pluralsight.
+Books:
+Oracle PL/SQL Programming by Steven Feuerstein (All Levels)
+Expert Oracle Database Architecture by Tom Kyte (Intermediate/Senior)
+PHP Track
+Courses/Certifications:
+Laracasts / SymfonyCasts (All Levels)
+Certified Symfony/Laravel Developer (Intermediate/Senior)
+Udemy/Coursera for foundational and specialized topics.
+Books:
+Clean Code by Robert C. Martin (Intermediate/Senior)
+Head First Design Patterns by Eric Freeman & Elisabeth Robson (Intermediate)
+The Manager's Path by Camille Fournier (Senior)
