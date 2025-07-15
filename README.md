@@ -184,15 +184,17 @@ CUSTOM_KEY=your-custom-key
 NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
 OPENAI_API_KEY=your-openai-api-key
+=======
 ```
-
 ### Authentication (Preview)
 
 Use Supabase credentials to sign in at `/login`. Successful login redirects to
 the dashboard. Visit `/logout` to sign out.
 
+
 Try the new learning path wizard at `/learning-paths/new` to generate an
 OpenAI-powered career roadmap.
+=======
 ## 🎯 Development Roadmap
 
 ### Phase 1: Foundation ✅
