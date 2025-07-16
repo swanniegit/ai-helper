@@ -53,11 +53,6 @@ export async function POST(req: Request) {
       if (framework) {
         frameworkData = `
 Career Framework: ${careerPath} Developer
-Core Pillars:
-- Test & Assess: ${framework.corePillars.testAssess}
-- Integrate & Promote: ${framework.corePillars.integratePromote}
-- Develop & Train: ${framework.corePillars.developTrain}
-- Track & Review: ${framework.corePillars.trackReview}
 `;
 
         // Add current level skills if specified
@@ -77,15 +72,17 @@ Target Level (${targetLevel}) Skills:
 ${targetSkills.map(skill => `- ${skill.name}: ${skill.description}`).join('\n')}
 `;
 
-          // Add training resources for target level
-          const resources = getTrainingResources(framework, targetLevel);
-          if (resources) {
-            trainingResources = `
-Recommended Training Resources for ${targetLevel} Level:
+          // Add training resources for the first skill in target level
+          if (targetSkills.length > 0) {
+            const resources = getTrainingResources(targetSkills[0].name, targetLevel);
+            if (resources) {
+              trainingResources = `
+Recommended Training Resources for ${targetLevel} Level (${targetSkills[0].name}):
 ${resources.courses ? `Courses: ${resources.courses.join(', ')}` : ''}
 ${resources.books ? `Books: ${resources.books.join(', ')}` : ''}
-${resources.certifications ? `Certifications: ${resources.certifications.join(', ')}` : ''}
+${resources.practice ? `Practice: ${resources.practice.join(', ')}` : ''}
 `;
+            }
           }
         }
       }

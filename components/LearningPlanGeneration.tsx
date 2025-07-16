@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { SkillsData, GoalsData } from './LearningPathWizard'
 import { CareerFrameworkDisplay } from './CareerFrameworkDisplay'
 
@@ -35,11 +35,7 @@ export const LearningPlanGeneration: React.FC<LearningPlanGenerationProps> = ({
   const [error, setError] = useState<string | null>(null)
   const [progress, setProgress] = useState(0)
 
-  useEffect(() => {
-    generateLearningPlan()
-  }, [])
-
-  const generateLearningPlan = async () => {
+  const generateLearningPlan = useCallback(async () => {
     try {
       setProgress(10)
       
@@ -106,7 +102,11 @@ export const LearningPlanGeneration: React.FC<LearningPlanGenerationProps> = ({
       setError(err instanceof Error ? err.message : 'An error occurred')
       setIsGenerating(false)
     }
-  }
+  }, [skillsData, goalsData])
+
+  useEffect(() => {
+    generateLearningPlan()
+  }, [generateLearningPlan])
 
   const renderGeneratingState = () => (
     <div className="text-center space-y-6">
@@ -148,7 +148,7 @@ export const LearningPlanGeneration: React.FC<LearningPlanGenerationProps> = ({
             Your Personalized Learning Plan
           </h3>
           <p className="text-gray-600">
-            Here's your {goalsData.timelineMonths}-month journey to achieve your career goals
+            Here&apos;s your {goalsData.timelineMonths}-month journey to achieve your career goals
           </p>
         </div>
 

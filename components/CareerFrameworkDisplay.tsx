@@ -32,27 +32,7 @@ export const CareerFrameworkDisplay: React.FC<CareerFrameworkDisplayProps> = ({
       </div>
 
       {/* Core Pillars */}
-      <div className="mb-6">
-        <h4 className="font-medium text-gray-900 mb-3">Core Pillars</h4>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-white p-4 rounded-lg border">
-            <h5 className="font-medium text-blue-600 mb-2">Test & Assess</h5>
-            <p className="text-sm text-gray-600">{framework.corePillars.testAssess}</p>
-          </div>
-          <div className="bg-white p-4 rounded-lg border">
-            <h5 className="font-medium text-green-600 mb-2">Integrate & Promote</h5>
-            <p className="text-sm text-gray-600">{framework.corePillars.integratePromote}</p>
-          </div>
-          <div className="bg-white p-4 rounded-lg border">
-            <h5 className="font-medium text-purple-600 mb-2">Develop & Train</h5>
-            <p className="text-sm text-gray-600">{framework.corePillars.developTrain}</p>
-          </div>
-          <div className="bg-white p-4 rounded-lg border">
-            <h5 className="font-medium text-orange-600 mb-2">Track & Review</h5>
-            <p className="text-sm text-gray-600">{framework.corePillars.trackReview}</p>
-          </div>
-        </div>
-      </div>
+      {/* Removed: No corePillars property in framework */}
 
       {/* Current Level Skills */}
       {currentLevel && (
@@ -106,9 +86,10 @@ export const CareerFrameworkDisplay: React.FC<CareerFrameworkDisplayProps> = ({
           </h4>
           <div className="bg-white p-4 rounded-lg border">
             {(() => {
-              const resources = getTrainingResources(framework, targetLevel)
-              if (!resources) return <p className="text-sm text-gray-600">No specific resources available for this level.</p>
-              
+              const targetSkills = getAllSkillsForLevel(framework, targetLevel);
+              if (!targetSkills.length) return <p className="text-sm text-gray-600">No specific resources available for this level.</p>;
+              const resources = getTrainingResources(targetSkills[0].name, targetLevel);
+              if (!resources) return <p className="text-sm text-gray-600">No specific resources available for this level.</p>;
               return (
                 <div className="space-y-3">
                   {resources.courses && resources.courses.length > 0 && (
@@ -123,7 +104,6 @@ export const CareerFrameworkDisplay: React.FC<CareerFrameworkDisplayProps> = ({
                       </div>
                     </div>
                   )}
-                  
                   {resources.books && resources.books.length > 0 && (
                     <div>
                       <h6 className="font-medium text-green-600 text-sm mb-1">Books</h6>
@@ -136,21 +116,20 @@ export const CareerFrameworkDisplay: React.FC<CareerFrameworkDisplayProps> = ({
                       </div>
                     </div>
                   )}
-                  
-                  {resources.certifications && resources.certifications.length > 0 && (
+                  {resources.practice && resources.practice.length > 0 && (
                     <div>
-                      <h6 className="font-medium text-purple-600 text-sm mb-1">Certifications</h6>
+                      <h6 className="font-medium text-orange-600 text-sm mb-1">Practice</h6>
                       <div className="flex flex-wrap gap-2">
-                        {resources.certifications.map((cert, index) => (
-                          <span key={index} className="px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs">
-                            {cert}
+                        {resources.practice.map((practice, index) => (
+                          <span key={index} className="px-2 py-1 bg-orange-100 text-orange-800 rounded text-xs">
+                            {practice}
                           </span>
                         ))}
                       </div>
                     </div>
                   )}
                 </div>
-              )
+              );
             })()}
           </div>
         </div>

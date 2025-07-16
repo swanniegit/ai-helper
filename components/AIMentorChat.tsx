@@ -74,11 +74,11 @@ export default function AIMentorChat() {
     if (messages.length === 0) {
       setMessages([{
         role: 'assistant',
-        content: "Hello! I'm your AI Career Mentor. I'm here to help you advance your career in PHP or Oracle development. What would you like to work on today?",
+        content: "Hello! I&apos;m your AI Career Mentor. I&apos;m here to help you advance your career in PHP or Oracle development. What would you like to work on today?",
         timestamp: new Date()
       }]);
     }
-  }, []);
+  }, [messages.length]);
 
   const sendMessage = async (message: string, action: string = 'chat') => {
     if (!message.trim()) return;
@@ -433,7 +433,7 @@ export default function AIMentorChat() {
 
               <div className="grid gap-4 md:grid-cols-3">
                 <div className="bg-white bg-opacity-20 rounded-lg p-4">
-                  <h4 className="font-medium mb-2">Today's Focus</h4>
+                  <h4 className="font-medium mb-2">Today&apos;s Focus</h4>
                   <p className="text-sm">{dailyMotivation.focusArea}</p>
                 </div>
                 
@@ -474,8 +474,8 @@ export default function AIMentorChat() {
                 onChange={(e) => setInputMessage(e.target.value)}
                 placeholder={
                   chatMode === 'chat' ? "Ask me anything about your career development..." :
-                  chatMode === 'interview-prep' ? "Type 'generate' to get interview questions..." :
-                  chatMode === 'daily-motivation' ? "Type 'motivate' for daily inspiration..." :
+                  chatMode === 'interview-prep' ? "Type &apos;generate&apos; to get interview questions..." :
+                  chatMode === 'daily-motivation' ? "Type &apos;motivate&apos; for daily inspiration..." :
                   "Type your message..."
                 }
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"

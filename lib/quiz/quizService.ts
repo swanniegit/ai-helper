@@ -133,7 +133,7 @@ export class QuizService {
       const correctAnswers = session.questions.map(q => q.correct_answer);
       const score = this.calculateScore(request.answers, correctAnswers);
       const percentageScore = (score / session.questions.length) * 100;
-      const passed = percentageScore >= session.questions[0]?.template_id ? 70 : false; // Default passing score
+      const passed = percentageScore >= 70; // Default passing score
       
       // Generate feedback
       const feedback = await this.generateFeedback(

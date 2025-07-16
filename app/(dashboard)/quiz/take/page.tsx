@@ -44,45 +44,7 @@ export default function TakeQuizPage() {
     }
   }, [sessionToken]);
 
-  useEffect(() => {
-    if (!sessionToken) {
-      setError('No quiz session found');
-      setLoading(false);
-      return;
-    }
-
-    loadQuizSession();
-  }, [sessionToken, loadQuizSession]);
-
-  useEffect(() => {
-    if (timeRemaining <= 0 && !isComplete) {
-      handleSubmitQuiz();
-    }
-  }, [timeRemaining, isComplete]);
-
-  const handleAnswerSelect = (answer: string) => {
-    const newAnswers = [...answers];
-    newAnswers[currentQuestionIndex] = answer;
-    setAnswers(newAnswers);
-  };
-
-  const handleNextQuestion = () => {
-    if (currentQuestionIndex < (quizSession?.questions.length || 0) - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-    }
-  };
-
-  const handlePreviousQuestion = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
-    }
-  };
-
-  const handleQuestionJump = (index: number) => {
-    setCurrentQuestionIndex(index);
-  };
-
-  const handleSubmitQuiz = async () => {
+  const handleSubmitQuiz = useCallback(async () => {
     if (!quizSession) return;
 
     try {
@@ -112,6 +74,44 @@ export default function TakeQuizPage() {
       setError('Failed to submit quiz');
       console.error('Submit quiz error:', err);
     }
+  }, [quizSession, sessionToken, answers]);
+
+  useEffect(() => {
+    if (!sessionToken) {
+      setError('No quiz session found');
+      setLoading(false);
+      return;
+    }
+
+    loadQuizSession();
+  }, [sessionToken, loadQuizSession]);
+
+  useEffect(() => {
+    if (timeRemaining <= 0 && !isComplete) {
+      handleSubmitQuiz();
+    }
+  }, [timeRemaining, isComplete, handleSubmitQuiz]);
+
+  const handleAnswerSelect = (answer: string) => {
+    const newAnswers = [...answers];
+    newAnswers[currentQuestionIndex] = answer;
+    setAnswers(newAnswers);
+  };
+
+  const handleNextQuestion = () => {
+    if (currentQuestionIndex < (quizSession?.questions.length || 0) - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    }
+  };
+
+  const handlePreviousQuestion = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
+    }
+  };
+
+  const handleQuestionJump = (index: number) => {
+    setCurrentQuestionIndex(index);
   };
 
   const handleRetakeQuiz = () => {
