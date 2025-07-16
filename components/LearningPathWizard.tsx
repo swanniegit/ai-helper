@@ -89,7 +89,7 @@ export const LearningPathWizard: React.FC = () => {
             Create Your Learning Path
           </h1>
           <p className="text-gray-600">
-            Let&apos;s assess your skills and create a personalized learning plan for the next 12 months
+            Let's assess your skills and create a personalized learning plan for the next 12 months
           </p>
         </div>
 

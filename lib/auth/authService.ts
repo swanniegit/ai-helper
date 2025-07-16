@@ -146,11 +146,10 @@ export class AuthService {
    * Create a new session for a user
    */
   static async createSession(userId: string, ipAddress?: string, userAgent?: string): Promise<Session> {
-    const sessionToken = jwt.sign(
-      { userId, sessionId: uuidv4() },
-      this.JWT_SECRET,
-      { expiresIn: '30d' }
-    );
+    // Generate a shorter session token that fits within VARCHAR(255)
+    const sessionId = uuidv4().replace(/-/g, '').substring(0, 16);
+    const timestamp = Date.now().toString(36);
+    const sessionToken = `${userId}_${sessionId}_${timestamp}`;
 
     const expiresAt = new Date(Date.now() + this.SESSION_DURATION);
 

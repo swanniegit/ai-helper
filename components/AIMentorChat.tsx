@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Code, MessageSquare, Target, Zap, Sparkles, Bot, User, Star, Lightbulb, TrendingUp } from 'lucide-react';
+import { Send, Code, MessageSquare, Zap, Bot, User, Star, Lightbulb, TrendingUp } from 'lucide-react';
 
 interface MentorMessage {
   role: 'user' | 'assistant';
@@ -30,16 +30,7 @@ interface CodeReview {
   improvements: string[];
 }
 
-interface InterviewQuestions {
-  questions: Array<{
-    question: string;
-    type: 'technical' | 'behavioral';
-    difficulty: 'easy' | 'medium' | 'hard';
-    expectedAnswer: string;
-    tips: string[];
-  }>;
-  preparationTips: string[];
-}
+
 
 interface DailyMotivation {
   message: string;
@@ -48,7 +39,7 @@ interface DailyMotivation {
   encouragement: string;
 }
 
-type ChatMode = 'chat' | 'code-review' | 'interview-prep' | 'daily-motivation';
+type ChatMode = 'chat' | 'code-review' | 'daily-motivation';
 
 export default function AIMentorChat() {
   const [messages, setMessages] = useState<MentorMessage[]>([]);
@@ -57,7 +48,6 @@ export default function AIMentorChat() {
   const [chatMode, setChatMode] = useState<ChatMode>('chat');
   const [userContext, setUserContext] = useState<any>(null);
   const [codeReview, setCodeReview] = useState<CodeReview | null>(null);
-  const [interviewQuestions, setInterviewQuestions] = useState<InterviewQuestions | null>(null);
   const [dailyMotivation, setDailyMotivation] = useState<DailyMotivation | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -74,7 +64,7 @@ export default function AIMentorChat() {
     if (messages.length === 0) {
       setMessages([{
         role: 'assistant',
-        content: "Hello! I&apos;m your AI Career Mentor. I&apos;m here to help you advance your career in PHP or Oracle development. What would you like to work on today?",
+        content: "Hello! I'm your AI Career Mentor. I'm here to help you advance your career in PHP or Oracle development. What would you like to work on today?",
         timestamp: new Date()
       }]);
     }
@@ -118,8 +108,6 @@ export default function AIMentorChat() {
           setUserContext(data.context);
         } else if (action === 'code-review') {
           setCodeReview(data.review);
-        } else if (action === 'interview-prep') {
-          setInterviewQuestions(data.questions);
         } else if (action === 'daily-motivation') {
           setDailyMotivation(data.motivation);
         }
@@ -144,22 +132,7 @@ export default function AIMentorChat() {
     sendMessage(inputMessage, chatMode);
   };
 
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case 'easy': return 'text-green-600 bg-green-100';
-      case 'medium': return 'text-yellow-600 bg-yellow-100';
-      case 'hard': return 'text-red-600 bg-red-100';
-      default: return 'text-gray-600 bg-gray-100';
-    }
-  };
 
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'technical': return 'text-blue-600 bg-blue-100';
-      case 'behavioral': return 'text-purple-600 bg-purple-100';
-      default: return 'text-gray-600 bg-gray-100';
-    }
-  };
 
   return (
     <div className="flex flex-col h-full bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -219,18 +192,7 @@ export default function AIMentorChat() {
             <span>Code Review</span>
           </button>
           
-          <button
-            onClick={() => setChatMode('interview-prep')}
-            className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-              chatMode === 'interview-prep'
-                ? 'bg-purple-100 text-purple-700'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
-          >
-            <Target className="w-4 h-4" />
-            <span>Interview Prep</span>
-          </button>
-          
+
           <button
             onClick={() => setChatMode('daily-motivation')}
             className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
@@ -352,71 +314,7 @@ export default function AIMentorChat() {
           </div>
         )}
 
-        {/* Interview Questions */}
-        {chatMode === 'interview-prep' && interviewQuestions && (
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <div className="flex items-center space-x-2 mb-4">
-              <Target className="w-6 h-6 text-purple-600" />
-              <h3 className="text-lg font-semibold text-gray-900">Interview Preparation</h3>
-            </div>
 
-            <div className="mb-6">
-              <h4 className="font-medium text-gray-900 mb-3">Preparation Tips</h4>
-              <div className="grid gap-2">
-                {interviewQuestions.preparationTips.map((tip, index) => (
-                  <div key={index} className="flex items-start space-x-2 p-3 bg-purple-50 rounded-lg">
-                    <Sparkles className="w-4 h-4 text-purple-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700">{tip}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <h4 className="font-medium text-gray-900">Practice Questions</h4>
-              {interviewQuestions.questions.map((question, index) => (
-                <div key={index} className="border border-gray-200 rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex space-x-2">
-                      <span className={`px-2 py-1 rounded text-xs font-medium ${getTypeColor(question.type)}`}>
-                        {question.type}
-                      </span>
-                      <span className={`px-2 py-1 rounded text-xs font-medium ${getDifficultyColor(question.difficulty)}`}>
-                        {question.difficulty}
-                      </span>
-                    </div>
-                    <span className="text-sm text-gray-500">Q{index + 1}</span>
-                  </div>
-                  
-                  <p className="text-gray-900 mb-3 font-medium">{question.question}</p>
-                  
-                  <details className="space-y-2">
-                    <summary className="cursor-pointer text-sm text-blue-600 hover:text-blue-800">
-                      Show expected answer and tips
-                    </summary>
-                    <div className="pl-4 space-y-2">
-                      <div>
-                        <span className="text-sm font-medium text-gray-700">Expected Answer:</span>
-                        <p className="text-sm text-gray-600 mt-1">{question.expectedAnswer}</p>
-                      </div>
-                      <div>
-                        <span className="text-sm font-medium text-gray-700">Tips:</span>
-                        <ul className="text-sm text-gray-600 mt-1 space-y-1">
-                          {question.tips.map((tip, tipIndex) => (
-                            <li key={tipIndex} className="flex items-start space-x-2">
-                              <span className="text-blue-500">•</span>
-                              <span>{tip}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  </details>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Daily Motivation */}
         {chatMode === 'daily-motivation' && dailyMotivation && (
@@ -433,7 +331,7 @@ export default function AIMentorChat() {
 
               <div className="grid gap-4 md:grid-cols-3">
                 <div className="bg-white bg-opacity-20 rounded-lg p-4">
-                  <h4 className="font-medium mb-2">Today&apos;s Focus</h4>
+                  <h4 className="font-medium mb-2">Today's Focus</h4>
                   <p className="text-sm">{dailyMotivation.focusArea}</p>
                 </div>
                 
@@ -474,8 +372,7 @@ export default function AIMentorChat() {
                 onChange={(e) => setInputMessage(e.target.value)}
                 placeholder={
                   chatMode === 'chat' ? "Ask me anything about your career development..." :
-                  chatMode === 'interview-prep' ? "Type &apos;generate&apos; to get interview questions..." :
-                  chatMode === 'daily-motivation' ? "Type &apos;motivate&apos; for daily inspiration..." :
+                  chatMode === 'daily-motivation' ? "Type 'motivate' for daily inspiration..." :
                   "Type your message..."
                 }
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -527,14 +424,7 @@ export default function AIMentorChat() {
             </button>
           )}
           
-          {chatMode === 'interview-prep' && (
-            <button
-              onClick={() => sendMessage("generate", 'interview-prep')}
-              className="px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition-colors"
-            >
-              Generate Questions
-            </button>
-          )}
+
           
           {chatMode === 'daily-motivation' && (
             <button

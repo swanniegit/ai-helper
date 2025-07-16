@@ -7,7 +7,7 @@ export default function MentorChatPage() {
         <div className="max-w-7xl mx-auto">
           <h1 className="text-2xl font-bold text-gray-900">AI Career Mentor</h1>
           <p className="text-gray-600 mt-1">
-            Get personalized career guidance, code reviews, interview prep, and daily motivation
+            Get personalized career guidance, code reviews, and daily motivation
           </p>
         </div>
       </div>

@@ -53,8 +53,7 @@ export async function POST(req: NextRequest) {
         return await handleChatMessage(message, context, result.user!.id);
       case 'code-review':
         return await handleCodeReview(message, context);
-      case 'interview-prep':
-        return await handleInterviewPrep(context);
+
       case 'daily-motivation':
         return await handleDailyMotivation(context);
       default:
@@ -232,22 +231,7 @@ async function handleCodeReview(message: string, context: MentorContext) {
   }
 }
 
-async function handleInterviewPrep(context: MentorContext) {
-  try {
-    const questions = await MentorService.generateInterviewQuestions(context, 'mixed');
 
-    return NextResponse.json({
-      success: true,
-      questions
-    });
-  } catch (error) {
-    console.error('Interview prep error:', error);
-    return NextResponse.json(
-      { error: 'Failed to generate interview questions' },
-      { status: 500 }
-    );
-  }
-}
 
 async function handleDailyMotivation(context: MentorContext) {
   try {

@@ -148,7 +148,7 @@ export const LearningPlanGeneration: React.FC<LearningPlanGenerationProps> = ({
             Your Personalized Learning Plan
           </h3>
           <p className="text-gray-600">
-            Here&apos;s your {goalsData.timelineMonths}-month journey to achieve your career goals
+            Here's your {goalsData.timelineMonths}-month journey to achieve your career goals
           </p>
         </div>
 

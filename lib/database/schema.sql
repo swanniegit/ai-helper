@@ -23,7 +23,7 @@ CREATE TABLE users (
 CREATE TABLE user_sessions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    session_token VARCHAR(255) UNIQUE NOT NULL,
+    session_token TEXT UNIQUE NOT NULL,
     expires_at TIMESTAMP NOT NULL,
     ip_address INET,
     user_agent TEXT,

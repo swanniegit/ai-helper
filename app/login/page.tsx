@@ -9,6 +9,7 @@ export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [loading, setLoading] = useState(false);
@@ -42,6 +43,20 @@ export default function LoginPage() {
           setError(result.error || 'Login failed');
         }
       } else {
+        // Validate password confirmation
+        if (password !== confirmPassword) {
+          setError('Passwords do not match');
+          setLoading(false);
+          return;
+        }
+
+        // Validate password strength
+        if (password.length < 8) {
+          setError('Password must be at least 8 characters long');
+          setLoading(false);
+          return;
+        }
+
         // Handle registration
         const response = await fetch('/api/auth/register', {
           method: 'POST',
@@ -62,6 +77,7 @@ export default function LoginPage() {
           setIsLogin(true);
           setEmail('');
           setPassword('');
+          setConfirmPassword('');
           setFirstName('');
           setLastName('');
         }
@@ -71,6 +87,17 @@ export default function LoginPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleToggleMode = () => {
+    setIsLogin(!isLogin);
+    setError('');
+    setSuccess('');
+    setEmail('');
+    setPassword('');
+    setConfirmPassword('');
+    setFirstName('');
+    setLastName('');
   };
 
   return (
@@ -88,7 +115,7 @@ export default function LoginPage() {
               <>
                 Or{' '}
                 <button
-                  onClick={() => setIsLogin(false)}
+                  onClick={handleToggleMode}
                   className="font-medium text-blue-600 hover:text-blue-500"
                 >
                   create a new account
@@ -98,7 +125,7 @@ export default function LoginPage() {
               <>
                 Or{' '}
                 <button
-                  onClick={() => setIsLogin(true)}
+                  onClick={handleToggleMode}
                   className="font-medium text-blue-600 hover:text-blue-500"
                 >
                   sign in to existing account
@@ -178,6 +205,24 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
+            {!isLogin && (
+              <div>
+                <label htmlFor="confirmPassword" className="sr-only">
+                  Confirm Password
+                </label>
+                <input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  autoComplete="new-password"
+                  required={!isLogin}
+                  className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  placeholder="Confirm Password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+              </div>
+            )}
           </div>
 
           {error && (
