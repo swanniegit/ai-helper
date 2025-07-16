@@ -24,12 +24,25 @@ jobs:
       run: npm run build
       env:
         NODE_ENV: production
+        # Add dummy environment variables for build
+        NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: dummy-key
+        SUPABASE_SERVICE_ROLE_KEY: dummy-service-key
+        DATABASE_URL: postgresql://dummy:dummy@localhost:5432/dummy
+        JWT_SECRET: dummy-jwt-secret
+        OPENAI_API_KEY: dummy-openai-key
     
     - name: Check Vercel secrets
       run: |
         if [ -z "${{ secrets.VERCEL_TOKEN }}" ] || [ -z "${{ secrets.ORG_ID }}" ] || [ -z "${{ secrets.PROJECT_ID }}" ]; then
           echo "⚠️  Vercel secrets not configured. Skipping deployment."
+          echo "To enable deployment, add the following secrets to your repository:"
+          echo "- VERCEL_TOKEN"
+          echo "- ORG_ID" 
+          echo "- PROJECT_ID"
           exit 0
+        else
+          echo "✅ Vercel secrets found. Proceeding with deployment."
         fi
     
     - name: Deploy to Vercel
