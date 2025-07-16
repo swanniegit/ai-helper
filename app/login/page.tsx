@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useAuth } from '../../lib/auth/AuthContext';
 
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -14,6 +15,14 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const router = useRouter();
+  const { user, login } = useAuth();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      router.push('/dashboard');
+    }
+  }, [user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,30 +31,40 @@ export default function LoginPage() {
     setSuccess('');
 
     try {
-      const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
-      const body = isLogin 
-        ? { email, password }
-        : { email, password, firstName, lastName };
+      if (isLogin) {
+        const result = await login(email, password);
+        if (result.success) {
+          setSuccess('Login successful!');
+          setTimeout(() => {
+            router.push('/dashboard');
+          }, 1000);
+        } else {
+          setError(result.error || 'Login failed');
+        }
+      } else {
+        // Handle registration
+        const response = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password, firstName, lastName }),
+        });
 
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
-      });
+        const data = await response.json();
 
-      const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || 'Registration failed');
+        }
 
-      if (!response.ok) {
-        throw new Error(data.error || 'An error occurred');
-      }
-
-      if (data.success) {
-        setSuccess(isLogin ? 'Login successful!' : 'Registration successful!');
-        setTimeout(() => {
-          router.push('/dashboard');
-        }, 1000);
+        if (data.success) {
+          setSuccess('Registration successful! Please log in.');
+          setIsLogin(true);
+          setEmail('');
+          setPassword('');
+          setFirstName('');
+          setLastName('');
+        }
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');

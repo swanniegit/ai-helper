@@ -1,5 +1,6 @@
 import React from 'react';
 import Navigation from '@/components/Navigation';
+import ProtectedRoute from '@/components/ProtectedRoute';
 
 export default function DashboardLayout({
   children,
@@ -7,11 +8,13 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex">
-    <Navigation />
-      <div className="flex-grow p-6 bg-white rounded-lg shadow-md animate-fadeIn">
-        {children}
+    <ProtectedRoute>
+      <div className="flex">
+        <Navigation />
+        <div className="flex-grow p-6 bg-white rounded-lg shadow-md animate-fadeIn">
+          {children}
+        </div>
       </div>
-    </div>
+    </ProtectedRoute>
   );
 } 
