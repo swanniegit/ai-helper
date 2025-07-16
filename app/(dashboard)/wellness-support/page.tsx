@@ -55,7 +55,7 @@ export default function WellnessSupportPage() {
           </p>
           <div className="space-y-2">
             <div className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
-              <span className="text-sm font-medium">Today's Mood</span>
+              <span className="text-sm font-medium">Today&apos;s Mood</span>
               <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full">Good</span>
             </div>
             <div className="flex items-center justify-between p-3 bg-gray-50 rounded-md">

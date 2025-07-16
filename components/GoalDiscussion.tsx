@@ -170,7 +170,7 @@ export const GoalDiscussion: React.FC<GoalDiscussionProps> = ({ onComplete }) =>
     <div className="space-y-6">
       <div className="text-center">
         <h3 className="text-xl font-semibold text-gray-900 mb-2">
-          What's your timeline for achieving these goals?
+          What&apos;s your timeline for achieving these goals?
         </h3>
         <p className="text-gray-600">
           How many months do you want to spend on this learning journey?
@@ -277,7 +277,7 @@ export const GoalDiscussion: React.FC<GoalDiscussionProps> = ({ onComplete }) =>
           Step 3: Goal Discussion
         </h2>
         <p className="text-gray-600">
-          Let's understand your career objectives and priorities
+          Let&apos;s understand your career objectives and priorities
         </p>
       </div>
 

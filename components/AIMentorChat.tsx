@@ -331,7 +331,7 @@ export default function AIMentorChat() {
 
               <div className="grid gap-4 md:grid-cols-3">
                 <div className="bg-white bg-opacity-20 rounded-lg p-4">
-                  <h4 className="font-medium mb-2">Today's Focus</h4>
+                  <h4 className="font-medium mb-2">Today&apos;s Focus</h4>
                   <p className="text-sm">{dailyMotivation.focusArea}</p>
                 </div>
                 
