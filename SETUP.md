@@ -1,110 +1,197 @@
-# Setup Guide - AI Helper Learning Path System
+# Setup Guide - AI Mentor Chat System
 
-## 🚨 Current Issue: "Failed to create user"
+## 🚀 Complete Setup Instructions
 
-The error you're seeing is because the database tables haven't been created yet. Follow these steps to fix it:
+This guide will help you set up the AI Mentor Chat System with all its features including authentication, AI chat, learning paths, and database integration.
 
 ## 📋 Prerequisites
 
-1. **Supabase Account**: You need access to your Supabase project
-2. **Environment Variables**: Make sure your `.env.local` file has the correct Supabase credentials
+1. **Node.js 20+** - Latest LTS version
+2. **Docker & Docker Compose** - For containerized development
+3. **Supabase Account** - Free tier available at [supabase.com](https://supabase.com)
+4. **OpenAI API Key** - Get from [platform.openai.com](https://platform.openai.com)
+5. **Git** - For version control
 
 ## 🔧 Step-by-Step Setup
 
-### 1. Set Up Database Tables
-
-1. Go to your **Supabase Dashboard**
-2. Navigate to **SQL Editor**
-3. Copy the entire content from `scripts/setup-database.sql`
-4. Paste it into the SQL Editor
-5. Click **Run** to execute the script
-
-### 2. Verify Environment Variables
-
-Make sure your `.env.local` file contains:
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
-OPENAI_API_KEY=your-openai-api-key
-```
-
-### 3. Restart Docker Containers
+### 1. Clone and Install
 
 ```bash
-docker-compose down
-docker-compose up -d --build
+# Clone the repository
+git clone https://github.com/swanniegit/ai-helper.git
+cd ai-helper
+
+# Install dependencies
+npm install
 ```
 
-### 4. Test Registration
+### 2. Set Up Supabase
 
-1. Go to `http://localhost:3000/login`
-2. Click "create a new account"
-3. Fill in the registration form
-4. Should now work without the "Failed to create user" error
+1. **Create Supabase Project**:
+   - Go to [supabase.com](https://supabase.com)
+   - Create a new project
+   - Note your project URL and anon key
+
+2. **Set Up Database Tables**:
+   - Go to your **Supabase Dashboard**
+   - Navigate to **SQL Editor**
+   - Copy the entire content from `scripts/setup-database.sql`
+   - Paste it into the SQL Editor
+   - Click **Run** to execute the script
+
+### 3. Configure Environment Variables
+
+Create a `.env.local` file in the root directory:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3000
+NEXT_TELEMETRY_DISABLED=1
+CUSTOM_KEY=your-custom-key-here
+NEXT_PUBLIC_SUPABASE_URL=your-supabase-url-here
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key-here
+OPENAI_API_KEY=your-openai-api-key-here
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+```
+
+### 4. Start Development Server
+
+#### Option A: Local Development
+```bash
+npm run dev
+```
+
+#### Option B: Docker Development
+```bash
+# Build and start containers
+docker-compose up -d --build
+
+# View logs
+docker-compose logs -f app
+```
+
+### 5. Test the System
+
+1. **Open** `http://localhost:3000`
+2. **Register** a new account at `/login`
+3. **Login** with your credentials
+4. **Access** the AI mentor chat at `/chat`
+5. **Create** learning paths at `/learning-paths/new`
 
 ## 🎯 What the Setup Script Does
 
-The `setup-database.sql` script creates:
+The `scripts/setup-database.sql` script creates:
 
 - **Users table** - For user accounts and authentication
-- **User sessions** - For secure session management
+- **User sessions** - For secure session management with JWT
 - **Learning paths** - For storing career paths and goals
-- **Skill assessments** - For tracking user skills
-- **Career goals** - For user-defined objectives
-- **Learning plans** - For AI-generated learning plans
-- **Progress tracking** - For monitoring user progress
-- **All necessary indexes** - For optimal performance
-- **Row Level Security** - For data protection
+- **Skill assessments** - For tracking user skills and levels
+- **Career goals** - For user-defined objectives and timelines
+- **Learning plans** - For AI-generated learning plans with quarters
+- **Progress tracking** - For monitoring milestone completion
+- **Chat sessions** - For conversation history and context
+- **Conversation history** - For detailed chat message storage
+- **All necessary indexes** - For optimal database performance
+- **Row Level Security (RLS)** - For data protection and access control
 
 ## 🔍 Troubleshooting
 
-### If you still get "Failed to create user":
+### Authentication Issues
 
-1. **Check Supabase Connection**:
-   - Verify your Supabase URL and anon key are correct
-   - Test connection in Supabase dashboard
+1. **"Failed to create user" Error**:
+   - Verify database tables are created in Supabase
+   - Check RLS policies are properly configured
+   - Ensure environment variables are correct
 
-2. **Check Database Tables**:
-   - Go to Supabase → Table Editor
-   - Verify the `users` table exists
+2. **Login Problems**:
+   - Verify Supabase URL and anon key
+   - Check JWT_SECRET is set correctly
+   - Ensure user sessions table exists
 
-3. **Check RLS Policies**:
-   - Go to Supabase → Authentication → Policies
-   - Verify policies are created for the `users` table
+### Database Issues
 
-4. **Check Logs**:
-   ```bash
-   docker-compose logs app
-   ```
+1. **Connection Errors**:
+   - Verify Supabase project is active
+   - Check network connectivity
+   - Ensure API keys are valid
 
-### Common Issues:
+2. **RLS Policy Errors**:
+   - Run the RLS fix scripts if needed
+   - Check Supabase dashboard for policy status
+   - Verify user permissions
 
-- **Wrong Supabase URL**: Make sure it starts with `https://`
-- **Invalid anon key**: Copy the full key from Supabase settings
-- **Missing JWT_SECRET**: Add it to your environment variables
-- **Database not created**: Run the setup script in Supabase SQL Editor
+### AI Chat Issues
+
+1. **OpenAI API Errors**:
+   - Verify OPENAI_API_KEY is valid
+   - Check API quota and billing
+   - Ensure proper API endpoint configuration
+
+2. **Context Loading Issues**:
+   - Check user profile data exists
+   - Verify career path selection
+   - Ensure learning progress is tracked
+
+### Common Solutions
+
+```bash
+# Restart Docker containers
+docker-compose down
+docker-compose up -d --build
+
+# Check application logs
+docker-compose logs -f app
+
+# Verify environment variables
+cat .env.local
+
+# Test Supabase connection
+curl -X GET "https://your-project.supabase.co/rest/v1/" \
+  -H "apikey: your-anon-key"
+```
 
 ## ✅ Success Indicators
 
 After successful setup, you should be able to:
 
-1. ✅ Register a new user account
-2. ✅ Login with the created account
-3. ✅ Access the dashboard
-4. ✅ Create learning paths
-5. ✅ Select career paths (PHP/Oracle)
-6. ✅ Generate AI-powered learning plans
+1. ✅ **Register** a new user account at `/login`
+2. ✅ **Login** with the created account
+3. ✅ **Access** the dashboard at `/dashboard`
+4. ✅ **Chat** with AI mentor at `/chat`
+5. ✅ **Create** learning paths at `/learning-paths/new`
+6. ✅ **Select** career paths (PHP/Oracle)
+7. ✅ **Generate** AI-powered learning plans
+8. ✅ **Track** progress and milestones
 
 ## 🚀 Next Steps
 
-Once registration works:
+Once everything is working:
 
-1. Create your first learning path
-2. Select PHP or Oracle as your career path
-3. Complete the skills assessment
-4. Set your career goals
-5. Generate your personalized learning plan
+1. **Explore the AI Mentor Chat**:
+   - Try different chat modes (General, Code Review, Interview Prep, Motivation)
+   - Ask career-related questions
+   - Get personalized guidance
 
-The system will then save everything to the database and display your learning paths on the dashboard! 
+2. **Create Your Learning Path**:
+   - Select your career track (PHP or Oracle)
+   - Complete the skills assessment
+   - Set your career goals and timeline
+   - Generate your personalized roadmap
+
+3. **Track Your Progress**:
+   - Monitor milestone completion
+   - Review quarterly objectives
+   - Update your skills and goals
+
+4. **Advanced Features**:
+   - Use code review for PHP/SQL/PL/SQL
+   - Practice interview questions
+   - Get daily motivation and tips
+
+## 📚 Additional Resources
+
+- **[Context and Memory System](CONTEXT_AND_MEMORY.md)** - Understand how the AI remembers and personalizes responses
+- **[CSS Styling Guide](CSS_STYLING_GUIDE.md)** - Learn about the design system and styling
+- **[Learning Path Implementation](learning-path.md)** - Detailed feature documentation
+- **[Technical Implementation Handbook](Technical%20Implementation%20Handbook.docx.md)** - Complete technical guide
+
+The system is now ready to provide personalized career guidance and learning experiences! 🎉 

@@ -1,17 +1,18 @@
-# Role-Based AI Platform Demo
+# AI Mentor Chat System
 
-A Next.js 14 application demonstrating a role-based AI growth and goal-tracking platform with modern UI/UX design, Docker support, and CI/CD pipeline.
+A comprehensive Next.js 14 application featuring an AI-powered career mentor chat system with personalized learning paths, career frameworks, and interactive guidance for PHP and Oracle developers.
 
 ## 🚀 Features
 
-- **Goal Tracking Dashboard** - Visual progress tracking with status indicators
-- **AI Mentor Chat** - Interactive chat interface with simulated AI responses
-- **Learning Path Wizard** - OpenAI-powered roadmap generation after a short quiz
-- **Responsive Design** - Mobile-first approach with Tailwind CSS
-- **Modern Animations** - Smooth transitions and hover effects
-- **TypeScript** - Full type safety throughout the application
-- **Docker Support** - Containerized development and production deployment
-- **CI/CD Pipeline** - Automated testing and deployment with GitHub Actions
+- **🤖 AI Mentor Chat** - GPT-4 powered virtual career mentor with context-aware responses
+- **🎯 Personalized Learning Paths** - AI-generated career roadmaps with quarterly milestones
+- **📚 Career Frameworks** - Comprehensive PHP and Oracle developer progression frameworks
+- **💬 Interactive Chat Modes** - Code review, interview prep, daily motivation, and general guidance
+- **📊 Progress Tracking** - Real-time milestone tracking and learning analytics
+- **🔐 Secure Authentication** - Supabase-powered user management with JWT sessions
+- **🎨 Modern UI/UX** - Beautiful, responsive design with Tailwind CSS
+- **🐳 Docker Support** - Containerized development and production deployment
+- **🔄 CI/CD Pipeline** - Automated testing and deployment with GitHub Actions
 
 ## 🛠️ Tech Stack
 
@@ -19,6 +20,9 @@ A Next.js 14 application demonstrating a role-based AI growth and goal-tracking 
 - **TypeScript** - Type-safe development
 - **Tailwind CSS** - Utility-first CSS framework
 - **React 18** - Latest React features
+- **OpenAI GPT-4** - AI-powered mentor responses
+- **Supabase** - Database and authentication
+- **PostgreSQL** - Relational database with RLS policies
 - **Docker** - Containerization
 - **GitHub Actions** - CI/CD pipeline
 - **Jest & Testing Library** - Testing framework
@@ -116,25 +120,43 @@ npm run lint
 ## 🏗️ Project Structure
 
 ```
-role-based-ai-platform-demo/
+ai-helper/
 ├── app/                    # Next.js 14 app directory
-│   ├── chat/              # AI chat functionality
-│   ├── dashboard/         # Goal tracking dashboard
+│   ├── (dashboard)/       # Dashboard layout group
+│   │   ├── chat/          # AI mentor chat interface
+│   │   ├── dashboard/     # Main dashboard
+│   │   ├── learning-paths/ # Learning path management
+│   │   ├── mentor-linkup/ # Mentor connection features
+│   │   ├── news-feed/     # News and updates
+│   │   └── wellness-support/ # Wellness features
+│   ├── api/               # API routes
+│   │   ├── auth/          # Authentication endpoints
+│   │   ├── chat/          # Chat API endpoints
+│   │   └── generate-learning-path/ # AI plan generation
+│   ├── login/             # Authentication pages
+│   ├── logout/            # Logout functionality
 │   ├── globals.css        # Global styles
 │   ├── layout.tsx         # Root layout
 │   └── page.tsx           # Home page
 ├── components/            # Reusable components
-│   ├── ChatWindow.tsx     # Chat interface
+│   ├── ChatWindow.tsx     # Enhanced chat interface
 │   ├── GoalCard.tsx       # Goal display component
+│   ├── Navigation.tsx     # Navigation component
 │   └── NewsTicker.tsx     # News ticker component
 ├── lib/                   # Utility functions
+│   ├── auth/              # Authentication utilities
+│   ├── supabaseClient.ts  # Supabase client configuration
 │   └── mockData.ts        # Mock data for demo
 ├── types/                 # TypeScript type definitions
 │   └── chat.ts           # Chat-related types
+├── database/              # Database schema and migrations
+├── docs/                  # Documentation files
 ├── .github/              # GitHub Actions workflows
 ├── Dockerfile            # Production Docker image
 ├── Dockerfile.dev        # Development Docker image
 ├── docker-compose.yml    # Docker Compose configuration
+├── CONTEXT_AND_MEMORY.md # Context and memory system docs
+├── CSS_STYLING_GUIDE.md  # CSS styling documentation
 └── README.md             # This file
 ```
 
@@ -168,33 +190,45 @@ The project includes a GitHub Actions workflow that:
 
 ### Environment Variables
 
-Create a `.env.local` file for local development. You can start by copying
-the provided `.env.example` file:
-
-```bash
-cp .env.example .env.local
-```
-
-Then adjust the values as needed:
+Create a `.env.local` file for local development with the following variables:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3000
 NEXT_TELEMETRY_DISABLED=1
-CUSTOM_KEY=your-custom-key
-NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
-OPENAI_API_KEY=your-openai-api-key
-=======
+CUSTOM_KEY=your-custom-key-here
+NEXT_PUBLIC_SUPABASE_URL=your-supabase-url-here
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key-here
+OPENAI_API_KEY=your-openai-api-key-here
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
 ```
-### Authentication (Preview)
 
-Use Supabase credentials to sign in at `/login`. Successful login redirects to
-the dashboard. Visit `/logout` to sign out.
+### Authentication
 
+The system uses Supabase for authentication with JWT session management:
 
-Try the new learning path wizard at `/learning-paths/new` to generate an
-OpenAI-powered career roadmap.
-=======
+- **Registration**: `/login` - Create new account
+- **Login**: `/login` - Sign in with existing credentials  
+- **Logout**: `/logout` - Sign out and clear session
+- **Dashboard**: `/dashboard` - Main application interface
+
+### AI Mentor Chat
+
+Access the AI mentor chat at `/chat` with multiple interaction modes:
+
+- **General Guidance**: Career advice and mentorship
+- **Code Review**: PHP/SQL/PL/SQL code analysis and improvements
+- **Interview Prep**: Mock interviews and preparation tips
+- **Daily Motivation**: Personalized encouragement and tips
+
+### Learning Paths
+
+Generate personalized learning paths at `/learning-paths/new`:
+
+1. **Career Path Selection**: Choose PHP or Oracle developer track
+2. **Skills Assessment**: Evaluate current skill levels
+3. **Goal Setting**: Define career objectives and timeline
+4. **AI Plan Generation**: GPT-4 powered roadmap creation
+5. **Progress Tracking**: Monitor milestone completion
 ## 🎯 Development Roadmap
 
 ### Phase 1: Foundation ✅
@@ -204,23 +238,33 @@ OpenAI-powered career roadmap.
 - [x] Docker configuration
 - [x] CI/CD pipeline
 
-### Phase 2: Backend Integration 🚧
-- [ ] Supabase authentication
-- [ ] Database schema implementation
-- [ ] API routes for goals and chat
-- [ ] Real-time features
+### Phase 2: Backend Integration ✅
+- [x] Supabase authentication with JWT sessions
+- [x] PostgreSQL database schema with RLS policies
+- [x] API routes for authentication and chat
+- [x] User session management
+- [x] Database security and optimization
 
-### Phase 3: AI Features 🚧
-- [ ] OpenAI API integration
-- [ ] RAG system implementation
-- [ ] Role-based responses
-- [ ] Document processing
+### Phase 3: AI Features ✅
+- [x] OpenAI GPT-4 integration
+- [x] Context-aware AI mentor chat system
+- [x] Career framework integration (PHP/Oracle)
+- [x] Personalized learning path generation
+- [x] Multi-mode chat interactions
 
-### Phase 4: Advanced Features 🚧
-- [ ] Quiz engine
-- [ ] CBT support
-- [ ] Analytics dashboard
-- [ ] Mobile app
+### Phase 4: Learning System ✅
+- [x] Skills assessment and evaluation
+- [x] Goal setting and timeline planning
+- [x] Quarterly milestone tracking
+- [x] Progress monitoring and analytics
+- [x] Career progression frameworks
+
+### Phase 5: Advanced Features 🚧
+- [ ] Quiz generation system
+- [ ] Project assessment tools
+- [ ] Advanced analytics dashboard
+- [ ] Mobile app development
+- [ ] Social learning features
 
 ## 🤝 Contributing
 
@@ -242,6 +286,33 @@ If you encounter any issues:
 2. Create a new issue with detailed information
 3. Contact the development team
 
+## 📚 Documentation
+
+- **[Context and Memory System](CONTEXT_AND_MEMORY.md)** - Comprehensive guide to the AI mentor's context and memory management
+- **[CSS Styling Guide](CSS_STYLING_GUIDE.md)** - Complete styling system documentation
+- **[Learning Path Implementation](learning-path.md)** - Detailed implementation status and features
+- **[Technical Implementation Handbook](Technical%20Implementation%20Handbook.docx.md)** - Complete technical documentation
+
+## 🎯 Key Features in Detail
+
+### AI Mentor Chat System
+- **Context-Aware Responses**: AI remembers user's career path, progress, and preferences
+- **Multi-Mode Interactions**: General guidance, code review, interview prep, and motivation
+- **Career Framework Integration**: PHP and Oracle developer progression paths
+- **Real-time Learning**: Adapts responses based on user's current learning phase
+
+### Learning Path System
+- **Personalized Roadmaps**: AI-generated career plans with quarterly milestones
+- **Skills Assessment**: Comprehensive evaluation of current skill levels
+- **Progress Tracking**: Real-time milestone completion monitoring
+- **Goal Management**: Structured goal setting and timeline planning
+
+### Authentication & Security
+- **Supabase Integration**: Secure user authentication and session management
+- **JWT Sessions**: Stateless authentication with HTTP-only cookies
+- **RLS Policies**: Row-level security for database protection
+- **Password Security**: Bcrypt hashing for secure password storage
+
 ---
 
-**Note:** This is a demo application showcasing the frontend foundation for a comprehensive role-based AI platform. The full system will include backend services, AI integration, and advanced features as outlined in the Technical Implementation Handbook.
+**Note:** This is a production-ready AI mentor chat system with comprehensive career guidance features, secure authentication, and personalized learning experiences for PHP and Oracle developers.

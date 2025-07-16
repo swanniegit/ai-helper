@@ -8,6 +8,7 @@ export default function Navigation() {
 
   const navItems = [
     { key: 'progress', href: '/dashboard', label: 'My Progress' },
+    { key: 'quiz', href: '/quiz', label: 'Quiz Center' },
     { key: 'mentor', href: '/mentor-chat', label: 'AI Mentor' },
     { key: 'learning', href: '/learning-paths', label: 'Learning Paths' },
     { key: 'news', href: '/news-feed', label: 'News Feed' },

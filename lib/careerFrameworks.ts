@@ -386,4 +386,35 @@ export function getCareerLevelRequirements(framework: CareerFramework, targetLev
     prerequisites,
     estimatedTime
   };
+}
+
+/**
+ * Get training resources for a specific skill and level
+ */
+export function getTrainingResources(skillName: string, level: 'Junior' | 'Intermediate' | 'Senior'): {
+  courses: string[];
+  books: string[];
+  practice: string[];
+  estimatedHours: number;
+} {
+  const resources = {
+    courses: [
+      `${skillName} Fundamentals Course`,
+      `${skillName} Best Practices`,
+      `${skillName} Advanced Techniques`
+    ],
+    books: [
+      `${skillName} Complete Guide`,
+      `${skillName} Design Patterns`,
+      `${skillName} Performance Optimization`
+    ],
+    practice: [
+      `${skillName} Coding Challenges`,
+      `${skillName} Project Building`,
+      `${skillName} Code Reviews`
+    ],
+    estimatedHours: level === 'Junior' ? 40 : level === 'Intermediate' ? 60 : 80
+  };
+
+  return resources;
 } 
