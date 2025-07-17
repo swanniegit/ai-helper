@@ -44,7 +44,7 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal }) => {
         Progress {goal.progress_pct}%{goal.status !== 'Completed' && <> • Expected {goal.expected_progress}%</>}
       </p>
 
-      <button className="btn btn-sm btn-primary-light mt-2">View Details (Mock)</button>
+      <button className="btn btn-sm btn-gradient mt-2">View Details (Mock)</button>
     </div>
   );
 };
