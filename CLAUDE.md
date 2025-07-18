@@ -193,6 +193,44 @@ JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
 - Error handling with try-catch blocks
 - Type safety with proper interfaces
 
+### Pre-Deployment Checklist
+Before committing code, always check:
+
+#### ESLint & React Rules
+- **Escape apostrophes**: Use `&apos;` instead of `'` in JSX text content
+- **Quote escaping**: Use `&quot;` for quotes in JSX
+- **HTML entities**: Use proper HTML entities for special characters
+- **React fragments**: Use `<>` or `React.Fragment` instead of divs when possible
+
+#### Build Validation
+```bash
+# Always run before committing
+npm run lint
+npm run type-check
+npm run build
+```
+
+#### Common ESLint Fixes
+```jsx
+// ❌ Wrong - will cause react/no-unescaped-entities error
+<p>You haven't completed any quizzes yet.</p>
+
+// ✅ Correct - escaped apostrophe
+<p>You haven&apos;t completed any quizzes yet.</p>
+
+// ❌ Wrong - unescaped quotes
+<p>Click "Start Quiz" to begin.</p>
+
+// ✅ Correct - escaped quotes
+<p>Click &quot;Start Quiz&quot; to begin.</p>
+```
+
+#### Color Theme Compliance
+- **NO blue elements**: All interactive elements must use primary green theme
+- **Consistent gradients**: Use `bg-gradient-to-r from-primary to-gray-700` for buttons
+- **Hover states**: Use `hover:from-primary/90 hover:to-gray-700/90`
+- **Text colors**: Use `text-primary` instead of `text-blue-*`
+
 ### CSS Requirements and Styling Guidelines
 
 #### Nightingale UI/UX Theme Evaluation Rule
