@@ -28,7 +28,7 @@ const NewsTicker: React.FC<NewsTickerProps> = ({ newsItems }) => {
         ))}
       </ul>
       <div className="mt-4 text-right">
-        <a href="#" className="text-blue-600 hover:underline text-sm hover:bg-blue-50 transition-colors duration-200 rounded-md p-1">View All News (Mock)</a>
+        <a href="#" className="text-primary hover:underline text-sm hover:bg-primary/20 transition-colors duration-200 rounded-md p-1">View All News (Mock)</a>
       </div>
     </div>
   );

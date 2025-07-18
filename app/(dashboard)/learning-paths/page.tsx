@@ -82,7 +82,7 @@ export default function LearningPathsPage() {
       case 'PHP':
         return 'bg-purple-100 text-purple-600';
       case 'Oracle':
-        return 'bg-blue-100 text-blue-600';
+        return 'bg-primary/20 text-primary';
       default:
         return 'bg-gray-100 text-gray-600';
     }
@@ -139,7 +139,7 @@ export default function LearningPathsPage() {
           <p className="text-red-600">Error: {error}</p>
           <button 
             onClick={fetchLearningPaths}
-            className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="mt-2 px-4 py-2 bg-gradient-to-r from-primary to-gray-700 text-white rounded-lg hover:from-primary/90 hover:to-gray-700/90 transition-colors"
           >
             Try Again
           </button>

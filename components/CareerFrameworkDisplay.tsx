@@ -97,7 +97,7 @@ export const CareerFrameworkDisplay: React.FC<CareerFrameworkDisplayProps> = ({
                       <h6 className="font-medium text-blue-600 text-sm mb-1">Courses & Platforms</h6>
                       <div className="flex flex-wrap gap-2">
                         {resources.courses.map((course, index) => (
-                          <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">
+                          <span key={index} className="px-2 py-1 bg-primary/20 text-primary rounded text-xs">
                             {course}
                           </span>
                         ))}

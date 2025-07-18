@@ -79,7 +79,7 @@ export const SkillsAssessmentForm: React.FC<SkillsAssessmentFormProps> = ({ onCo
             onClick={() => setCareerPath('PHP')}
             className={`p-6 rounded-lg border-2 transition-all text-left ${
               careerPath === 'PHP'
-                ? 'border-blue-500 bg-blue-50 text-blue-700'
+                ? 'border-primary bg-primary/20 text-primary'
                 : 'border-gray-200 hover:border-gray-300'
             }`}
           >
@@ -93,7 +93,7 @@ export const SkillsAssessmentForm: React.FC<SkillsAssessmentFormProps> = ({ onCo
             onClick={() => setCareerPath('Oracle')}
             className={`p-6 rounded-lg border-2 transition-all text-left ${
               careerPath === 'Oracle'
-                ? 'border-blue-500 bg-blue-50 text-blue-700'
+                ? 'border-primary bg-primary/20 text-primary'
                 : 'border-gray-200 hover:border-gray-300'
             }`}
           >
@@ -118,7 +118,7 @@ export const SkillsAssessmentForm: React.FC<SkillsAssessmentFormProps> = ({ onCo
               onClick={() => handleSkillToggle(skill)}
               className={`p-3 rounded-lg border-2 transition-all ${
                 selectedSkills.includes(skill)
-                  ? 'border-blue-500 bg-blue-50 text-blue-700'
+                  ? 'border-primary bg-primary/20 text-primary'
                   : 'border-gray-200 hover:border-gray-300'
               }`}
             >
@@ -156,7 +156,7 @@ export const SkillsAssessmentForm: React.FC<SkillsAssessmentFormProps> = ({ onCo
               {selectedSkills.map(skill => (
                 <span
                   key={skill}
-                  className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm flex items-center gap-2"
+                  className="px-3 py-1 bg-primary/20 text-primary rounded-full text-sm flex items-center gap-2"
                 >
                   {skill}
                   <button

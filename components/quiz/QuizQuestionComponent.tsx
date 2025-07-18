@@ -55,7 +55,7 @@ const QuizQuestionComponent: React.FC<QuizQuestionComponentProps> = ({
 
         {/* Question Type Badge */}
         <div className="mb-4">
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/20 text-primary">
             {question.question_type.replace('_', ' ').toUpperCase()}
           </span>
         </div>
@@ -69,7 +69,7 @@ const QuizQuestionComponent: React.FC<QuizQuestionComponentProps> = ({
               key={index}
               className={`relative flex cursor-pointer rounded-lg border p-4 focus:outline-none transition-colors ${
                 selectedAnswer === option
-                  ? 'border-blue-500 bg-blue-50'
+                  ? 'border-primary bg-primary/20'
                   : 'border-gray-300 bg-white hover:bg-gray-50'
               }`}
             >
@@ -108,7 +108,7 @@ const QuizQuestionComponent: React.FC<QuizQuestionComponentProps> = ({
               key={option}
               className={`relative flex cursor-pointer rounded-lg border p-4 focus:outline-none transition-colors ${
                 selectedAnswer === option
-                  ? 'border-blue-500 bg-blue-50'
+                  ? 'border-primary bg-primary/20'
                   : 'border-gray-300 bg-white hover:bg-gray-50'
               }`}
             >

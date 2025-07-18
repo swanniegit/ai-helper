@@ -95,14 +95,14 @@ export const SkillLevelAssessment: React.FC<SkillLevelAssessmentProps> = ({ skil
             onClick={() => handleLevelSelect(currentSkill, level as 'beginner' | 'intermediate' | 'advanced')}
             className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
               currentLevel === level
-                ? 'border-blue-500 bg-blue-50'
+                ? 'border-primary bg-primary/20'
                 : 'border-gray-200 hover:border-gray-300'
             }`}
           >
             <div className="flex items-start gap-4">
               <div className={`w-4 h-4 rounded-full border-2 mt-1 ${
                 currentLevel === level
-                  ? 'border-blue-500 bg-blue-500'
+                  ? 'border-primary bg-primary'
                   : 'border-gray-300'
               }`}>
                 {currentLevel === level && (
@@ -157,7 +157,7 @@ export const SkillLevelAssessment: React.FC<SkillLevelAssessmentProps> = ({ skil
               key={skill}
               className={`p-2 rounded text-sm ${
                 index === currentSkillIndex
-                  ? 'bg-blue-100 text-blue-800 border border-blue-300'
+                  ? 'bg-primary/20 text-primary border border-primary/30'
                   : skillLevels[skill]
                   ? 'bg-green-100 text-green-800'
                   : 'bg-gray-100 text-gray-600'

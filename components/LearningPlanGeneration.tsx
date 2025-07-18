@@ -164,7 +164,7 @@ export const LearningPlanGeneration: React.FC<LearningPlanGenerationProps> = ({
         )}
 
         {/* Plan Summary */}
-        <div className="bg-blue-50 p-6 rounded-lg">
+        <div className="bg-primary/10 p-6 rounded-lg">
           <h4 className="font-semibold text-blue-900 mb-3">Plan Summary</h4>
           <p className="text-blue-800 mb-4">{generatedPlan.summary}</p>
           <div className="flex justify-between text-sm text-blue-700">
@@ -193,7 +193,7 @@ export const LearningPlanGeneration: React.FC<LearningPlanGenerationProps> = ({
                   <ul className="space-y-1">
                     {quarter.objectives.map((objective, idx) => (
                       <li key={idx} className="text-sm text-gray-600 flex items-start gap-2">
-                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0" />
+                        <span className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0" />
                         {objective}
                       </li>
                     ))}
@@ -260,7 +260,7 @@ export const LearningPlanGeneration: React.FC<LearningPlanGenerationProps> = ({
         <p className="text-gray-600 mb-4">{error}</p>
         <button
           onClick={generateLearningPlan}
-          className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="px-6 py-3 bg-gradient-to-r from-primary to-gray-700 text-white rounded-lg hover:from-primary/90 hover:to-gray-700/90 transition-colors"
         >
           Try Again
         </button>

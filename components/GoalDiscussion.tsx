@@ -113,7 +113,7 @@ export const GoalDiscussion: React.FC<GoalDiscussionProps> = ({ onComplete }) =>
             onClick={() => handleGoalToggle(goal)}
             className={`p-4 rounded-lg border-2 text-left transition-all ${
               selectedGoals.includes(goal)
-                ? 'border-blue-500 bg-blue-50 text-blue-700'
+                ? 'border-primary bg-primary/20 text-primary'
                 : 'border-gray-200 hover:border-gray-300'
             }`}
           >
@@ -149,7 +149,7 @@ export const GoalDiscussion: React.FC<GoalDiscussionProps> = ({ onComplete }) =>
             {selectedGoals.map(goal => (
               <span
                 key={goal}
-                className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm flex items-center gap-2"
+                className="px-3 py-1 bg-primary/20 text-primary rounded-full text-sm flex items-center gap-2"
               >
                 {goal}
                 <button
@@ -197,7 +197,7 @@ export const GoalDiscussion: React.FC<GoalDiscussionProps> = ({ onComplete }) =>
           </div>
         </div>
 
-        <div className="text-center p-4 bg-blue-50 rounded-lg">
+        <div className="text-center p-4 bg-primary/10 rounded-lg">
           <p className="text-sm text-blue-800">
             This will create {Math.ceil(timelineMonths / 3)} learning quarters, each with specific objectives and milestones.
           </p>

@@ -26,7 +26,7 @@ const QuizProgress: React.FC<QuizProgressProps> = ({
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'current':
-        return 'bg-blue-500 text-white';
+        return 'bg-primary text-white';
       case 'answered':
         return 'bg-green-500 text-white';
       case 'unanswered':
@@ -48,7 +48,7 @@ const QuizProgress: React.FC<QuizProgressProps> = ({
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2">
           <div
-            className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+            className="bg-primary h-2 rounded-full transition-all duration-300"
             style={{ width: `${(answeredCount / totalQuestions) * 100}%` }}
           ></div>
         </div>
@@ -81,7 +81,7 @@ const QuizProgress: React.FC<QuizProgressProps> = ({
       <div className="mt-6 pt-4 border-t border-gray-200">
         <div className="space-y-2 text-xs">
           <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+            <div className="w-3 h-3 bg-primary rounded-full"></div>
             <span className="text-gray-600">Current</span>
           </div>
           <div className="flex items-center space-x-2">

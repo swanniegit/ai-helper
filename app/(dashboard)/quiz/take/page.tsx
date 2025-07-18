@@ -173,7 +173,7 @@ function TakeQuizContent() {
           <p className="text-gray-600">Quiz session not found</p>
           <button
             onClick={() => router.push('/quiz')}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="mt-4 px-4 py-2 bg-gradient-to-r from-primary to-gray-700 text-white rounded-lg hover:from-primary/90 hover:to-gray-700/90"
           >
             Back to Quiz Center
           </button>
