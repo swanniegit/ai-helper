@@ -37,33 +37,35 @@ export class QuizService {
     total_questions: number;
   }> {
     try {
+      console.log(`Starting quiz generation for ${request.skill_category}`);
+      
       // Get user preferences
       const preferences = await this.getUserPreferences(userId);
       
       // Determine difficulty level
       const difficulty = request.difficulty_level || preferences?.preferred_difficulty || 'intermediate';
-      const questionCount = request.question_count || preferences?.preferred_question_count || 15;
+      const questionCount = request.question_count || preferences?.preferred_question_count || 10;
       
-      // Get quiz template - with fallback if none found
-      let template = await this.getQuizTemplate(request.skill_category, difficulty, request.quiz_type);
-      if (!template) {
-        console.log(`No database template found for ${request.skill_category} at ${difficulty} level, creating fallback`);
-        template = this.createFallbackTemplate(request.skill_category, difficulty, request.quiz_type);
+      console.log(`Generating quiz: category=${request.skill_category}, difficulty=${difficulty}, questions=${questionCount}`);
+      
+      // Always create fallback template to ensure we have one
+      const template = this.createFallbackTemplate(request.skill_category, difficulty, request.quiz_type);
+      console.log('Using fallback template:', template.name);
+      
+      // Since we're using fallback templates, we need to generate AI questions
+      console.log(`Generating ${questionCount} AI questions for ${request.skill_category}`);
+      const questions = await this.generateAIQuestions(
+        request.skill_category,
+        difficulty,
+        questionCount,
+        userId
+      );
+      
+      if (questions.length === 0) {
+        throw new Error(`Failed to generate questions for ${request.skill_category}`);
       }
       
-      // Get questions for the template
-      let questions = await this.getQuestionsForTemplate(template.id, questionCount);
-      
-      // If not enough questions, generate AI questions
-      if (questions.length < questionCount) {
-        const aiQuestions = await this.generateAIQuestions(
-          request.skill_category,
-          difficulty,
-          questionCount - questions.length,
-          userId
-        );
-        questions = [...questions, ...aiQuestions];
-      }
+      console.log(`Generated ${questions.length} questions successfully`);
       
       // Shuffle questions
       questions = this.shuffleArray(questions);
