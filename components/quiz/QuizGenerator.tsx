@@ -87,17 +87,17 @@ const QuizGenerator: React.FC<QuizGeneratorProps> = ({ onQuizGenerated }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg shadow-md p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-xl font-semibold text-gray-900">Generate Custom Quiz</h2>
-          <p className="text-sm text-gray-600 mt-1">
+          <h2 className="text-xl font-semibold text-white">Generate Custom Quiz</h2>
+          <p className="text-sm text-white/80 mt-1">
             Create a personalized quiz with AI-powered questions
           </p>
         </div>
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center px-4 py-2 bg-gradient-to-r from-primary to-gray-700 text-white rounded-lg hover:from-primary/90 hover:to-gray-700/90 transition-colors"
         >
           {isOpen ? 'Hide Generator' : 'Show Generator'}
           <svg
@@ -115,13 +115,13 @@ const QuizGenerator: React.FC<QuizGeneratorProps> = ({ onQuizGenerated }) => {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Skill Category */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-white mb-2">
               Skill Category *
             </label>
             <select
               value={formData.skill_category}
               onChange={(e) => handleInputChange('skill_category', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-white/20 bg-white/10 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder-white/50"
               required
             >
               <option value="">Select a skill category</option>
@@ -135,7 +135,7 @@ const QuizGenerator: React.FC<QuizGeneratorProps> = ({ onQuizGenerated }) => {
 
           {/* Difficulty Level */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-white mb-2">
               Difficulty Level
             </label>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -144,8 +144,8 @@ const QuizGenerator: React.FC<QuizGeneratorProps> = ({ onQuizGenerated }) => {
                   key={level.value}
                   className={`relative flex cursor-pointer rounded-lg border p-4 focus:outline-none ${
                     formData.difficulty_level === level.value
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-300 bg-white hover:bg-gray-50'
+                      ? 'border-primary bg-primary/20'
+                      : 'border-white/20 bg-white/10 hover:bg-white/20'
                   }`}
                 >
                   <input
@@ -159,12 +159,12 @@ const QuizGenerator: React.FC<QuizGeneratorProps> = ({ onQuizGenerated }) => {
                   <div className="flex w-full items-center justify-between">
                     <div className="flex items-center">
                       <div className="text-sm">
-                        <p className="font-medium text-gray-900">{level.label}</p>
-                        <p className="text-gray-500">{level.description}</p>
+                        <p className="font-medium text-white">{level.label}</p>
+                        <p className="text-white/70">{level.description}</p>
                       </div>
                     </div>
                     {formData.difficulty_level === level.value && (
-                      <div className="shrink-0 text-blue-600">
+                      <div className="shrink-0 text-primary">
                         <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
@@ -178,7 +178,7 @@ const QuizGenerator: React.FC<QuizGeneratorProps> = ({ onQuizGenerated }) => {
 
           {/* Quiz Type */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-white mb-2">
               Quiz Type
             </label>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -187,8 +187,8 @@ const QuizGenerator: React.FC<QuizGeneratorProps> = ({ onQuizGenerated }) => {
                   key={type.value}
                   className={`relative flex cursor-pointer rounded-lg border p-4 focus:outline-none ${
                     formData.quiz_type === type.value
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-300 bg-white hover:bg-gray-50'
+                      ? 'border-primary bg-primary/20'
+                      : 'border-white/20 bg-white/10 hover:bg-white/20'
                   }`}
                 >
                   <input
@@ -202,12 +202,12 @@ const QuizGenerator: React.FC<QuizGeneratorProps> = ({ onQuizGenerated }) => {
                   <div className="flex w-full items-center justify-between">
                     <div className="flex items-center">
                       <div className="text-sm">
-                        <p className="font-medium text-gray-900">{type.label}</p>
-                        <p className="text-gray-500">{type.description}</p>
+                        <p className="font-medium text-white">{type.label}</p>
+                        <p className="text-white/70">{type.description}</p>
                       </div>
                     </div>
                     {formData.quiz_type === type.value && (
-                      <div className="shrink-0 text-blue-600">
+                      <div className="shrink-0 text-primary">
                         <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
@@ -221,7 +221,7 @@ const QuizGenerator: React.FC<QuizGeneratorProps> = ({ onQuizGenerated }) => {
 
           {/* Question Count */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-white mb-2">
               Number of Questions
             </label>
             <div className="flex items-center space-x-4">
@@ -232,13 +232,13 @@ const QuizGenerator: React.FC<QuizGeneratorProps> = ({ onQuizGenerated }) => {
                 step="5"
                 value={formData.question_count}
                 onChange={(e) => handleInputChange('question_count', parseInt(e.target.value))}
-                className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                className="flex-1 h-2 bg-white/20 rounded-lg appearance-none cursor-pointer slider"
               />
-              <span className="text-sm font-medium text-gray-900 min-w-[3rem]">
+              <span className="text-sm font-medium text-white min-w-[3rem]">
                 {formData.question_count}
               </span>
             </div>
-            <div className="flex justify-between text-xs text-gray-500 mt-1">
+            <div className="flex justify-between text-xs text-white/70 mt-1">
               <span>5</span>
               <span>10</span>
               <span>15</span>
@@ -253,7 +253,7 @@ const QuizGenerator: React.FC<QuizGeneratorProps> = ({ onQuizGenerated }) => {
             <button
               type="submit"
               disabled={loading || !formData.skill_category}
-              className="px-6 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium rounded-lg hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              className="px-6 py-2 bg-gradient-to-r from-primary to-gray-700 text-white font-medium rounded-lg hover:from-primary/90 hover:to-gray-700/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
             >
               {loading ? (
                 <div className="flex items-center">

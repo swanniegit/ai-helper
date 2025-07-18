@@ -180,19 +180,19 @@ export default function QuizPage() {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-300">{progress.completed_quizzes}</div>
+                  <div className="text-2xl font-bold text-white">{progress.completed_quizzes}</div>
                   <div className="text-sm text-white/60">Quizzes Completed</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-green-300">{progress.average_score.toFixed(1)}%</div>
+                  <div className="text-2xl font-bold text-white">{progress.average_score.toFixed(1)}%</div>
                   <div className="text-sm text-white/60">Average Score</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-purple-300">{progress.skills_mastered.length}</div>
+                  <div className="text-2xl font-bold text-white">{progress.skills_mastered.length}</div>
                   <div className="text-sm text-white/60">Skills Mastered</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-orange-300">
+                  <div className="text-2xl font-bold text-white">
                     {Math.floor(progress.total_time_spent / 60)}
                   </div>
                   <div className="text-sm text-white/60">Minutes Spent</div>
