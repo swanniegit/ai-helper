@@ -195,7 +195,7 @@ const QuizResults: React.FC<QuizResultsProps> = ({
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button
             onClick={onRetake}
-            className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+            className="px-8 py-3 bg-gradient-to-r from-primary to-gray-700 text-white rounded-lg hover:from-primary/90 hover:to-gray-700/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors"
           >
             Retake Quiz
           </button>

@@ -130,7 +130,7 @@ export default function LearningPathsPage() {
           <h2 className="text-2xl font-bold text-gray-800">Learning Paths</h2>
           <Link
             href="/learning-paths/new"
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="px-4 py-2 bg-gradient-to-r from-primary to-gray-700 text-white rounded-lg hover:from-primary/90 hover:to-gray-700/90 transition-colors"
           >
             Create New Path
           </Link>

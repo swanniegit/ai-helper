@@ -122,7 +122,7 @@ export const LearningPlanGeneration: React.FC<LearningPlanGenerationProps> = ({
         
         <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
           <div 
-            className="bg-blue-600 h-2 rounded-full transition-all duration-500"
+            className="bg-gradient-to-r from-primary to-gray-700 h-2 rounded-full transition-all duration-500"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -241,7 +241,7 @@ export const LearningPlanGeneration: React.FC<LearningPlanGenerationProps> = ({
           
           <button
             onClick={onComplete}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="px-6 py-3 bg-gradient-to-r from-primary to-gray-700 text-white rounded-lg hover:from-primary/90 hover:to-gray-700/90 transition-colors"
           >
             Start My Learning Journey
           </button>

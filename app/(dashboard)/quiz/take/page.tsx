@@ -146,7 +146,7 @@ function TakeQuizContent() {
           <p className="text-gray-600 mb-4">{error}</p>
           <button
             onClick={() => router.push('/quiz')}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="px-4 py-2 bg-gradient-to-r from-primary to-gray-700 text-white rounded-lg hover:from-primary/90 hover:to-gray-700/90"
           >
             Back to Quiz Center
           </button>
@@ -246,7 +246,7 @@ function TakeQuizContent() {
                   ) : (
                     <button
                       onClick={handleNextQuestion}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="px-4 py-2 bg-gradient-to-r from-primary to-gray-700 text-white rounded-lg hover:from-primary/90 hover:to-gray-700/90 focus:outline-none focus:ring-2 focus:ring-primary"
                     >
                       Next →
                     </button>

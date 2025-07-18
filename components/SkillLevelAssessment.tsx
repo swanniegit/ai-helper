@@ -142,7 +142,7 @@ export const SkillLevelAssessment: React.FC<SkillLevelAssessmentProps> = ({ skil
         
         <button
           onClick={handleNext}
-          className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+          className="px-6 py-3 bg-gradient-to-r from-primary to-gray-700 text-white rounded-lg font-medium hover:from-primary/90 hover:to-gray-700/90 transition-colors"
         >
           {currentSkillIndex === skills.length - 1 ? 'Complete Assessment' : 'Next Skill'}
         </button>

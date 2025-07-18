@@ -8,7 +8,7 @@ export default function TestStylesPage() {
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <h2 className="text-2xl font-semibold text-blue-600 mb-4">Basic Tailwind Classes</h2>
           <p className="text-gray-700 mb-4">This text should be gray and readable.</p>
-          <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors">
+          <button className="bg-gradient-to-r from-primary to-gray-700 hover:from-primary/90 hover:to-gray-700/90 text-white px-4 py-2 rounded-md transition-colors">
             Test Button
           </button>
         </div>

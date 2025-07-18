@@ -141,7 +141,7 @@ export const SkillsAssessmentForm: React.FC<SkillsAssessmentFormProps> = ({ onCo
             />
             <button
               onClick={handleAddCustomSkill}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="px-4 py-2 bg-gradient-to-r from-primary to-gray-700 text-white rounded-lg hover:from-primary/90 hover:to-gray-700/90 transition-colors"
             >
               Add
             </button>
@@ -179,7 +179,7 @@ export const SkillsAssessmentForm: React.FC<SkillsAssessmentFormProps> = ({ onCo
           disabled={!isFormValid}
           className={`px-6 py-3 rounded-lg font-medium transition-colors ${
             isFormValid
-              ? 'bg-blue-600 text-white hover:bg-blue-700'
+              ? 'bg-gradient-to-r from-primary to-gray-700 text-white hover:from-primary/90 hover:to-gray-700/90'
               : 'bg-gray-300 text-gray-500 cursor-not-allowed'
           }`}
         >
