@@ -1,8 +1,10 @@
 name: Deploy
 
 on:
-  push:
-    branches: [ main ]
+  # Temporarily disable until deployment issues are resolved
+  # push:
+  #   branches: [ main ]
+  workflow_dispatch: # Allow manual trigger only
 
 jobs:
   deploy:
