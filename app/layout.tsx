@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${poppins.className} bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 min-h-screen`}>
+      <body className={`${poppins.className} bg-background text-foreground min-h-screen`}>
         <AuthProvider>
           {children}
         </AuthProvider>

@@ -3,6 +3,9 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '../lib/auth/AuthContext';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 export default function Navigation() {
   const pathname = usePathname();
@@ -25,49 +28,54 @@ export default function Navigation() {
   };
 
   return (
-    <aside className="w-64 bg-gradient-to-b from-indigo-600 to-purple-600 text-white p-4 shadow-md rounded-lg mr-4 animate-slideInLeft">
-      <div className="mb-6">
-        <h2 className="text-xl font-bold mb-2 border-b pb-2 border-white border-opacity-20">
-          Dashboard Menu
-        </h2>
-        {user && (
-          <div className="text-sm text-white text-opacity-90">
-            <p className="font-medium">{user.first_name || user.email}</p>
-            <p className="text-xs">{user.email}</p>
-          </div>
-        )}
-      </div>
-      
-      <nav>
-        <ul>
-          {navItems.map(item => {
-            const isActive = pathname === item.href;
-            return (
-              <li key={item.key} className="mb-2">
-                <Link
-                  href={item.href}
-                  className={`block p-2 rounded-md transition-all duration-200 transform hover:translate-x-1 ${
-                    isActive
-                      ? 'bg-white bg-opacity-20'
-                      : 'hover:bg-white hover:bg-opacity-10'
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
+    <aside className="w-64 p-4 mr-4 animate-slideInLeft">
+      <Card className="bg-card/80 backdrop-blur-sm border-primary/20 shadow-lg">
+        <CardHeader>
+          <CardTitle className="text-xl font-bold text-primary">
+            Dashboard Menu
+          </CardTitle>
+          {user && (
+            <CardDescription>
+              <p className="font-medium text-card-foreground">{user.first_name || user.email}</p>
+              <p className="text-xs text-muted-foreground">{user.email}</p>
+            </CardDescription>
+          )}
+        </CardHeader>
+        <CardContent className="space-y-2">
+          <nav>
+            <ul className="space-y-1">
+              {navItems.map(item => {
+                const isActive = pathname === item.href;
+                return (
+                  <li key={item.key}>
+                    <Link
+                      href={item.href}
+                      className={cn(
+                        "block p-3 rounded-md transition-all duration-200 text-sm font-medium",
+                        isActive
+                          ? 'bg-primary text-primary-foreground shadow-sm'
+                          : 'text-muted-foreground hover:text-primary hover:bg-primary/5'
+                      )}
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
 
-      <div className="mt-6 pt-4 border-t border-gray-200">
-        <button
-          onClick={handleLogout}
-          className="w-full p-2 text-left bg-white bg-opacity-10 hover:bg-opacity-20 rounded-md transition-all duration-200"
-        >
-          Sign Out
-        </button>
-      </div>
+          <div className="mt-6 pt-4 border-t border-border">
+            <Button
+              onClick={handleLogout}
+              variant="outline"
+              className="w-full bg-destructive/10 border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
+            >
+              Sign Out
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </aside>
   );
 }

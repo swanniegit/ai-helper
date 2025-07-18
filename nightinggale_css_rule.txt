@@ -1,0 +1,75 @@
+Of course. As a UI/UX and AI expert, I've designed a comprehensive rule for an AI Coder like Cursor. This rule is not a simple search query; it's a multi-phase analytical process that forces the AI to evaluate potential themes and libraries through the lens of a seasoned UI/UX professional.
+
+You can feed this directly to your AI Coder.
+
+Rule: UI/UX Theme and Component Library Evaluation
+
+Objective:
+Analyze and recommend the most suitable UI component library or theme based on project context, adhering to modern UI/UX principles. The primary goal is to ensure the final selection promotes usability, accessibility, performance, and a cohesive user experience.
+
+Trigger:
+This rule is activated when I ask you to "find a UI theme," "recommend a component library," or a similar request.
+
+Phase 1: Contextual Discovery & Filtering
+
+Before searching, you must first understand the project's core requirements. Use the following placeholders which I will provide:
+
+[TECH_STACK]: Next.js, TypeScript, Tailwind CSS, and Supabase
+[PROJECT_TYPE]: Agenic Assistant like
+[DESIGN_AESTHETIC]: Strong but metro with light green to dark grey gradients
+
+Action:
+
+Perform a targeted search for "UI component libraries for [TECH_STACK]," "best design systems for [PROJECT_TYPE]," and "[DESIGN_AESTHETIC] CSS frameworks."
+From the search results, identify 3-5 promising candidates.
+Initial Filtering: Immediately discard any candidate that has not been updated in the last 12 months or has overwhelmingly negative feedback regarding bugs or support in its GitHub issues.
+Phase 2: Deep Analysis & Scoring
+
+For each of the filtered candidates, you will analyze its documentation, GitHub repository, and official examples to score it against the following critical UI/UX criteria. Present the results in a comparative table.
+
+Analysis Criteria:
+
+Accessibility (A11y) - Weight: 30%
+
+Does the documentation explicitly state a commitment to accessibility (WCAG 2.1 AA or higher)?
+Are components navigable via keyboard?
+Do interactive components use appropriate ARIA roles and states?
+Is there sufficient color contrast in the default theme?
+
+Design Philosophy & Consistency - Weight: 25%
+
+Is there a clear, documented design system or philosophy (e.g., Atomic Design, Material)?
+Are components visually and functionally consistent across the library? (e.g., Do all buttons, inputs, and modals share a similar look and feel?)
+Does it provide clear usage guidelines for typography, spacing, and color palettes?
+
+Component Quality & Documentation - Weight: 20%
+
+How comprehensive is the component library for the [PROJECT_TYPE]? (e.g., Does a dashboard theme have robust data tables and charts?)
+Is the documentation clear, with live, interactive examples and code snippets for each component?
+Is the component API (props/attributes) intuitive and well-documented?
+
+Performance & Lightweightness - Weight: 15%
+
+What is the library's bundle size? Is it known for being lightweight?
+Does it support tree-shaking to only include used components?
+Does it have minimal dependencies on other large libraries?
+
+Customizability & Theming - Weight: 10%
+
+How easy is it to apply a custom brand identity?
+Does it use modern CSS features like variables for easy theming?
+Can you override component styles without fighting specificity wars?
+Phase 3: Final Recommendation & Usage Guidelines
+
+Action:
+
+Synthesize Findings: Based on the scores from Phase 2, present a summary table comparing the candidates.
+Top Recommendation: State your top recommendation with a brief justification explaining why it's the best fit for the project's specific context ([TECH_STACK], [PROJECT_TYPE], [DESIGN_AESTHETIC]).
+Provide "Best Practices for Usage": Generate a concise, actionable list of rules for me to follow when implementing the chosen theme. This is crucial for maintaining UI/UX integrity. This list must include:
+A starter code snippet for installation and basic setup.
+A directive to "Adhere to the system's spacing and typography scale" to ensure visual rhythm.
+A warning to "Favor composition over modification." (i.e., Use the components as designed before attempting to heavily override their styles).
+A guideline to "Use the theme's provided color palette for states" (e.g., primary, error, success) to maintain consistency.
+A final reminder to "Always test key user flows for keyboard accessibility."
+
+By following this three-phase rule, you will move beyond simple keyword matching and provide expert-level guidance that ensures the chosen UI foundation leads to a superior final product.

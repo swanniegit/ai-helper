@@ -9,9 +9,9 @@ export default function DashboardLayout({
 }) {
   return (
     <ProtectedRoute>
-      <div className="flex">
+      <div className="min-h-screen bg-gradient-metro flex">
         <Navigation />
-        <div className="flex-grow p-6 bg-white rounded-lg shadow-md animate-fadeIn">
+        <div className="flex-grow animate-fadeIn">
           {children}
         </div>
       </div>

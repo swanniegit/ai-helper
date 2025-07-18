@@ -4,6 +4,10 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '../../lib/auth/AuthContext';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -101,22 +105,22 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-metro flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
-        <div>
-          <div className="mx-auto h-12 w-12 bg-blue-600 rounded-lg flex items-center justify-center">
-            <span className="text-white text-xl font-bold">🎯</span>
+        <div className="text-center">
+          <div className="mx-auto h-12 w-12 bg-primary/90 backdrop-blur-sm rounded-lg flex items-center justify-center shadow-lg">
+            <span className="text-primary-foreground text-xl font-bold">🎯</span>
           </div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-primary-foreground">
             {isLogin ? 'Sign in to your account' : 'Create your account'}
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-2 text-center text-sm text-primary-foreground/80">
             {isLogin ? (
               <>
                 Or{' '}
                 <button
                   onClick={handleToggleMode}
-                  className="font-medium text-blue-600 hover:text-blue-500"
+                  className="font-medium text-primary-foreground hover:text-primary-foreground/90 underline"
                 >
                   create a new account
                 </button>
@@ -126,7 +130,7 @@ export default function LoginPage() {
                 Or{' '}
                 <button
                   onClick={handleToggleMode}
-                  className="font-medium text-blue-600 hover:text-blue-500"
+                  className="font-medium text-primary-foreground hover:text-primary-foreground/90 underline"
                 >
                   sign in to existing account
                 </button>
@@ -135,131 +139,135 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm -space-y-px">
-            {!isLogin && (
-              <>
-                <div className="grid grid-cols-2 gap-3 mb-3">
-                  <div>
-                    <label htmlFor="firstName" className="sr-only">
+        <Card className="bg-card/90 backdrop-blur-sm border-primary/20 shadow-xl">
+          <CardHeader>
+            <CardTitle className="text-center text-lg">
+              {isLogin ? 'Welcome back' : 'Join our community'}
+            </CardTitle>
+            <CardDescription className="text-center">
+              {isLogin ? 'Enter your credentials to continue' : 'Create an account to get started'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form className="space-y-4" onSubmit={handleSubmit}>
+              {!isLogin && (
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <label htmlFor="firstName" className="text-sm font-medium">
                       First Name
                     </label>
-                    <input
+                    <Input
                       id="firstName"
                       name="firstName"
                       type="text"
                       required={!isLogin}
-                      className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
-                      placeholder="First Name"
+                      placeholder="John"
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
                     />
                   </div>
-                  <div>
-                    <label htmlFor="lastName" className="sr-only">
+                  <div className="space-y-2">
+                    <label htmlFor="lastName" className="text-sm font-medium">
                       Last Name
                     </label>
-                    <input
+                    <Input
                       id="lastName"
                       name="lastName"
                       type="text"
                       required={!isLogin}
-                      className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
-                      placeholder="Last Name"
+                      placeholder="Doe"
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
                     />
                   </div>
                 </div>
-              </>
-            )}
-            <div>
-              <label htmlFor="email" className="sr-only">
-                Email address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
-                placeholder="Email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete={isLogin ? 'current-password' : 'new-password'}
-                required
-                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-            {!isLogin && (
-              <div>
-                <label htmlFor="confirmPassword" className="sr-only">
-                  Confirm Password
+              )}
+              
+              <div className="space-y-2">
+                <label htmlFor="email" className="text-sm font-medium">
+                  Email address
                 </label>
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  autoComplete="new-password"
-                  required={!isLogin}
-                  className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
-                  placeholder="Confirm Password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  placeholder="john@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
-            )}
-          </div>
-
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
-              {error}
-            </div>
-          )}
-
-          {success && (
-            <div className="bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-md text-sm">
-              {success}
-            </div>
-          )}
-
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? (
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-              ) : (
-                isLogin ? 'Sign in' : 'Create account'
+              
+              <div className="space-y-2">
+                <label htmlFor="password" className="text-sm font-medium">
+                  Password
+                </label>
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autoComplete={isLogin ? 'current-password' : 'new-password'}
+                  required
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+              
+              {!isLogin && (
+                <div className="space-y-2">
+                  <label htmlFor="confirmPassword" className="text-sm font-medium">
+                    Confirm Password
+                  </label>
+                  <Input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type="password"
+                    autoComplete="new-password"
+                    required={!isLogin}
+                    placeholder="Confirm your password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                  />
+                </div>
               )}
-            </button>
-          </div>
 
-          <div className="text-center">
-            <Link
-              href="/"
-              className="font-medium text-blue-600 hover:text-blue-500 text-sm"
-            >
-              Back to home
-            </Link>
-          </div>
-        </form>
+              {error && (
+                <div className="bg-destructive/15 border border-destructive/30 text-destructive px-4 py-3 rounded-md text-sm">
+                  {error}
+                </div>
+              )}
+
+              {success && (
+                <div className="bg-primary/15 border border-primary/30 text-primary px-4 py-3 rounded-md text-sm">
+                  {success}
+                </div>
+              )}
+
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+              >
+                {loading ? (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground"></div>
+                ) : (
+                  isLogin ? 'Sign in' : 'Create account'
+                )}
+              </Button>
+
+              <div className="text-center">
+                <Link
+                  href="/"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  Back to home
+                </Link>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
