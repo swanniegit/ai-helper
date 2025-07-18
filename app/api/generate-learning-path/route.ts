@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { getCareerFramework, getAllSkillsForLevel, getTrainingResources } from '../../../lib/careerFrameworks';
 
+// Force dynamic rendering for this route (uses OpenAI API)
+export const dynamic = 'force-dynamic';
+
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 interface LearningPathRequest {
