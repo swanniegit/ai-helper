@@ -89,7 +89,7 @@ export default function QuizProgressPage() {
               </div>
               <h3 className="text-lg font-medium text-white mb-2">No progress data available</h3>
               <p className="text-white/60 mb-4">
-                You haven't completed any quizzes yet. Start taking quizzes to see your progress here.
+                You haven&apos;t completed any quizzes yet. Start taking quizzes to see your progress here.
               </p>
               <Button
                 onClick={() => window.location.href = '/quiz'}
