@@ -58,6 +58,7 @@ jobs:
         DATABASE_URL: postgresql://dummy:dummy@localhost:5432/dummy
         JWT_SECRET: dummy-jwt-secret
         OPENAI_API_KEY: dummy-openai-key
+        CUSTOM_KEY: dummy-custom-key
 
   docker:
     runs-on: ubuntu-latest
