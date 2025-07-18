@@ -90,7 +90,10 @@ export default function QuizPage() {
         {/* Progress Overview */}
         {progress && (
           <div className="mb-8">
-            <QuizProgressCard progress={progress} onViewDetails={() => {}} />
+            <QuizProgressCard progress={progress} onViewDetails={() => {
+              // Navigate to detailed progress page
+              window.location.href = '/quiz/progress';
+            }} />
           </div>
         )}
 
@@ -146,7 +149,14 @@ export default function QuizPage() {
               <QuizTemplateCard
                 key={template.id}
                 template={template}
-                onStartQuiz={() => {}}
+                onStartQuiz={async (templateId) => {
+                  try {
+                    // Navigate to quiz taking page with template ID
+                    window.location.href = `/quiz/take?template=${templateId}`;
+                  } catch (error) {
+                    console.error('Failed to start quiz:', error);
+                  }
+                }}
               />
             ))
           ) : (

@@ -82,7 +82,7 @@ const QuizResults: React.FC<QuizResultsProps> = ({
           {/* Score Details */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">{result.score}</div>
+              <div className="text-2xl font-bold text-primary">{result.score}</div>
               <div className="text-sm text-gray-600">Correct Answers</div>
             </div>
             <div className="text-center">
@@ -90,7 +90,7 @@ const QuizResults: React.FC<QuizResultsProps> = ({
               <div className="text-sm text-gray-600">Total Questions</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">
+              <div className="text-2xl font-bold text-primary">
                 {result.time_taken_seconds ? formatTime(result.time_taken_seconds) : 'N/A'}
               </div>
               <div className="text-sm text-gray-600">Time Taken</div>
@@ -151,11 +151,11 @@ const QuizResults: React.FC<QuizResultsProps> = ({
           <div className="space-y-6">
             {/* Next Steps */}
             <div>
-              <h4 className="text-lg font-medium text-blue-700 mb-3">🎯 Next Steps</h4>
+              <h4 className="text-lg font-medium text-primary mb-3">🎯 Next Steps</h4>
               <ul className="space-y-2">
                 {feedback.next_steps.map((step, index) => (
                   <li key={index} className="flex items-start">
-                    <span className="text-blue-500 mr-2">•</span>
+                    <span className="text-primary mr-2">•</span>
                     <span className="text-gray-700">{step}</span>
                   </li>
                 ))}
@@ -165,12 +165,12 @@ const QuizResults: React.FC<QuizResultsProps> = ({
             {/* Skill Gaps */}
             {feedback.skill_gaps.length > 0 && (
               <div>
-                <h4 className="text-lg font-medium text-purple-700 mb-3">🔍 Skill Gaps Identified</h4>
+                <h4 className="text-lg font-medium text-primary mb-3">🔍 Skill Gaps Identified</h4>
                 <div className="flex flex-wrap gap-2">
                   {feedback.skill_gaps.map((skill, index) => (
                     <span
                       key={index}
-                      className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800"
+                      className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary/20 text-primary"
                     >
                       {skill}
                     </span>
@@ -182,8 +182,8 @@ const QuizResults: React.FC<QuizResultsProps> = ({
             {/* Estimated Improvement Time */}
             <div className="bg-primary/10 rounded-lg p-4">
               <div className="flex items-center">
-                <span className="text-blue-600 mr-2">⏱️</span>
-                <span className="text-blue-800 font-medium">
+                <span className="text-primary mr-2">⏱️</span>
+                <span className="text-primary font-medium">
                   Estimated time to improve: {feedback.estimated_improvement_time}
                 </span>
               </div>

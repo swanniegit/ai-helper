@@ -6,7 +6,7 @@ export default function TestStylesPage() {
         
         {/* Test basic Tailwind classes */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-2xl font-semibold text-blue-600 mb-4">Basic Tailwind Classes</h2>
+          <h2 className="text-2xl font-semibold text-primary mb-4">Basic Tailwind Classes</h2>
           <p className="text-gray-700 mb-4">This text should be gray and readable.</p>
           <button className="bg-gradient-to-r from-primary to-gray-700 hover:from-primary/90 hover:to-gray-700/90 text-white px-4 py-2 rounded-md transition-colors">
             Test Button
@@ -21,13 +21,13 @@ export default function TestStylesPage() {
 
         {/* Test custom button classes */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-2xl font-semibold text-purple-600 mb-4">Custom Button Classes</h2>
+          <h2 className="text-2xl font-semibold text-primary mb-4">Custom Button Classes</h2>
           <button className="btn btn-sm btn-primary-light">Custom Button</button>
         </div>
 
         {/* Test status colors like in GoalCard */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-2xl font-semibold text-orange-600 mb-4">Status Colors</h2>
+          <h2 className="text-2xl font-semibold text-primary mb-4">Status Colors</h2>
           <div className="space-y-2">
             <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
               On Track
@@ -46,7 +46,7 @@ export default function TestStylesPage() {
 
         {/* Test progress bars */}
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-semibold text-indigo-600 mb-4">Progress Bars</h2>
+          <h2 className="text-2xl font-semibold text-primary mb-4">Progress Bars</h2>
           <div className="space-y-4">
             <div>
               <p className="text-sm text-gray-600 mb-2">75% Progress</p>

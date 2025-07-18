@@ -5,7 +5,7 @@ import { QuizTemplate, DifficultyLevel } from '../../types/quiz';
 
 interface QuizTemplateCardProps {
   template: QuizTemplate;
-  onStartQuiz: (template: QuizTemplate) => void;
+  onStartQuiz: (templateId: string) => void;
 }
 
 const QuizTemplateCard: React.FC<QuizTemplateCardProps> = ({ template, onStartQuiz }) => {
@@ -91,7 +91,7 @@ const QuizTemplateCard: React.FC<QuizTemplateCardProps> = ({ template, onStartQu
 
         {/* Action Button */}
         <button
-          onClick={() => onStartQuiz(template)}
+          onClick={() => onStartQuiz(template.id)}
           className="w-full bg-gradient-to-r from-primary to-gray-700 hover:from-primary/90 hover:to-gray-700/90 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
         >
           Start Quiz

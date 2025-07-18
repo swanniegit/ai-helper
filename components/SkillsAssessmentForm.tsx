@@ -136,7 +136,7 @@ export const SkillsAssessmentForm: React.FC<SkillsAssessmentFormProps> = ({ onCo
               value={newSkill}
               onChange={(e) => setNewSkill(e.target.value)}
               placeholder="Enter a custom skill..."
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               onKeyPress={(e) => e.key === 'Enter' && handleAddCustomSkill()}
             />
             <button
@@ -161,7 +161,7 @@ export const SkillsAssessmentForm: React.FC<SkillsAssessmentFormProps> = ({ onCo
                   {skill}
                   <button
                     onClick={() => handleSkillToggle(skill)}
-                    className="text-blue-600 hover:text-blue-800"
+                    className="text-primary hover:text-primary/80"
                   >
                     ×
                   </button>

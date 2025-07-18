@@ -12,6 +12,7 @@ function TakeQuizContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const sessionToken = searchParams.get('session');
+  const templateId = searchParams.get('template');
   
   const [quizSession, setQuizSession] = useState<QuizSession | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -26,7 +27,30 @@ function TakeQuizContent() {
 
   const loadQuizSession = useCallback(async () => {
     try {
-      const response = await fetch(`/api/quiz/session?token=${sessionToken}`);
+      let response;
+      
+      if (sessionToken) {
+        // Load existing session
+        response = await fetch(`/api/quiz/session?token=${sessionToken}`);
+      } else if (templateId) {
+        // Generate new session from template
+        response = await fetch('/api/quiz/generate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            template_id: templateId,
+            question_count: 10,
+            difficulty: 'mixed'
+          }),
+        });
+      } else {
+        setError('No quiz session or template specified');
+        setLoading(false);
+        return;
+      }
+
       const data = await response.json();
 
       if (data.success) {
@@ -42,7 +66,7 @@ function TakeQuizContent() {
     } finally {
       setLoading(false);
     }
-  }, [sessionToken]);
+  }, [sessionToken, templateId]);
 
   const handleSubmitQuiz = useCallback(async () => {
     if (!quizSession) return;
@@ -56,7 +80,7 @@ function TakeQuizContent() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          session_token: sessionToken,
+          session_token: sessionToken || quizSession?.session_token,
           answers: answers,
           time_taken_seconds: timeTaken,
         }),
@@ -77,14 +101,14 @@ function TakeQuizContent() {
   }, [quizSession, sessionToken, answers]);
 
   useEffect(() => {
-    if (!sessionToken) {
-      setError('No quiz session found');
+    if (!sessionToken && !templateId) {
+      setError('No quiz session or template found');
       setLoading(false);
       return;
     }
 
     loadQuizSession();
-  }, [sessionToken, loadQuizSession]);
+  }, [sessionToken, templateId, loadQuizSession]);
 
   useEffect(() => {
     if (timeRemaining <= 0 && !isComplete) {
@@ -126,7 +150,7 @@ function TakeQuizContent() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-gray-600">Loading quiz...</p>
         </div>
       </div>
@@ -277,7 +301,7 @@ export default function TakeQuizPage() {
     <Suspense fallback={
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-gray-600">Loading quiz...</p>
         </div>
       </div>

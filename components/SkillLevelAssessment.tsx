@@ -83,7 +83,7 @@ export const SkillLevelAssessment: React.FC<SkillLevelAssessmentProps> = ({ skil
       {/* Current Skill Assessment */}
       <div className="text-center mb-8">
         <h3 className="text-xl font-medium text-gray-900 mb-4">
-          How would you rate your proficiency in <span className="text-blue-600 font-semibold">{currentSkill}</span>?
+          How would you rate your proficiency in <span className="text-primary font-semibold">{currentSkill}</span>?
         </h3>
       </div>
 

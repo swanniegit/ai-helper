@@ -18,7 +18,7 @@ const NewsTicker: React.FC<NewsTickerProps> = ({ newsItems }) => {
           <li 
             key={item.id} 
             className="border-b border-gray-200 pb-3 last:border-b-0 last:pb-0 
-                       transform transition-transform duration-300 hover:translate-x-1 hover:text-blue-700 
+                       transform transition-transform duration-300 hover:translate-x-1 hover:text-primary 
                        opacity-0" // Initial state for animation
             style={{ animation: `fadeIn 0.5s ease-out forwards ${index * 0.1}s` }} // Staggered animation
           >
