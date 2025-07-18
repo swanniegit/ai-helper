@@ -193,6 +193,61 @@ JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
 - Error handling with try-catch blocks
 - Type safety with proper interfaces
 
+### CSS Requirements and Styling Guidelines
+
+#### Nightingale UI/UX Theme Evaluation Rule
+When asked to recommend UI themes or component libraries, follow this evaluation process:
+
+**Phase 1: Contextual Discovery**
+- **Tech Stack**: Next.js, TypeScript, Tailwind CSS, Supabase
+- **Project Type**: AI Assistant/Agentic platform
+- **Design Aesthetic**: Modern metro design with light green to dark grey gradients
+
+**Phase 2: Evaluation Criteria**
+1. **Accessibility (30%)**: WCAG 2.1 AA compliance, keyboard navigation, ARIA support
+2. **Design Philosophy (25%)**: Consistent design system, clear guidelines
+3. **Component Quality (20%)**: Comprehensive library, clear documentation
+4. **Performance (15%)**: Bundle size, tree-shaking support
+5. **Customizability (10%)**: Easy theming, CSS variables support
+
+**Phase 3: Implementation Guidelines**
+- Use established spacing and typography scales
+- Favor composition over heavy style modifications
+- Maintain consistent color palette for states
+- Always test keyboard accessibility
+- Follow the project's existing design system
+
+#### Current Styling System
+
+**Framework & Components**
+- **Base**: Tailwind CSS with shadcn/ui component library
+- **Typography**: Poppins font family with weights 400, 600, 700
+- **Component Library**: shadcn/ui components (Button, Card, Dialog, Input) with class-variance-authority for variants
+
+**Color System**
+- **Primary**: Green theme (`hsl(120, 25%, 35%)`) for primary actions and accents
+- **Semantic Colors**: HSL-based system with CSS variables for consistent theming
+- **Light/Dark Mode**: Automatic theme switching with `.dark` class support
+- **Metro Gradient**: Custom gradient from light green to dark grey (`bg-gradient-metro`)
+
+**Layout & Spacing**
+- **Container**: Centered with 2rem padding, max-width 1400px on 2xl screens
+- **Cards**: Backdrop blur effects with `bg-card/80 backdrop-blur-sm`
+- **Animations**: Custom fadeIn, slideInLeft, slideInRight animations
+- **Borders**: Dynamic radius system using CSS custom properties
+
+**Component Patterns**
+- **Navigation**: Sidebar with card-based navigation items using backdrop blur
+- **Forms**: shadcn/ui Input components with proper focus states
+- **Buttons**: CVA-based button variants (default, destructive, outline, secondary, ghost, link)
+- **Typography**: Semantic text colors using CSS variables (foreground, muted-foreground, etc.)
+
+**Custom Utilities**
+- **Gradient Buttons**: `.btn-gradient` for metro-themed buttons
+- **Animation Classes**: `.animate-fadeIn`, `.animate-slideInLeft`, `.animate-slideInRight`
+- **Focus States**: Proper focus-visible ring styling with primary color
+- **Responsive**: Mobile-first approach with Tailwind's responsive utilities
+
 ### Database Operations
 - Always use Supabase client for database operations
 - Ensure RLS policies are properly configured
@@ -247,70 +302,6 @@ JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
 - Check Supabase auth configuration
 - Verify session management in `authService.ts`
 
-## UI/UX Theme and Component Library Evaluation
-
-### Rule: UI/UX Theme and Component Library Evaluation
-
-**Objective:**
-Analyze and recommend the most suitable UI component library or theme based on project context, adhering to modern UI/UX principles. The primary goal is to ensure the final selection promotes usability, accessibility, performance, and a cohesive user experience.
-
-**Trigger:**
-This rule is activated when asked to "find a UI theme," "recommend a component library," or similar requests.
-
-**Phase 1: Contextual Discovery & Filtering**
-
-Before searching, understand the project's core requirements using these placeholders:
-
-- **[TECH_STACK]**: Next.js, TypeScript, Tailwind CSS, and Supabase
-- **[PROJECT_TYPE]**: Agenic Assistant like
-- **[DESIGN_AESTHETIC]**: Strong but metro with light green to dark grey gradients
-
-**Action:**
-1. Perform targeted search for "UI component libraries for [TECH_STACK]," "best design systems for [PROJECT_TYPE]," and "[DESIGN_AESTHETIC] CSS frameworks"
-2. Identify 3-5 promising candidates from search results
-3. Initial filtering: Discard candidates not updated in last 12 months or with overwhelmingly negative feedback
-
-**Phase 2: Deep Analysis & Scoring**
-
-Analyze each filtered candidate against these UI/UX criteria:
-
-1. **Accessibility (A11y) - Weight: 30%**
-   - WCAG 2.1 AA or higher commitment
-   - Keyboard navigation support
-   - Appropriate ARIA roles and states
-   - Sufficient color contrast in default theme
-
-2. **Design Philosophy & Consistency - Weight: 25%**
-   - Clear, documented design system
-   - Visual and functional consistency across components
-   - Clear usage guidelines for typography, spacing, and color palettes
-
-3. **Component Quality & Documentation - Weight: 20%**
-   - Comprehensive component library for project type
-   - Clear documentation with live, interactive examples
-   - Intuitive and well-documented component API
-
-4. **Performance & Lightweightness - Weight: 15%**
-   - Bundle size analysis
-   - Tree-shaking support
-   - Minimal dependencies on large libraries
-
-5. **Customizability & Theming - Weight: 10%**
-   - Easy custom brand identity application
-   - Modern CSS features (variables) for theming
-   - Override component styles without specificity wars
-
-**Phase 3: Final Recommendation & Usage Guidelines**
-
-**Action:**
-1. **Synthesize Findings**: Present summary table comparing candidates
-2. **Top Recommendation**: State top recommendation with justification for project context
-3. **Best Practices for Usage**: Generate actionable implementation rules including:
-   - Starter code snippet for installation and basic setup
-   - "Adhere to the system's spacing and typography scale" for visual rhythm
-   - "Favor composition over modification" warning
-   - "Use the theme's provided color palette for states" guideline
-   - "Always test key user flows for keyboard accessibility" reminder
 
 ## Documentation References
 

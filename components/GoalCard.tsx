@@ -19,24 +19,24 @@ interface GoalCardProps {
 const GoalCard: React.FC<GoalCardProps> = ({ goal }) => {
   const statusMap: Record<GoalStatus, { color: string; gradient: string; bgColor: string }> = {
     'On Track': { 
-      color: 'text-green-700 bg-green-100 border-green-200', 
-      gradient: 'from-green-400 to-green-600',
-      bgColor: 'bg-green-50/50'
+      color: 'text-primary bg-primary/20 border-primary/30', 
+      gradient: 'from-primary to-primary/80',
+      bgColor: 'bg-primary/10'
     },
     Behind: { 
-      color: 'text-yellow-700 bg-yellow-100 border-yellow-200', 
-      gradient: 'from-yellow-400 to-yellow-600',
-      bgColor: 'bg-yellow-50/50'
+      color: 'text-primary/80 bg-primary/15 border-primary/25', 
+      gradient: 'from-primary/80 to-primary/60',
+      bgColor: 'bg-primary/5'
     },
     'At Risk': { 
-      color: 'text-red-700 bg-red-100 border-red-200', 
-      gradient: 'from-red-400 to-red-600',
-      bgColor: 'bg-red-50/50'
+      color: 'text-destructive bg-destructive/20 border-destructive/30', 
+      gradient: 'from-destructive to-destructive/80',
+      bgColor: 'bg-destructive/10'
     },
     Completed: { 
-      color: 'text-blue-700 bg-blue-100 border-blue-200', 
-      gradient: 'from-blue-400 to-blue-600',
-      bgColor: 'bg-blue-50/50'
+      color: 'text-primary bg-primary/30 border-primary/40', 
+      gradient: 'from-primary to-gray-700',
+      bgColor: 'bg-primary/20'
     },
   };
 

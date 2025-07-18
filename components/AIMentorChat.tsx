@@ -157,7 +157,7 @@ export default function AIMentorChat() {
               <p className="text-xs text-gray-600">
                 {userContext.currentLevel} → {userContext.targetLevel}
               </p>
-              <p className="text-xs text-blue-600">
+              <p className="text-xs text-primary">
                 Progress: {userContext.progress}
               </p>
             </div>
@@ -172,7 +172,7 @@ export default function AIMentorChat() {
             onClick={() => setChatMode('chat')}
             className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
               chatMode === 'chat'
-                ? 'bg-blue-100 text-blue-700'
+                ? 'bg-primary/20 text-primary'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
@@ -184,7 +184,7 @@ export default function AIMentorChat() {
             onClick={() => setChatMode('code-review')}
             className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
               chatMode === 'code-review'
-                ? 'bg-green-100 text-green-700'
+                ? 'bg-primary/20 text-primary'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
@@ -197,7 +197,7 @@ export default function AIMentorChat() {
             onClick={() => setChatMode('daily-motivation')}
             className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
               chatMode === 'daily-motivation'
-                ? 'bg-yellow-100 text-yellow-700'
+                ? 'bg-primary/20 text-primary'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
@@ -219,24 +219,24 @@ export default function AIMentorChat() {
                 <div
                   className={`max-w-xs lg:max-w-md px-4 py-3 rounded-lg ${
                     message.role === 'user'
-                      ? 'bg-blue-500 text-white'
+                      ? 'bg-gradient-to-r from-primary to-gray-700 text-white'
                       : 'bg-white border border-gray-200 text-gray-900'
                   }`}
                 >
                   <div className="flex items-start space-x-2">
                     {message.role === 'assistant' && (
-                      <Bot className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
+                      <Bot className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                     )}
                     <div className="flex-1">
                       <p className="text-sm">{message.content}</p>
                       <p className={`text-xs mt-1 ${
-                        message.role === 'user' ? 'text-blue-100' : 'text-gray-500'
+                        message.role === 'user' ? 'text-white/80' : 'text-gray-500'
                       }`}>
                         {message.timestamp.toLocaleTimeString()}
                       </p>
                     </div>
                     {message.role === 'user' && (
-                      <User className="w-5 h-5 text-blue-100 mt-0.5 flex-shrink-0" />
+                      <User className="w-5 h-5 text-white/80 mt-0.5 flex-shrink-0" />
                     )}
                   </div>
                 </div>
@@ -247,11 +247,11 @@ export default function AIMentorChat() {
               <div className="flex justify-start">
                 <div className="bg-white border border-gray-200 rounded-lg px-4 py-3">
                   <div className="flex items-center space-x-2">
-                    <Bot className="w-5 h-5 text-blue-500" />
+                    <Bot className="w-5 h-5 text-primary" />
                     <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                     </div>
                   </div>
                 </div>
@@ -264,18 +264,18 @@ export default function AIMentorChat() {
         {chatMode === 'code-review' && codeReview && (
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <div className="flex items-center space-x-2 mb-4">
-              <Code className="w-6 h-6 text-green-600" />
+              <Code className="w-6 h-6 text-primary" />
               <h3 className="text-lg font-semibold text-gray-900">Code Review Results</h3>
             </div>
             
             <div className="mb-4">
               <div className="flex items-center space-x-2 mb-2">
-                <Star className="w-5 h-5 text-yellow-500" />
+                <Star className="w-5 h-5 text-primary" />
                 <span className="text-lg font-semibold">Score: {codeReview.score}/100</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
-                  className="bg-gradient-to-r from-green-400 to-blue-500 h-2 rounded-full transition-all duration-500"
+                  className="bg-gradient-to-r from-primary to-gray-700 h-2 rounded-full transition-all duration-500"
                   style={{ width: `${codeReview.score}%` }}
                 ></div>
               </div>
@@ -292,7 +292,7 @@ export default function AIMentorChat() {
                 <ul className="space-y-1">
                   {codeReview.suggestions.map((suggestion, index) => (
                     <li key={index} className="flex items-start space-x-2">
-                      <Lightbulb className="w-4 h-4 text-yellow-500 mt-0.5 flex-shrink-0" />
+                      <Lightbulb className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
                       <span className="text-gray-700">{suggestion}</span>
                     </li>
                   ))}
@@ -304,7 +304,7 @@ export default function AIMentorChat() {
                 <ul className="space-y-1">
                   {codeReview.improvements.map((improvement, index) => (
                     <li key={index} className="flex items-start space-x-2">
-                      <TrendingUp className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <TrendingUp className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
                       <span className="text-gray-700">{improvement}</span>
                     </li>
                   ))}
@@ -318,7 +318,7 @@ export default function AIMentorChat() {
 
         {/* Daily Motivation */}
         {chatMode === 'daily-motivation' && dailyMotivation && (
-          <div className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-lg p-6 text-white">
+          <div className="bg-gradient-to-r from-primary to-gray-700 rounded-lg p-6 text-white">
             <div className="flex items-center space-x-2 mb-4">
               <Zap className="w-6 h-6" />
               <h3 className="text-lg font-semibold">Daily Motivation</h3>
@@ -361,7 +361,7 @@ export default function AIMentorChat() {
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 placeholder="Paste your code here with language specification (e.g., ```php\n// your code\n```)"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
                 rows={4}
                 disabled={isLoading}
               />
@@ -375,7 +375,7 @@ export default function AIMentorChat() {
                   chatMode === 'daily-motivation' ? "Type 'motivate' for daily inspiration..." :
                   "Type your message..."
                 }
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 disabled={isLoading}
               />
             )}
@@ -384,7 +384,7 @@ export default function AIMentorChat() {
           <button
             type="submit"
             disabled={isLoading || !inputMessage.trim()}
-            className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="px-6 py-3 bg-gradient-to-r from-primary to-gray-700 text-white rounded-lg hover:from-primary/90 hover:to-gray-700/90 focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             <Send className="w-5 h-5" />
           </button>
