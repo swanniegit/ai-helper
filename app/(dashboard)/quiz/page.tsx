@@ -116,7 +116,7 @@ export default function QuizPage() {
                 variant={selectedCategory === category ? "default" : "outline"}
                 className={`rounded-full text-sm font-medium transition-colors ${
                   selectedCategory === category
-                    ? 'bg-primary text-primary-foreground'
+                    ? 'bg-primary text-white'
                     : 'bg-white/10 text-white hover:bg-white/20 border-white/20'
                 }`}
               >

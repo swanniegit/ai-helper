@@ -217,6 +217,8 @@ export class QuizService {
     total_time_spent: number;
     skills_mastered: string[];
     skills_needing_improvement: string[];
+    weak_areas: string[];
+    last_quiz_date: string;
     recent_performance: {
       date: string;
       score: number;
@@ -239,6 +241,8 @@ export class QuizService {
           total_time_spent: 0,
           skills_mastered: [],
           skills_needing_improvement: [],
+          weak_areas: [],
+          last_quiz_date: new Date().toISOString(),
           recent_performance: []
         };
       }
@@ -278,6 +282,8 @@ export class QuizService {
         total_time_spent: totalTimeSpent,
         skills_mastered: skillsMastered,
         skills_needing_improvement: skillsNeedingImprovement,
+        weak_areas: skillsNeedingImprovement,
+        last_quiz_date: results[0]?.taken_at || new Date().toISOString(),
         recent_performance: recentPerformance
       };
     } catch (error) {
@@ -303,11 +309,47 @@ export class QuizService {
       const { data, error } = await query;
       if (error) throw error;
       
-      return data || [];
+      // If no templates found, return fallback templates
+      if (!data || data.length === 0) {
+        return this.createFallbackTemplates(skillCategory);
+      }
+      
+      return data;
     } catch (error) {
       console.error('Get quiz templates error:', error);
-      throw new Error('Failed to get quiz templates');
+      // Return fallback templates on error
+      return this.createFallbackTemplates(skillCategory);
     }
+  }
+  
+  private static createFallbackTemplates(skillCategory?: string): QuizTemplate[] {
+    const categories = skillCategory ? [skillCategory] : [
+      'JavaScript', 'TypeScript', 'React', 'Node.js', 'Python', 'SQL', 
+      'API Development', 'DevOps', 'Docker', 'AWS', 'Git', 'Testing'
+    ];
+    
+    const templates: QuizTemplate[] = [];
+    
+    categories.forEach(category => {
+      ['beginner', 'intermediate', 'advanced'].forEach(difficulty => {
+        templates.push({
+          id: uuidv4(),
+          name: `${category} ${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} Quiz`,
+          description: `Test your knowledge of ${category} at ${difficulty} level`,
+          quiz_type: 'practice',
+          skill_category: category,
+          difficulty_level: difficulty as DifficultyLevel,
+          question_count: 10,
+          time_limit_minutes: 15,
+          passing_score: 70,
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        });
+      });
+    });
+    
+    return templates;
   }
   
   /**
@@ -369,6 +411,12 @@ export class QuizService {
       }
       
       const { data, error } = await query.limit(1).single();
+      
+      if (error && error.code === 'PGRST116') {
+        // No template found, create a fallback template
+        return this.createFallbackTemplate(skillCategory, difficulty, quizType);
+      }
+      
       if (error) throw error;
       
       return data;
@@ -376,6 +424,27 @@ export class QuizService {
       console.error('Get quiz template error:', error);
       return null;
     }
+  }
+  
+  private static createFallbackTemplate(
+    skillCategory: string,
+    difficulty: DifficultyLevel,
+    quizType?: QuizType
+  ): QuizTemplate {
+    return {
+      id: uuidv4(),
+      name: `${skillCategory} ${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} Quiz`,
+      description: `Test your knowledge of ${skillCategory} at ${difficulty} level`,
+      quiz_type: quizType || 'practice',
+      skill_category: skillCategory,
+      difficulty_level: difficulty,
+      question_count: 10,
+      time_limit_minutes: 15,
+      passing_score: 70,
+      is_active: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
   }
   
   private static async getQuestionsForTemplate(templateId: string, count: number): Promise<QuizQuestion[]> {
