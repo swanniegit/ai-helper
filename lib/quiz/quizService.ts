@@ -44,10 +44,11 @@ export class QuizService {
       const difficulty = request.difficulty_level || preferences?.preferred_difficulty || 'intermediate';
       const questionCount = request.question_count || preferences?.preferred_question_count || 15;
       
-      // Get quiz template
-      const template = await this.getQuizTemplate(request.skill_category, difficulty, request.quiz_type);
+      // Get quiz template - with fallback if none found
+      let template = await this.getQuizTemplate(request.skill_category, difficulty, request.quiz_type);
       if (!template) {
-        throw new Error(`No quiz template found for ${request.skill_category} at ${difficulty} level`);
+        console.log(`No database template found for ${request.skill_category} at ${difficulty} level, creating fallback`);
+        template = this.createFallbackTemplate(request.skill_category, difficulty, request.quiz_type);
       }
       
       // Get questions for the template
@@ -413,11 +414,15 @@ export class QuizService {
       const { data, error } = await query.limit(1).single();
       
       if (error && error.code === 'PGRST116') {
-        // No template found, create a fallback template
-        return this.createFallbackTemplate(skillCategory, difficulty, quizType);
+        // No template found, return null (fallback handled in calling method)
+        console.log(`No database template found for ${skillCategory} at ${difficulty} level`);
+        return null;
       }
       
-      if (error) throw error;
+      if (error) {
+        console.error('Database error in getQuizTemplate:', error);
+        return null;
+      }
       
       return data;
     } catch (error) {
@@ -431,7 +436,8 @@ export class QuizService {
     difficulty: DifficultyLevel,
     quizType?: QuizType
   ): QuizTemplate {
-    return {
+    console.log(`Creating fallback template for ${skillCategory} at ${difficulty} level`);
+    const template = {
       id: uuidv4(),
       name: `${skillCategory} ${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} Quiz`,
       description: `Test your knowledge of ${skillCategory} at ${difficulty} level`,
@@ -445,6 +451,8 @@ export class QuizService {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
+    console.log('Fallback template created:', template);
+    return template;
   }
   
   private static async getQuestionsForTemplate(templateId: string, count: number): Promise<QuizQuestion[]> {
