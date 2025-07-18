@@ -145,6 +145,8 @@ export interface QuizProgress {
   total_time_spent: number;
   skills_mastered: string[];
   skills_needing_improvement: string[];
+  weak_areas: string[];
+  last_quiz_date: string;
   recent_performance: {
     date: string;
     score: number;
