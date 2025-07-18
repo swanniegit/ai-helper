@@ -1,22 +1,10 @@
 {
-  "buildCommand": "npm run build",
-  "devCommand": "npm run dev",
-  "installCommand": "npm install",
   "framework": "nextjs",
   "regions": ["iad1"],
   "functions": {
     "app/api/**/*.ts": {
       "runtime": "nodejs20.x"
     }
-  },
-  "env": {
-    "NEXT_PUBLIC_API_URL": "@next_public_api_url",
-    "NEXT_TELEMETRY_DISABLED": "1",
-    "CUSTOM_KEY": "@custom_key",
-    "NEXT_PUBLIC_SUPABASE_URL": "@next_public_supabase_url",
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@next_public_supabase_anon_key",
-    "OPENAI_API_KEY": "@openai_api_key",
-    "JWT_SECRET": "@jwt_secret"
   },
   "headers": [
     {
@@ -39,12 +27,6 @@
           "value": "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self'; frame-ancestors 'none';"
         }
       ]
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
     }
   ]
 }
