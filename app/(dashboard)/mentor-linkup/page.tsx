@@ -3,7 +3,7 @@ export default function MentorLinkupPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-gray-800">Mentor Linkup</h2>
-        <button className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+        <button className="px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 transition-colors">
           Find Mentor
         </button>
       </div>
@@ -78,7 +78,7 @@ export default function MentorLinkupPage() {
 
             <div className="bg-white shadow-md rounded-lg p-6 border border-gray-200">
               <div className="flex items-start space-x-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-lg">
+                <div className="w-16 h-16 bg-gradient-to-br from-green-600 to-gray-600 rounded-full flex items-center justify-center text-white font-semibold text-lg">
                   LW
                 </div>
                 <div className="flex-1">
@@ -150,7 +150,7 @@ export default function MentorLinkupPage() {
               <button className="w-full px-4 py-2 bg-green-100 text-green-700 rounded-md hover:bg-green-200 transition-colors text-left">
                 📚 View Resources
               </button>
-              <button className="w-full px-4 py-2 bg-purple-100 text-purple-700 rounded-md hover:bg-purple-200 transition-colors text-left">
+              <button className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors text-left">
                 💬 Message Mentors
               </button>
             </div>

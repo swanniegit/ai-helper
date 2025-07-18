@@ -59,7 +59,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages: initialMessages }) =>
             <div
               className={`max-w-xs px-4 py-2 rounded-xl shadow-md transition-all duration-300 ease-in-out transform hover:scale-[1.02] ${
                 msg.sender === 'User'
-                  ? 'bg-purple-600 text-white rounded-br-none'
+                  ? 'bg-green-700 text-white rounded-br-none'
                   : 'bg-gray-200 text-gray-800 rounded-bl-none'
               }`}
             >
@@ -78,11 +78,11 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages: initialMessages }) =>
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Type your message..."
-          className="flex-grow border border-gray-300 rounded-full p-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
+          className="flex-grow border border-gray-300 rounded-full p-3 focus:outline-none focus:ring-2 focus:ring-green-700 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
         />
         <button
           type="submit"
-          className="ml-3 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full hover:from-purple-600 hover:to-pink-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95"
+          className="ml-3 px-6 py-3 bg-gradient-to-r from-green-700 to-gray-700 text-white rounded-full hover:from-green-800 hover:to-gray-800 focus:outline-none focus:ring-2 focus:ring-green-700 focus:ring-offset-2 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95"
         >
           Send
         </button>
