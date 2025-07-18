@@ -5,7 +5,9 @@ import { getCareerFramework, getAllSkillsForLevel, getTrainingResources } from '
 // Force dynamic rendering for this route (uses OpenAI API)
 export const dynamic = 'force-dynamic';
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const openai = new OpenAI({ 
+  apiKey: process.env.OPENAI_API_KEY || 'placeholder-key'
+});
 
 interface LearningPathRequest {
   skills: string[]

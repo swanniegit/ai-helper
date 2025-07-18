@@ -1,7 +1,9 @@
 import OpenAI from 'openai';
 import { getCareerFramework, getAllSkillsForLevel } from '../careerFrameworks';
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const openai = new OpenAI({ 
+  apiKey: process.env.OPENAI_API_KEY || 'placeholder-key'
+});
 
 export interface MentorContext {
   userId: string;

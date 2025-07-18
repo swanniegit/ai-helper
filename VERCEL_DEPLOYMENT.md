@@ -44,7 +44,7 @@ All required dependencies are properly configured:
 
 ### 1. **Environment Variables Setup**
 
-Set these environment variables in your Vercel dashboard:
+⚠️ **CRITICAL**: Set these environment variables in your Vercel dashboard before deployment:
 
 ```bash
 # Required for the application to work
@@ -56,6 +56,13 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key-here
 OPENAI_API_KEY=sk-your-openai-api-key-here
 JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
 ```
+
+**How to set environment variables in Vercel:**
+1. Go to your Vercel Dashboard
+2. Select your project
+3. Go to **Settings** → **Environment Variables**
+4. Add each variable with the correct value
+5. Make sure to set them for **Production**, **Preview**, and **Development**
 
 ### 2. **Build Configuration**
 

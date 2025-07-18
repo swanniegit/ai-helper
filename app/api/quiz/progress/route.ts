@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { QuizService } from '../../../../lib/quiz/quizService';
 import { AuthService } from '../../../../lib/auth/authService';
 
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
     // Get session token from cookies
