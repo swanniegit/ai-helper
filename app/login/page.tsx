@@ -108,12 +108,19 @@ export default function LoginPage() {
     <div className="min-h-screen bg-gradient-metro flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <div className="mx-auto h-12 w-12 bg-primary/90 backdrop-blur-sm rounded-lg flex items-center justify-center shadow-lg">
-            <span className="text-primary-foreground text-xl font-bold">🎯</span>
+          <div className="mx-auto h-16 w-16 bg-white/90 backdrop-blur-sm rounded-lg flex items-center justify-center shadow-lg p-2">
+            <img 
+              src="/images/ai-mentor-logo.svg" 
+              alt="AI Career Mentor" 
+              className="w-12 h-12"
+            />
           </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-primary-foreground">
-            {isLogin ? 'Sign in to your account' : 'Create your account'}
+            AI Career Mentor
           </h2>
+          <h3 className="mt-2 text-center text-xl font-bold text-primary-foreground/90">
+            {isLogin ? 'Sign in to your account' : 'Create your account'}
+          </h3>
           <p className="mt-2 text-center text-sm text-primary-foreground/80">
             {isLogin ? (
               <>

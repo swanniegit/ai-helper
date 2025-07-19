@@ -16,9 +16,10 @@ import {
   QuestionType
 } from '../../types/quiz';
 
+// Use service role key for server-side operations to bypass RLS
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key'
+  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key'
 );
 
 const openai = new OpenAI({ 
@@ -29,7 +30,7 @@ export class QuizService {
   /**
    * Generate a new quiz session
    */
-  static async generateQuiz(request: GenerateQuizRequest, userId: string): Promise<{
+  static async generateQuiz(request: any, userId: string): Promise<{
     session_token: string;
     template: QuizTemplate;
     questions: QuizQuestion[];
@@ -37,7 +38,19 @@ export class QuizService {
     total_questions: number;
   }> {
     try {
-      console.log(`Starting quiz generation for ${request.skill_category}`);
+      // Handle template_id vs skill_category
+      let skillCategory: string;
+      let template: QuizTemplate;
+      
+      if (request.template_id) {
+        // Load template from database (fallback since we're not using DB templates)
+        template = this.createFallbackTemplateFromId(request.template_id);
+        skillCategory = template.skill_category;
+        console.log(`Starting quiz generation from template ${request.template_id} for ${skillCategory}`);
+      } else {
+        skillCategory = request.skill_category;
+        console.log(`Starting quiz generation for ${skillCategory}`);
+      }
       
       // Get user preferences
       const preferences = await this.getUserPreferences(userId);
@@ -46,16 +59,18 @@ export class QuizService {
       const difficulty = request.difficulty_level || preferences?.preferred_difficulty || 'intermediate';
       const questionCount = request.question_count || preferences?.preferred_question_count || 10;
       
-      console.log(`Generating quiz: category=${request.skill_category}, difficulty=${difficulty}, questions=${questionCount}`);
+      console.log(`Generating quiz: category=${skillCategory}, difficulty=${difficulty}, questions=${questionCount}`);
       
-      // Always create fallback template to ensure we have one
-      const template = this.createFallbackTemplate(request.skill_category, difficulty, request.quiz_type);
-      console.log('Using fallback template:', template.name);
+      // Create fallback template if not already created
+      if (!template) {
+        template = this.createFallbackTemplate(skillCategory, difficulty, request.quiz_type);
+      }
+      console.log('Using template:', template.name);
       
       // Since we're using fallback templates, we need to generate AI questions
-      console.log(`Generating ${questionCount} AI questions for ${request.skill_category}`);
+      console.log(`Generating ${questionCount} AI questions for ${skillCategory}`);
       let questions = await this.generateAIQuestions(
-        request.skill_category,
+        skillCategory,
         difficulty,
         questionCount,
         userId
@@ -86,7 +101,7 @@ export class QuizService {
       };
       
       // Save session to database
-      await supabase
+      const { error: insertError } = await supabase
         .from('quiz_sessions')
         .insert({
           id: session.id,
@@ -101,12 +116,21 @@ export class QuizService {
           expires_at: session.expires_at
         });
       
+      if (insertError) {
+        console.error('Failed to save quiz session:', insertError);
+        throw new Error('Failed to create quiz session');
+      }
+      
+      console.log('Quiz session saved successfully with token:', sessionToken);
+      
       return {
         session_token: sessionToken,
         template,
         questions,
         time_limit_minutes: template.time_limit_minutes,
-        total_questions: questions.length
+        total_questions: questions.length,
+        // Include the full session object for the frontend
+        session: session
       };
     } catch (error) {
       console.error('Quiz generation error:', error);
@@ -456,6 +480,23 @@ export class QuizService {
     console.log('Fallback template created:', template);
     return template;
   }
+
+  private static createFallbackTemplateFromId(templateId: string): QuizTemplate {
+    // Since we're not using database templates, create fallback based on template ID
+    // This maps template IDs to skill categories for the existing templates
+    const templateMap: Record<string, { skill: string, difficulty: DifficultyLevel }> = {
+      'sql-advanced': { skill: 'SQL', difficulty: 'advanced' },
+      'python-basics': { skill: 'Python', difficulty: 'beginner' },
+      'python-intermediate': { skill: 'Python', difficulty: 'intermediate' },
+      'javascript-fundamentals': { skill: 'JavaScript', difficulty: 'beginner' },
+      'react-basics': { skill: 'React', difficulty: 'beginner' },
+      'node-js-basics': { skill: 'Node.js', difficulty: 'beginner' }
+    };
+
+    const templateInfo = templateMap[templateId] || { skill: 'General Programming', difficulty: 'intermediate' as DifficultyLevel };
+    
+    return this.createFallbackTemplate(templateInfo.skill, templateInfo.difficulty, 'practice');
+  }
   
   private static async getQuestionsForTemplate(templateId: string, count: number): Promise<QuizQuestion[]> {
     try {
@@ -528,6 +569,8 @@ export class QuizService {
   
   private static async getQuizSession(sessionToken: string, userId: string): Promise<QuizSession | null> {
     try {
+      console.log(`Looking for quiz session with token: ${sessionToken} and user: ${userId}`);
+      
       const { data, error } = await supabase
         .from('quiz_sessions')
         .select('*')
@@ -536,8 +579,17 @@ export class QuizService {
         .eq('is_active', true)
         .single();
       
-      if (error) throw error;
+      if (error) {
+        console.error('Database error when fetching quiz session:', error);
+        throw error;
+      }
       
+      if (!data) {
+        console.log('No quiz session found');
+        return null;
+      }
+      
+      console.log('Quiz session found:', data.id);
       return data;
     } catch (error) {
       console.error('Get quiz session error:', error);

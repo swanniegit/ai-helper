@@ -27,12 +27,12 @@ export async function POST(req: NextRequest) {
     }
 
     // Parse request body
-    const body: GenerateQuizRequest = await req.json();
+    const body: any = await req.json();
     
-    // Validate required fields
-    if (!body.skill_category) {
+    // Validate required fields - either skill_category OR template_id is required
+    if (!body.skill_category && !body.template_id) {
       return NextResponse.json(
-        { error: 'Skill category is required' },
+        { error: 'Either skill_category or template_id is required' },
         { status: 400 }
       );
     }

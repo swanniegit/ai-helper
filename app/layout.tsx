@@ -6,8 +6,13 @@ import { AuthProvider } from '../lib/auth/AuthContext';
 const poppins = Poppins({ subsets: ['latin'], weight: ['400', '600', '700'] });
 
 export const metadata: Metadata = {
-  title: 'AI Growth Platform Demo',
-  description: 'Frontend demo for Role-Based AI Growth & Goal-Tracking Platform',
+  title: 'AI Career Mentor Platform',
+  description: 'AI-powered career mentor with personalized learning paths and interactive guidance',
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

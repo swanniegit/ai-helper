@@ -17,6 +17,10 @@
     "docker:dev:build": "docker-compose up --build",
     "docker:stop": "docker-compose down",
     "docker:clean": "docker system prune -f",
+    "dev:debug": "NODE_OPTIONS='--inspect=0.0.0.0:9229' next dev",
+    "logs": "docker-compose logs -f --tail=50 app",
+    "logs:debug": "docker-compose -f docker-compose.debug.yml logs -f --tail=50 app",
+    "docker:debug": "docker-compose -f docker-compose.debug.yml up --build",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prepare": "husky install || true"

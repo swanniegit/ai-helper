@@ -12,13 +12,13 @@ const QuizTemplateCard: React.FC<QuizTemplateCardProps> = ({ template, onStartQu
   const getDifficultyColor = (difficulty: DifficultyLevel) => {
     switch (difficulty) {
       case 'beginner':
-        return 'bg-primary/20 text-primary';
+        return 'bg-green-100 text-green-900 border border-green-200';
       case 'intermediate':
-        return 'bg-primary/30 text-primary';
+        return 'bg-yellow-100 text-yellow-900 border border-yellow-200';
       case 'advanced':
-        return 'bg-primary/40 text-primary';
+        return 'bg-red-100 text-red-900 border border-red-200';
       default:
-        return 'bg-primary/10 text-primary';
+        return 'bg-gray-100 text-gray-900 border border-gray-200';
     }
   };
 
@@ -84,7 +84,7 @@ const QuizTemplateCard: React.FC<QuizTemplateCardProps> = ({ template, onStartQu
 
         {/* Skill Category */}
         <div className="mb-6">
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary/20 text-primary">
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-900 border border-blue-200">
             {template.skill_category}
           </span>
         </div>
@@ -92,7 +92,7 @@ const QuizTemplateCard: React.FC<QuizTemplateCardProps> = ({ template, onStartQu
         {/* Action Button */}
         <button
           onClick={() => onStartQuiz(template.id)}
-          className="w-full bg-gradient-to-r from-primary to-gray-700 hover:from-primary/90 hover:to-gray-700/90 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+          className="w-full bg-gradient-to-r from-primary to-gray-800 hover:from-primary/90 hover:to-gray-800/90 text-white font-bold py-2 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 shadow-lg"
         >
           Start Quiz
         </button>

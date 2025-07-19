@@ -54,7 +54,14 @@ function TakeQuizContent() {
       const data = await response.json();
 
       if (data.success) {
-        setQuizSession(data.data);
+        // Set the quiz session with the session token
+        const sessionData = {
+          ...data.data.session,
+          template: data.data.template,
+          questions: data.data.questions,
+          session_token: data.data.session_token
+        };
+        setQuizSession(sessionData);
         setTimeRemaining(data.data.template.time_limit_minutes * 60);
         setAnswers(new Array(data.data.questions.length).fill(''));
       } else {

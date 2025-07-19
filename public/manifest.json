@@ -1,0 +1,22 @@
+{
+  "name": "AI Career Mentor Platform",
+  "short_name": "AI Mentor",
+  "description": "AI-powered career mentor with personalized learning paths and interactive guidance",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4a7c59",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/images/ai-mentor-logo.svg", 
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

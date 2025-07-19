@@ -31,13 +31,20 @@ export default function Navigation() {
     <aside className="w-64 p-4 mr-4 animate-slideInLeft">
       <Card className="bg-card/80 backdrop-blur-sm border-primary/20 shadow-lg">
         <CardHeader>
-          <CardTitle className="text-xl font-bold text-primary">
-            Dashboard Menu
-          </CardTitle>
+          <div className="flex items-center gap-3 mb-2">
+            <img 
+              src="/images/ai-mentor-logo.svg" 
+              alt="AI Mentor" 
+              className="w-10 h-8 rounded-md"
+            />
+            <CardTitle className="text-xl font-bold text-primary">
+              AI Mentor
+            </CardTitle>
+          </div>
           {user && (
             <CardDescription>
-              <p className="font-medium text-card-foreground">{user.first_name || user.email}</p>
-              <p className="text-xs text-muted-foreground">{user.email}</p>
+              <span className="font-medium text-card-foreground block">{user.first_name || user.email}</span>
+              <span className="text-xs text-muted-foreground block">{user.email}</span>
             </CardDescription>
           )}
         </CardHeader>
