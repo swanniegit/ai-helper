@@ -54,7 +54,7 @@ export class QuizService {
       
       // Since we're using fallback templates, we need to generate AI questions
       console.log(`Generating ${questionCount} AI questions for ${request.skill_category}`);
-      const questions = await this.generateAIQuestions(
+      let questions = await this.generateAIQuestions(
         request.skill_category,
         difficulty,
         questionCount,
