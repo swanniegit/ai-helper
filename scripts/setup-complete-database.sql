@@ -69,5 +69,101 @@ FROM public.users u
 LIMIT 1
 ON CONFLICT DO NOTHING;
 
+-- Insert sample quest templates
+INSERT INTO public.quest_templates (quest_key, title, description, narrative_text, quest_type, required_level, xp_reward, quest_giver_name, quest_giver_avatar, estimated_duration_hours, difficulty_rating) VALUES
+('first_quiz', 'The First Step', 'Complete your very first quiz to begin your learning journey', 'Welcome, young learner! Every great journey begins with a single step. Prove your readiness by completing your first quiz.', 'main_story', 1, 100, 'Mentor Sage', '🧙‍♂️', 1, 1),
+('php_basics', 'PHP Fundamentals', 'Master the basics of PHP programming', 'The path to PHP mastery lies before you. Learn the fundamentals and unlock the power of server-side scripting.', 'side_quest', 2, 200, 'Code Master', '👨‍💻', 3, 2),
+('daily_practice', 'Daily Practice Routine', 'Complete a quiz every day for a week', 'Consistency is the key to mastery. Establish a daily practice routine to accelerate your learning.', 'daily', 1, 50, 'Discipline Keeper', '⏰', 1, 1),
+('social_network', 'Join the Community', 'Join a guild and connect with other learners', 'Learning is better together! Join a guild and discover the power of collaborative learning.', 'social', 1, 75, 'Community Guide', '🤝', 1, 1),
+('perfect_score', 'Perfection Seeker', 'Achieve a perfect score on any quiz', 'Excellence is not a skill, it is an attitude. Strive for perfection in your learning journey.', 'special', 3, 300, 'Perfection Master', '⭐', 2, 3)
+ON CONFLICT (quest_key) DO NOTHING;
+
+-- Insert quest objectives
+INSERT INTO public.quest_objectives (quest_template_id, description, target_type, target_value, objective_order) 
+SELECT 
+  qt.id, 'Complete a quiz', 'quiz_completion', 1, 1
+FROM public.quest_templates qt WHERE qt.quest_key = 'first_quiz'
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.quest_objectives (quest_template_id, description, target_type, target_value, objective_order) 
+SELECT 
+  qt.id, 'Complete PHP-focused quizzes', 'php_quiz_completion', 3, 1
+FROM public.quest_templates qt WHERE qt.quest_key = 'php_basics'
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.quest_objectives (quest_template_id, description, target_type, target_value, objective_order) 
+SELECT 
+  qt.id, 'Complete daily quizzes', 'daily_quiz_completion', 7, 1
+FROM public.quest_templates qt WHERE qt.quest_key = 'daily_practice'
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.quest_objectives (quest_template_id, description, target_type, target_value, objective_order) 
+SELECT 
+  qt.id, 'Join a guild', 'guild_join', 1, 1
+FROM public.quest_templates qt WHERE qt.quest_key = 'social_network'
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.quest_objectives (quest_template_id, description, target_type, target_value, objective_order) 
+SELECT 
+  qt.id, 'Get a perfect score', 'perfect_score', 1, 1
+FROM public.quest_templates qt WHERE qt.quest_key = 'perfect_score'
+ON CONFLICT DO NOTHING;
+
+-- Insert quest steps
+INSERT INTO public.quest_steps (quest_template_id, step_key, step_name, step_description, step_narrative, step_order, step_xp_reward) 
+SELECT 
+  qt.id, 'step_1', 'Choose a Quiz', 'Select any quiz from the available templates', 'First, you must choose your challenge wisely. Pick a quiz that matches your current skill level.', 1, 25
+FROM public.quest_templates qt WHERE qt.quest_key = 'first_quiz'
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.quest_steps (quest_template_id, step_key, step_name, step_description, step_narrative, step_order, step_xp_reward) 
+SELECT 
+  qt.id, 'step_2', 'Complete the Quiz', 'Answer all questions to the best of your ability', 'Now face your challenge with courage and determination. Every question is an opportunity to learn.', 2, 50
+FROM public.quest_templates qt WHERE qt.quest_key = 'first_quiz'
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.quest_steps (quest_template_id, step_key, step_name, step_description, step_narrative, step_order, step_xp_reward) 
+SELECT 
+  qt.id, 'step_3', 'Review Results', 'Check your score and understand your performance', 'Reflect on your performance. Understanding your strengths and weaknesses is the path to improvement.', 3, 25
+FROM public.quest_templates qt WHERE qt.quest_key = 'first_quiz'
+ON CONFLICT DO NOTHING;
+
+-- Insert quest NPCs
+INSERT INTO public.quest_npcs (npc_key, npc_name, npc_title, npc_description, npc_personality, npc_avatar_emoji, npc_avatar_color) VALUES
+('mentor_sage', 'Mentor Sage', 'Wise Learning Guide', 'A wise mentor who guides new learners on their journey', 'Wise, patient, encouraging', '🧙‍♂️', '#8B5CF6'),
+('code_master', 'Code Master', 'Programming Expert', 'An expert programmer who shares deep knowledge', 'Knowledgeable, precise, helpful', '👨‍💻', '#3B82F6'),
+('discipline_keeper', 'Discipline Keeper', 'Habit Formation Specialist', 'Helps learners develop consistent study habits', 'Structured, motivating, consistent', '⏰', '#10B981'),
+('community_guide', 'Community Guide', 'Social Learning Coordinator', 'Facilitates connections between learners', 'Friendly, inclusive, supportive', '🤝', '#F59E0B'),
+('perfection_master', 'Perfection Master', 'Excellence Coach', 'Encourages learners to strive for excellence', 'Demanding, inspiring, focused', '⭐', '#EF4444')
+ON CONFLICT (npc_key) DO NOTHING;
+
+-- Insert sample skill tree nodes
+INSERT INTO public.skill_tree_nodes (node_key, node_name, node_description, skill_category, difficulty_level, xp_requirement, node_order) VALUES
+('php_basics', 'PHP Basics', 'Fundamental PHP concepts and syntax', 'PHP', 'beginner', 0, 1),
+('php_oop', 'Object-Oriented PHP', 'Classes, objects, and inheritance in PHP', 'PHP', 'intermediate', 500, 2),
+('php_advanced', 'Advanced PHP', 'Advanced PHP features and best practices', 'PHP', 'advanced', 1000, 3),
+('oracle_basics', 'Oracle Database Basics', 'Basic Oracle database concepts', 'Oracle', 'beginner', 0, 1),
+('oracle_sql', 'Oracle SQL', 'SQL queries and database operations', 'Oracle', 'intermediate', 500, 2),
+('oracle_advanced', 'Advanced Oracle', 'Advanced Oracle database administration', 'Oracle', 'advanced', 1000, 3),
+('web_basics', 'Web Development Basics', 'HTML, CSS, and JavaScript fundamentals', 'Web Development', 'beginner', 0, 1),
+('web_advanced', 'Advanced Web Development', 'Modern web development frameworks and tools', 'Web Development', 'intermediate', 500, 2)
+ON CONFLICT (node_key) DO NOTHING;
+
+-- Insert sample daily challenges
+INSERT INTO public.daily_challenges (user_id, challenge_type, title, description, target_value, xp_reward, assigned_date, expires_at) 
+SELECT 
+  u.id, 'quiz_completion', 'Daily Quiz Challenge', 'Complete one quiz today', 1, 50, CURRENT_DATE, CURRENT_DATE + INTERVAL '1 day'
+FROM public.users u 
+LIMIT 5
+ON CONFLICT DO NOTHING;
+
+-- Insert sample leaderboard entries
+INSERT INTO public.leaderboard_entries (user_id, skill_category, time_period, period_start, period_end, user_score, xp_earned, quizzes_completed, user_rank) 
+SELECT 
+  u.id, 'General', 'weekly', DATE_TRUNC('week', CURRENT_DATE), DATE_TRUNC('week', CURRENT_DATE) + INTERVAL '1 week', 500, 500, 5, 1
+FROM public.users u 
+LIMIT 3
+ON CONFLICT DO NOTHING;
+
 -- Success message
 SELECT 'Complete database setup with initial data completed successfully!' as status; 

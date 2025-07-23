@@ -437,6 +437,187 @@ CREATE TABLE IF NOT EXISTS public.user_seasonal_progress (
 );
 
 -- ============================================================================
+-- QUEST SYSTEM TABLES
+-- ============================================================================
+
+-- Quest templates
+CREATE TABLE IF NOT EXISTS public.quest_templates (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    quest_key VARCHAR(100) UNIQUE NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    narrative_text TEXT,
+    quest_type VARCHAR(50) NOT NULL CHECK (quest_type IN ('main_story', 'side_quest', 'daily', 'special', 'social')),
+    required_level INTEGER DEFAULT 1,
+    xp_reward INTEGER DEFAULT 100,
+    quest_giver_name VARCHAR(255),
+    quest_giver_avatar VARCHAR(10),
+    estimated_duration_hours INTEGER DEFAULT 1,
+    difficulty_rating INTEGER DEFAULT 1 CHECK (difficulty_rating BETWEEN 1 AND 5),
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Quest objectives
+CREATE TABLE IF NOT EXISTS public.quest_objectives (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    quest_template_id UUID NOT NULL REFERENCES public.quest_templates(id) ON DELETE CASCADE,
+    description TEXT NOT NULL,
+    target_type VARCHAR(50) NOT NULL,
+    target_value INTEGER NOT NULL DEFAULT 1,
+    objective_order INTEGER DEFAULT 0,
+    is_optional BOOLEAN DEFAULT false,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Quest steps
+CREATE TABLE IF NOT EXISTS public.quest_steps (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    quest_template_id UUID NOT NULL REFERENCES public.quest_templates(id) ON DELETE CASCADE,
+    step_key VARCHAR(100) NOT NULL,
+    step_name VARCHAR(255) NOT NULL,
+    step_description TEXT NOT NULL,
+    step_narrative TEXT,
+    step_order INTEGER NOT NULL DEFAULT 0,
+    is_optional BOOLEAN DEFAULT false,
+    step_xp_reward INTEGER DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Quest NPCs
+CREATE TABLE IF NOT EXISTS public.quest_npcs (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    npc_key VARCHAR(100) UNIQUE NOT NULL,
+    npc_name VARCHAR(255) NOT NULL,
+    npc_title VARCHAR(255),
+    npc_description TEXT,
+    npc_personality TEXT,
+    npc_avatar_emoji VARCHAR(10),
+    npc_avatar_color VARCHAR(7),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- User quests
+CREATE TABLE IF NOT EXISTS public.user_quests (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+    quest_template_id UUID NOT NULL REFERENCES public.quest_templates(id) ON DELETE CASCADE,
+    status VARCHAR(50) NOT NULL DEFAULT 'available' CHECK (status IN ('available', 'active', 'completed', 'failed')),
+    started_at TIMESTAMP,
+    completed_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, quest_template_id)
+);
+
+-- User quest objectives progress
+CREATE TABLE IF NOT EXISTS public.user_quest_objectives (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_quest_id UUID NOT NULL REFERENCES public.user_quests(id) ON DELETE CASCADE,
+    objective_id UUID NOT NULL REFERENCES public.quest_objectives(id) ON DELETE CASCADE,
+    current_progress INTEGER DEFAULT 0,
+    target_value INTEGER NOT NULL,
+    completed_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ============================================================================
+-- SKILL TREE SYSTEM TABLES
+-- ============================================================================
+
+-- Skill tree nodes
+CREATE TABLE IF NOT EXISTS public.skill_tree_nodes (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    node_key VARCHAR(100) UNIQUE NOT NULL,
+    node_name VARCHAR(255) NOT NULL,
+    node_description TEXT,
+    skill_category VARCHAR(50) NOT NULL,
+    difficulty_level VARCHAR(50) NOT NULL CHECK (difficulty_level IN ('beginner', 'intermediate', 'advanced')),
+    xp_requirement INTEGER DEFAULT 0,
+    parent_node_id UUID REFERENCES public.skill_tree_nodes(id) ON DELETE CASCADE,
+    node_order INTEGER DEFAULT 0,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- User skill progress
+CREATE TABLE IF NOT EXISTS public.user_skill_progress (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+    skill_node_id UUID NOT NULL REFERENCES public.skill_tree_nodes(id) ON DELETE CASCADE,
+    progress_percentage INTEGER DEFAULT 0 CHECK (progress_percentage BETWEEN 0 AND 100),
+    is_unlocked BOOLEAN DEFAULT false,
+    is_completed BOOLEAN DEFAULT false,
+    completed_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, skill_node_id)
+);
+
+-- ============================================================================
+-- SOCIAL INTERACTIONS TABLE
+-- ============================================================================
+
+-- Social interactions
+CREATE TABLE IF NOT EXISTS public.social_interactions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    from_user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+    to_user_id UUID REFERENCES public.users(id) ON DELETE CASCADE,
+    interaction_type VARCHAR(50) NOT NULL CHECK (interaction_type IN ('guild_join', 'guild_leave', 'challenge_complete', 'quest_help', 'mentor_request')),
+    guild_id UUID REFERENCES public.guilds(id) ON DELETE CASCADE,
+    metadata JSONB DEFAULT '{}',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ============================================================================
+-- DAILY CHALLENGES TABLE (Alternative name)
+-- ============================================================================
+
+-- Daily challenges (alternative to user_daily_challenges)
+CREATE TABLE IF NOT EXISTS public.daily_challenges (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+    challenge_type VARCHAR(50) NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    target_value INTEGER NOT NULL,
+    current_progress INTEGER DEFAULT 0,
+    xp_reward INTEGER DEFAULT 50,
+    assigned_date DATE NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    is_completed BOOLEAN DEFAULT false,
+    completed_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ============================================================================
+-- LEADERBOARD ENTRIES TABLE (Alternative name)
+-- ============================================================================
+
+-- Leaderboard entries (alternative to leaderboards)
+CREATE TABLE IF NOT EXISTS public.leaderboard_entries (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+    skill_category VARCHAR(50) NOT NULL,
+    time_period VARCHAR(20) NOT NULL CHECK (time_period IN ('daily', 'weekly', 'monthly', 'all_time')),
+    period_start DATE NOT NULL,
+    period_end DATE NOT NULL,
+    user_score INTEGER DEFAULT 0,
+    anonymous_name VARCHAR(100),
+    xp_earned INTEGER DEFAULT 0,
+    quizzes_completed INTEGER DEFAULT 0,
+    perfect_scores INTEGER DEFAULT 0,
+    streak_days INTEGER DEFAULT 0,
+    user_rank INTEGER DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, skill_category, time_period, period_start)
+);
+
+-- ============================================================================
 -- INDEXES FOR PERFORMANCE
 -- ============================================================================
 
@@ -496,6 +677,44 @@ CREATE INDEX IF NOT EXISTS idx_user_seasonal_progress_user_id ON public.user_sea
 CREATE INDEX IF NOT EXISTS idx_user_seasonal_progress_event_id ON public.user_seasonal_progress(seasonal_event_id);
 CREATE INDEX IF NOT EXISTS idx_user_seasonal_progress_joined_at ON public.user_seasonal_progress(joined_at DESC);
 
+-- Quest system indexes
+CREATE INDEX IF NOT EXISTS idx_quest_templates_type ON public.quest_templates(quest_type);
+CREATE INDEX IF NOT EXISTS idx_quest_templates_active ON public.quest_templates(is_active);
+CREATE INDEX IF NOT EXISTS idx_quest_objectives_template_id ON public.quest_objectives(quest_template_id);
+CREATE INDEX IF NOT EXISTS idx_quest_steps_template_id ON public.quest_steps(quest_template_id);
+CREATE INDEX IF NOT EXISTS idx_quest_steps_order ON public.quest_steps(step_order);
+CREATE INDEX IF NOT EXISTS idx_user_quests_user_id ON public.user_quests(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_quests_status ON public.user_quests(status);
+CREATE INDEX IF NOT EXISTS idx_user_quests_template_id ON public.user_quests(quest_template_id);
+CREATE INDEX IF NOT EXISTS idx_user_quest_objectives_quest_id ON public.user_quest_objectives(user_quest_id);
+CREATE INDEX IF NOT EXISTS idx_user_quest_objectives_objective_id ON public.user_quest_objectives(objective_id);
+
+-- Skill tree indexes
+CREATE INDEX IF NOT EXISTS idx_skill_tree_nodes_category ON public.skill_tree_nodes(skill_category);
+CREATE INDEX IF NOT EXISTS idx_skill_tree_nodes_parent ON public.skill_tree_nodes(parent_node_id);
+CREATE INDEX IF NOT EXISTS idx_skill_tree_nodes_order ON public.skill_tree_nodes(node_order);
+CREATE INDEX IF NOT EXISTS idx_user_skill_progress_user_id ON public.user_skill_progress(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_skill_progress_node_id ON public.user_skill_progress(skill_node_id);
+CREATE INDEX IF NOT EXISTS idx_user_skill_progress_completed ON public.user_skill_progress(is_completed);
+
+-- Social interactions indexes
+CREATE INDEX IF NOT EXISTS idx_social_interactions_from_user ON public.social_interactions(from_user_id);
+CREATE INDEX IF NOT EXISTS idx_social_interactions_to_user ON public.social_interactions(to_user_id);
+CREATE INDEX IF NOT EXISTS idx_social_interactions_type ON public.social_interactions(interaction_type);
+CREATE INDEX IF NOT EXISTS idx_social_interactions_guild ON public.social_interactions(guild_id);
+CREATE INDEX IF NOT EXISTS idx_social_interactions_created_at ON public.social_interactions(created_at DESC);
+
+-- Daily challenges indexes
+CREATE INDEX IF NOT EXISTS idx_daily_challenges_user_id ON public.daily_challenges(user_id);
+CREATE INDEX IF NOT EXISTS idx_daily_challenges_date ON public.daily_challenges(assigned_date);
+CREATE INDEX IF NOT EXISTS idx_daily_challenges_completed ON public.daily_challenges(is_completed);
+
+-- Leaderboard entries indexes
+CREATE INDEX IF NOT EXISTS idx_leaderboard_entries_user_id ON public.leaderboard_entries(user_id);
+CREATE INDEX IF NOT EXISTS idx_leaderboard_entries_category_period ON public.leaderboard_entries(skill_category, time_period, period_start);
+CREATE INDEX IF NOT EXISTS idx_leaderboard_entries_score ON public.leaderboard_entries(user_score DESC);
+CREATE INDEX IF NOT EXISTS idx_leaderboard_entries_rank ON public.leaderboard_entries(user_rank);
+
 -- ============================================================================
 -- TRIGGERS FOR UPDATED_AT
 -- ============================================================================
@@ -523,6 +742,20 @@ CREATE TRIGGER update_user_streaks_updated_at BEFORE UPDATE ON public.user_strea
 CREATE TRIGGER update_leaderboards_updated_at BEFORE UPDATE ON public.leaderboards FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_guilds_updated_at BEFORE UPDATE ON public.guilds FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_seasonal_events_updated_at BEFORE UPDATE ON public.seasonal_events FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- Quest system triggers
+CREATE TRIGGER update_quest_templates_updated_at BEFORE UPDATE ON public.quest_templates FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_user_quests_updated_at BEFORE UPDATE ON public.user_quests FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_user_quest_objectives_updated_at BEFORE UPDATE ON public.user_quest_objectives FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- Skill tree triggers
+CREATE TRIGGER update_user_skill_progress_updated_at BEFORE UPDATE ON public.user_skill_progress FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- Daily challenges triggers
+CREATE TRIGGER update_daily_challenges_updated_at BEFORE UPDATE ON public.daily_challenges FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- Leaderboard entries triggers
+CREATE TRIGGER update_leaderboard_entries_updated_at BEFORE UPDATE ON public.leaderboard_entries FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- ============================================================================
 -- ROW LEVEL SECURITY (RLS) POLICIES
@@ -557,6 +790,27 @@ ALTER TABLE public.user_daily_challenges ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.anonymous_names ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.seasonal_events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_seasonal_progress ENABLE ROW LEVEL SECURITY;
+
+-- Quest system RLS
+ALTER TABLE public.quest_templates ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.quest_objectives ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.quest_steps ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.quest_npcs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_quests ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_quest_objectives ENABLE ROW LEVEL SECURITY;
+
+-- Skill tree RLS
+ALTER TABLE public.skill_tree_nodes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_skill_progress ENABLE ROW LEVEL SECURITY;
+
+-- Social interactions RLS
+ALTER TABLE public.social_interactions ENABLE ROW LEVEL SECURITY;
+
+-- Daily challenges RLS
+ALTER TABLE public.daily_challenges ENABLE ROW LEVEL SECURITY;
+
+-- Leaderboard entries RLS
+ALTER TABLE public.leaderboard_entries ENABLE ROW LEVEL SECURITY;
 
 -- Users can only access their own data
 CREATE POLICY "Users can view own profile" ON public.users FOR SELECT USING (auth.uid() = id);
@@ -623,6 +877,31 @@ CREATE POLICY "Users can manage own anonymous names" ON public.anonymous_names F
 -- Seasonal events policies
 CREATE POLICY "Users can view active seasonal events" ON public.seasonal_events FOR SELECT USING (is_active = true);
 CREATE POLICY "Users can manage own seasonal progress" ON public.user_seasonal_progress FOR ALL USING (auth.uid() = user_id);
+
+-- Quest system policies
+CREATE POLICY "Users can view quest templates" ON public.quest_templates FOR SELECT USING (true);
+CREATE POLICY "Users can view quest objectives" ON public.quest_objectives FOR SELECT USING (true);
+CREATE POLICY "Users can view quest steps" ON public.quest_steps FOR SELECT USING (true);
+CREATE POLICY "Users can view quest NPCs" ON public.quest_npcs FOR SELECT USING (true);
+CREATE POLICY "Users can manage own quests" ON public.user_quests FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Users can manage own quest objectives" ON public.user_quest_objectives FOR ALL USING (
+    EXISTS (SELECT 1 FROM public.user_quests WHERE user_quests.id = user_quest_objectives.user_quest_id AND user_quests.user_id = auth.uid())
+);
+
+-- Skill tree policies
+CREATE POLICY "Users can view skill tree nodes" ON public.skill_tree_nodes FOR SELECT USING (true);
+CREATE POLICY "Users can manage own skill progress" ON public.user_skill_progress FOR ALL USING (auth.uid() = user_id);
+
+-- Social interactions policies
+CREATE POLICY "Users can view own social interactions" ON public.social_interactions FOR SELECT USING (auth.uid() = from_user_id OR auth.uid() = to_user_id);
+CREATE POLICY "Users can create social interactions" ON public.social_interactions FOR INSERT WITH CHECK (auth.uid() = from_user_id);
+
+-- Daily challenges policies
+CREATE POLICY "Users can manage own daily challenges" ON public.daily_challenges FOR ALL USING (auth.uid() = user_id);
+
+-- Leaderboard entries policies
+CREATE POLICY "Users can view leaderboard entries" ON public.leaderboard_entries FOR SELECT USING (true);
+CREATE POLICY "Users can manage own leaderboard entries" ON public.leaderboard_entries FOR ALL USING (auth.uid() = user_id);
 
 -- Success message
 SELECT 'Complete database schema setup completed successfully!' as status; 
