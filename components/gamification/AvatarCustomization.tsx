@@ -14,7 +14,7 @@ import {
   Award,
   Sparkles
 } from 'lucide-react';
-import { UserAvatar, AvatarCustomization } from '../../types/gamification';
+import { UserAvatar, type AvatarCustomization as AvatarCustomizationType } from '../../types/gamification';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
@@ -38,7 +38,7 @@ const AvatarCustomization: React.FC<AvatarCustomizationProps> = ({
     avatar_stats: any;
   } | null>(null);
   const [presets, setPresets] = useState<any[]>([]);
-  const [currentCustomization, setCurrentCustomization] = useState<AvatarCustomization | null>(null);
+  const [currentCustomization, setCurrentCustomization] = useState<AvatarCustomizationType | null>(null);
   const [avatarName, setAvatarName] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

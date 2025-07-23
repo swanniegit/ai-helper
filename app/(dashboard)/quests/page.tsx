@@ -71,7 +71,7 @@ type ViewMode = 'log' | 'details' | 'dialogue';
 export default function QuestsPage() {
   const [viewMode, setViewMode] = useState<ViewMode>('log');
   const [selectedQuest, setSelectedQuest] = useState<UserQuest | Quest | null>(null);
-  const [selectedNPC, setSelectedNPC] = useState<QuestNPC | null>(null);
+  const [selectedNPC, setSelectedNPC] = useState<any>(null);
   const [dialogueContext, setDialogueContext] = useState<string>('general_advice');
   const [questNPCs, setQuestNPCs] = useState<QuestNPC[]>([]);
 
@@ -125,7 +125,13 @@ export default function QuestsPage() {
   const handleTalkToNPC = (npcId: string, context: string = 'general_advice') => {
     const npc = questNPCs.find(n => n.id === npcId);
     if (npc) {
-      setSelectedNPC(npc);
+      // Ensure the NPC has all required fields for DialogueInterface
+      const dialogueNPC = {
+        ...npc,
+        specializes_in: (npc as any).specializes_in || ['general'],
+        quest_types: (npc as any).quest_types || ['main_story']
+      };
+      setSelectedNPC(dialogueNPC);
       setDialogueContext(context);
       setViewMode('dialogue');
     }

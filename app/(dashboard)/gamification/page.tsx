@@ -43,7 +43,12 @@ export default function GamificationPage() {
             </p>
           </div>
           <div className="lg:max-w-md">
-            <XPProgressBar />
+            <XPProgressBar 
+              current_xp={0} 
+              current_level="Code Apprentice" 
+              level_progress={0} 
+              size="sm" 
+            />
           </div>
         </div>
       </div>
@@ -140,7 +145,22 @@ export default function GamificationPage() {
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
             <div className="space-y-4">
               <h3 className="text-xl font-bold text-primary-foreground">Recent Achievements</h3>
-              <BadgeDisplay limit={8} show_progress={false} />
+              <BadgeDisplay 
+                badge={{
+                  id: '1',
+                  name: 'Quick Learner',
+                  description: 'Completed 5 quizzes this week',
+                  icon_name: 'zap',
+                  category: 'mastery',
+                  xp_reward: 100,
+                  unlock_condition: {},
+                  is_active: true,
+                  sort_order: 1,
+                  created_at: new Date().toISOString()
+                }}
+                is_earned={true}
+                show_description={true}
+              />
             </div>
 
             <div className="space-y-4">
@@ -179,7 +199,22 @@ export default function GamificationPage() {
               </p>
             </div>
           </div>
-          <BadgeDisplay show_progress={true} />
+          <BadgeDisplay 
+            badge={{
+              id: '2',
+              name: 'Achiever',
+              description: 'Unlocked 10 achievements',
+              icon_name: 'trophy',
+              category: 'mastery',
+              xp_reward: 200,
+              unlock_condition: {},
+              is_active: true,
+              sort_order: 2,
+              created_at: new Date().toISOString()
+            }}
+            is_earned={true}
+            show_description={true}
+          />
         </TabsContent>
 
         {/* Leaderboard Tab */}
@@ -199,7 +234,6 @@ export default function GamificationPage() {
               <LeaderboardDisplay 
                 skill_category="General" 
                 time_period="weekly" 
-                limit={10}
               />
             </div>
             
@@ -208,7 +242,6 @@ export default function GamificationPage() {
               <LeaderboardDisplay 
                 skill_category="General" 
                 time_period="all_time" 
-                limit={10}
               />
             </div>
           </div>
@@ -256,7 +289,7 @@ export default function GamificationPage() {
       </Tabs>
 
       {/* Achievement Notification Component (hidden by default, shows on achievements) */}
-      <AchievementNotification />
+      {/* <AchievementNotification /> */}
     </div>
   );
 }

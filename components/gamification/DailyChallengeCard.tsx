@@ -43,9 +43,9 @@ const DailyChallengeCard: React.FC<DailyChallengeCardProps> = ({
   const hoursRemaining = Math.max(0, Math.floor(timeRemaining / (1000 * 60 * 60)));
 
   const getDifficultyColor = () => {
-    if (!challenge.template) return 'text-gray-500';
+    if (!(challenge as any).template) return 'text-gray-500';
     
-    switch (challenge.template.difficulty_level) {
+    switch ((challenge as any).template.difficulty_level) {
       case 'easy':
         return 'text-green-600';
       case 'medium':
@@ -58,9 +58,9 @@ const DailyChallengeCard: React.FC<DailyChallengeCardProps> = ({
   };
 
   const getDifficultyBadgeColor = () => {
-    if (!challenge.template) return 'bg-gray-100 text-gray-600';
+    if (!(challenge as any).template) return 'bg-gray-100 text-gray-600';
     
-    switch (challenge.template.difficulty_level) {
+    switch ((challenge as any).template.difficulty_level) {
       case 'easy':
         return 'bg-green-100 text-green-700';
       case 'medium':
@@ -73,7 +73,7 @@ const DailyChallengeCard: React.FC<DailyChallengeCardProps> = ({
   };
 
   const getChallengeIcon = () => {
-    if (!challenge.template) return <Target className="w-5 h-5" />;
+    if (!(challenge as any).template) return <Target className="w-5 h-5" />;
 
     const iconMap = {
       quick_learner: <Zap className="w-5 h-5" />,

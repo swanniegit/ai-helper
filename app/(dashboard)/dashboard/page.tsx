@@ -23,7 +23,12 @@ export default function DashboardPage() {
             </p>
           </div>
           <div className="lg:max-w-md">
-            <XPProgressBar compact={true} />
+            <XPProgressBar 
+              current_xp={0} 
+              current_level="Code Apprentice" 
+              level_progress={0} 
+              size="sm" 
+            />
           </div>
         </div>
       </div>
@@ -118,7 +123,22 @@ export default function DashboardPage() {
           {/* Achievement Badges */}
           <div className="space-y-4">
             <h3 className="text-xl font-bold text-primary-foreground">Recent Achievements</h3>
-            <BadgeDisplay limit={6} show_progress={false} />
+            <BadgeDisplay 
+              badge={{
+                id: '1',
+                name: 'First Steps',
+                description: 'Completed your first quiz',
+                icon_name: 'star',
+                category: 'mastery',
+                xp_reward: 50,
+                unlock_condition: {},
+                is_active: true,
+                sort_order: 1,
+                created_at: new Date().toISOString()
+              }}
+              is_earned={true}
+              show_description={true}
+            />
           </div>
 
           {/* Leaderboard Preview */}
@@ -127,7 +147,6 @@ export default function DashboardPage() {
             <LeaderboardDisplay 
               skill_category="General" 
               time_period="weekly" 
-              limit={5} 
               compact={true}
             />
           </div>

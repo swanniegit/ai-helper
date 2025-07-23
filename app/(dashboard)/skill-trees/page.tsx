@@ -172,7 +172,7 @@ export default function SkillTreesPage() {
                       {path.progress_percentage.toFixed(1)}%
                     </span>
                     {path.is_primary && (
-                      <Crown className="w-3 h-3 text-yellow-500" title="Primary Path" />
+                      <Crown className="w-3 h-3 text-yellow-500" />
                     )}
                   </div>
                 ))}
