@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '../lib/auth/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -36,9 +37,11 @@ export default function Navigation() {
       <Card className="bg-card/80 backdrop-blur-sm border-primary/20 shadow-lg">
         <CardHeader>
           <div className="flex items-center gap-3 mb-2">
-            <img 
+            <Image 
               src="/images/ai-mentor-logo.svg" 
               alt="AI Mentor" 
+              width={40}
+              height={32}
               className="w-10 h-8 rounded-md"
             />
             <CardTitle className="text-xl font-bold text-primary">

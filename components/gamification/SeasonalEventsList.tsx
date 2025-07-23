@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Calendar, Star, RefreshCw, Clock } from 'lucide-react';
 import { SeasonalEvent, UserSeasonalProgress } from '../../types/gamification';
 import { Card } from '../ui/card';
@@ -25,11 +25,7 @@ const SeasonalEventsList: React.FC<SeasonalEventsListProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    fetchSeasonalEvents();
-  }, []);
-
-  const fetchSeasonalEvents = async () => {
+  const fetchSeasonalEvents = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -69,7 +65,11 @@ const SeasonalEventsList: React.FC<SeasonalEventsListProps> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [show_upcoming]);
+
+  useEffect(() => {
+    fetchSeasonalEvents();
+  }, [fetchSeasonalEvents]);
 
   const handleRefresh = async () => {
     setRefreshing(true);

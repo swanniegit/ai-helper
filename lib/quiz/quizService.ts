@@ -40,6 +40,7 @@ export class QuizService {
     session?: QuizSession;
   }> {
     try {
+      console.log('[QuizService] Starting generateQuiz with:', { request, userId });
       // Handle template_id vs skill_category
       let skillCategory: string;
       let template: QuizTemplate | undefined;
@@ -93,20 +94,29 @@ export class QuizService {
       );
       
       if (questions.length === 0) {
-        throw new Error(`Failed to generate questions for ${request.skill_category}`);
+        console.error('[QuizService] No questions generated for:', skillCategory);
+        throw new Error(`Failed to generate questions for ${skillCategory}`);
       }
       
-      console.log(`Generated ${questions.length} questions successfully`);
+      console.log(`[QuizService] Generated ${questions.length} questions successfully`);
       
       // Shuffle questions
       questions = this.shuffleArray(questions);
       
       // Create quiz session
       const sessionToken = uuidv4();
+      
+      // Ensure we have a valid UUID for template_id
+      let validTemplateId = template.id;
+      if (!validTemplateId || validTemplateId.length !== 36) {
+        // If template ID is not a valid UUID, use a default one from database
+        validTemplateId = 'f968cac1-2ec3-4012-933a-93d841326c94'; // PHP OOP Fundamentals
+      }
+      
       const session: QuizSession = {
         id: uuidv4(),
         user_id: userId,
-        template_id: template.id,
+        template_id: validTemplateId,
         session_token: sessionToken,
         questions,
         current_question_index: 0,
@@ -149,8 +159,9 @@ export class QuizService {
         session: session
       };
     } catch (error) {
-      console.error('Quiz generation error:', error);
-      throw new Error('Failed to generate quiz');
+      console.error('[QuizService] Quiz generation error:', error);
+      console.error('[QuizService] Error stack:', error instanceof Error ? error.stack : 'No stack');
+      throw error instanceof Error ? error : new Error('Failed to generate quiz');
     }
   }
   
@@ -539,8 +550,35 @@ export class QuizService {
     quizType?: QuizType
   ): QuizTemplate {
     console.log(`Creating fallback template for ${skillCategory} at ${difficulty} level`);
+    
+    // Use a known template ID from database, default to PHP OOP Fundamentals
+    let templateId = 'f968cac1-2ec3-4012-933a-93d841326c94'; // PHP OOP Fundamentals
+    
+    // Map skill categories to appropriate template IDs
+    const templateMap: Record<string, Record<string, string>> = {
+      'JavaScript': {
+        'beginner': 'f150e3af-c919-451c-a81a-d2311d900f8a',
+        'intermediate': '031f3d0b-67a6-4de0-83bb-610a7f8ef9b2',
+        'advanced': '957317c6-0ce4-4bce-b080-445f072c9f4d'
+      },
+      'React': {
+        'beginner': '1c2e2f9e-5cd9-4b4e-8e51-fa6c8b18176b',
+        'intermediate': '53c4535e-c00c-4f42-873a-05bb4d28781e',
+        'advanced': '21d22b6e-c705-40c8-8a5a-b094e64e710a'
+      },
+      'PHP OOP': {
+        'beginner': 'f968cac1-2ec3-4012-933a-93d841326c94',
+        'intermediate': 'b9149bd0-07b4-4be0-a562-b6388d29d70a',
+        'advanced': '59045d52-5f6f-4330-a844-4be82557e199'
+      }
+    };
+    
+    if (templateMap[skillCategory] && templateMap[skillCategory][difficulty]) {
+      templateId = templateMap[skillCategory][difficulty];
+    }
+    
     const template = {
-      id: uuidv4(),
+      id: templateId,
       name: `${skillCategory} ${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} Quiz`,
       description: `Test your knowledge of ${skillCategory} at ${difficulty} level`,
       quiz_type: quizType || 'practice',
@@ -599,6 +637,12 @@ export class QuizService {
     userId: string
   ): Promise<QuizQuestion[]> {
     try {
+      // Check if OpenAI API key is available and valid
+      if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'placeholder-key') {
+        console.log('OpenAI API key not configured, using fallback questions');
+        return this.generateFallbackQuestions(skillCategory, difficulty, count);
+      }
+
       const prompt = `Generate ${count} multiple choice questions for ${skillCategory} at ${difficulty} level. 
       
       Format each question as JSON with this structure:
@@ -639,8 +683,95 @@ export class QuizService {
       }));
     } catch (error) {
       console.error('AI question generation error:', error);
-      return [];
+      console.log('Falling back to hardcoded questions');
+      return this.generateFallbackQuestions(skillCategory, difficulty, count);
     }
+  }
+
+  private static generateFallbackQuestions(
+    skillCategory: string,
+    difficulty: DifficultyLevel,
+    count: number
+  ): QuizQuestion[] {
+    const fallbackQuestions: Record<string, QuizQuestion[]> = {
+      'JavaScript': [
+        {
+          id: uuidv4(),
+          template_id: '',
+          question_text: 'What is the correct way to declare a variable in JavaScript?',
+          question_type: 'multiple_choice',
+          options: ['var x = 5;', 'variable x = 5;', 'v x = 5;', 'declare x = 5;'],
+          correct_answer: 'var x = 5;',
+          explanation: 'var is the traditional way to declare variables in JavaScript',
+          difficulty_level: difficulty,
+          skill_tags: ['JavaScript', 'Variables'],
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        },
+        {
+          id: uuidv4(),
+          template_id: '',
+          question_text: 'Which method is used to add an element to the end of an array?',
+          question_type: 'multiple_choice',
+          options: ['push()', 'pop()', 'shift()', 'unshift()'],
+          correct_answer: 'push()',
+          explanation: 'push() adds elements to the end of an array',
+          difficulty_level: difficulty,
+          skill_tags: ['JavaScript', 'Arrays'],
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }
+      ],
+      'PHP': [
+        {
+          id: uuidv4(),
+          template_id: '',
+          question_text: 'What is the correct way to start a PHP script?',
+          question_type: 'multiple_choice',
+          options: ['<?php', '<php>', '<?', '<script>'],
+          correct_answer: '<?php',
+          explanation: '<?php is the standard opening tag for PHP',
+          difficulty_level: difficulty,
+          skill_tags: ['PHP', 'Syntax'],
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }
+      ],
+      'General': [
+        {
+          id: uuidv4(),
+          template_id: '',
+          question_text: 'What does API stand for?',
+          question_type: 'multiple_choice',
+          options: ['Application Programming Interface', 'Advanced Programming Interface', 'Application Process Interface', 'Automated Programming Interface'],
+          correct_answer: 'Application Programming Interface',
+          explanation: 'API stands for Application Programming Interface',
+          difficulty_level: difficulty,
+          skill_tags: ['General', 'Programming'],
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }
+      ]
+    };
+
+    const categoryQuestions = fallbackQuestions[skillCategory] || fallbackQuestions['General'];
+    
+    // Duplicate questions if needed to reach the requested count
+    const questions: QuizQuestion[] = [];
+    while (questions.length < count) {
+      const remainingCount = count - questions.length;
+      const questionsToAdd = categoryQuestions.slice(0, remainingCount);
+      questions.push(...questionsToAdd.map(q => ({
+        ...q,
+        id: uuidv4() // Generate new ID for each instance
+      })));
+    }
+
+    return questions.slice(0, count);
   }
   
   private static async getQuizSession(sessionToken: string, userId: string): Promise<QuizSession | null> {

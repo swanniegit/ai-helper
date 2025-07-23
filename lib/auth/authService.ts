@@ -57,6 +57,24 @@ export class AuthService {
   private static readonly SALT_ROUNDS = 12;
 
   /**
+   * Validate IP address format for PostgreSQL INET type
+   */
+  private static validateIpAddress(ipAddress?: string): string | null {
+    if (!ipAddress) return null;
+    
+    // Simple regex for IPv4 and IPv6 validation
+    const ipv4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+    const ipv6Regex = /^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/;
+    
+    if (ipv4Regex.test(ipAddress) || ipv6Regex.test(ipAddress)) {
+      return ipAddress;
+    }
+    
+    // Return null for invalid IP addresses (PostgreSQL will accept NULL)
+    return null;
+  }
+
+  /**
    * Register a new user
    */
   static async register(email: string, password: string, firstName?: string, lastName?: string): Promise<AuthResult> {
@@ -161,13 +179,16 @@ export class AuthService {
 
     const expiresAt = new Date(Date.now() + this.SESSION_DURATION);
 
+    // Validate IP address format for PostgreSQL INET type
+    const validIpAddress = this.validateIpAddress(ipAddress);
+
     const { data: session, error } = await supabase
       .from('user_sessions')
       .insert({
         user_id: userId,
         session_token: sessionToken,
         expires_at: expiresAt.toISOString(),
-        ip_address: ipAddress,
+        ip_address: validIpAddress,
         user_agent: userAgent,
         is_active: true
       })

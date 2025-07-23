@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { 
   Lock, 
   CheckCircle2, 
@@ -40,11 +40,7 @@ const SkillTreeViewer: React.FC<SkillTreeViewerProps> = ({
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
   const svgRef = useRef<SVGSVGElement>(null);
 
-  useEffect(() => {
-    fetchSkillTree();
-  }, [tree_path]);
-
-  const fetchSkillTree = async () => {
+  const fetchSkillTree = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -69,7 +65,11 @@ const SkillTreeViewer: React.FC<SkillTreeViewerProps> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [tree_path]);
+
+  useEffect(() => {
+    fetchSkillTree();
+  }, [fetchSkillTree]);
 
   const getNodeStatusColor = (status: SkillNodeStatus) => {
     switch (status) {

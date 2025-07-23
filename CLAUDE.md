@@ -48,6 +48,12 @@ npm run test:watch
 
 # Run tests with coverage
 npm run test:coverage
+
+# Run a single test file
+npm test -- --testPathPattern=<filename>
+
+# Run tests matching a specific pattern
+npm test -- --testNamePattern="<test name pattern>"
 ```
 
 ### Docker Commands
@@ -102,9 +108,11 @@ npm run logs:debug
   - `ui/` - shadcn/ui base components (Button, Card, Dialog, Input)
   - Feature components (AIMentorChat, LearningPathWizard, Navigation)
   - `quiz/` - Quiz system components
+  - `gamification/` - Gamification system components (avatars, achievements, quests)
 - `lib/` - Business logic and services:
   - `auth/` - Custom JWT authentication with React Context
   - `mentor/`, `quiz/` - Feature-specific services
+  - `gamification/` - Gamification services (avatars, quests, social features)
   - `supabaseClient.ts` - Database configuration
 - `types/` - Comprehensive TypeScript interfaces
 - `database/` - PostgreSQL schema, migrations, and RLS fix scripts
@@ -135,6 +143,15 @@ npm run logs:debug
 - **Multiple question types** and difficulty levels
 - **Session management** with database persistence
 - **Quiz templates** with fallback systems for reliability
+
+### Gamification System Architecture
+- **Avatar system** with customization and presets
+- **XP and leveling** with progress tracking and achievements
+- **Daily challenges** and streak tracking
+- **Social features** including guilds and leaderboards  
+- **Quest system** with NPC dialogue and interactive activities
+- **Seasonal events** with time-limited challenges
+- **Skill trees** for structured learning progression
 
 ## Database Schema
 
@@ -215,6 +232,27 @@ JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
 - `GET /api/quiz/progress` - Track quiz progress and analytics
 - `GET /api/quiz/templates` - Retrieve quiz templates with fallbacks
 - `POST /api/quiz/session` - Manage quiz session state
+
+### Gamification
+- `GET /api/gamification/progress` - Get user's XP, level, and achievements
+- `POST /api/gamification/xp` - Award XP for completed activities
+- `GET /api/gamification/achievements` - Retrieve user achievements
+- `GET /api/gamification/streaks` - Track daily activity streaks
+- `POST /api/gamification/init` - Initialize gamification for new users
+
+### Social & Competition
+- `GET /api/social/leaderboard` - Global and guild leaderboards
+- `GET /api/social/guilds` - Available guilds
+- `POST /api/social/guilds/join` - Join a guild
+- `GET /api/social/challenges/daily` - Daily challenges
+- `POST /api/social/challenges/complete` - Complete challenge
+
+### Quests & Skill Trees
+- `GET /api/quests` - Available quests
+- `POST /api/quests/start` - Start a quest
+- `GET /api/quests/[questId]/details` - Quest details
+- `GET /api/skill-tree/paths` - Available skill trees
+- `POST /api/skill-tree/update-progress` - Update learning progress
 
 ## Critical Configuration
 

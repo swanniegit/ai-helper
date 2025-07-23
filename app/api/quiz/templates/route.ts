@@ -7,29 +7,11 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
   try {
-    // Get session token from cookies
-    const sessionToken = req.cookies.get('session_token')?.value;
-    if (!sessionToken) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
-
-    // Validate session
-    const authResult = await AuthService.validateSession(sessionToken);
-    if (!authResult.success || !authResult.user) {
-      return NextResponse.json(
-        { error: 'Invalid session' },
-        { status: 401 }
-      );
-    }
-
     // Get query parameters
     const { searchParams } = new URL(req.url);
     const skillCategory = searchParams.get('skill_category');
 
-    // Get quiz templates
+    // Get quiz templates (no authentication required for browsing templates)
     const templates = await QuizService.getQuizTemplates(skillCategory || undefined);
 
     return NextResponse.json({

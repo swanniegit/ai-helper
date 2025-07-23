@@ -137,31 +137,40 @@ Format the response as JSON with this exact structure:
 
 Make the plan practical, achievable, and tailored to the individual's current skill levels and career goals. If a career framework is provided, ensure the plan aligns with the specific skills and progression path outlined in the framework.`;
 
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4',
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 0.7,
-      max_tokens: 2000,
-    });
-
-    const content = completion.choices[0].message?.content;
-    
-    if (!content) {
-      throw new Error('No response from OpenAI');
-    }
-
-    // Try to parse the JSON response
+    // Generate the learning plan using OpenAI or fallback
     let plan: GeneratedPlan;
+
     try {
-      plan = JSON.parse(content);
-    } catch (parseError) {
-      // If JSON parsing fails, create a fallback plan
-      console.warn('Failed to parse OpenAI response as JSON, using fallback plan');
+      // Check if OpenAI API key is available and valid
+      if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'placeholder-key') {
+        console.log('OpenAI API key not configured, using fallback learning plan');
+        plan = createFallbackPlan(skills, careerGoals, timelineMonths);
+      } else {
+        const completion = await openai.chat.completions.create({
+          model: 'gpt-4',
+          messages: [{ role: 'user', content: prompt }],
+          temperature: 0.7,
+          max_tokens: 2000,
+        });
+
+        const content = completion.choices[0].message?.content;
+        
+        if (!content) {
+          throw new Error('No response from OpenAI');
+        }
+
+        // Try to parse the JSON response
+        plan = JSON.parse(content);
+      }
+    } catch (aiError: any) {
+      console.error('AI learning plan generation failed:', aiError);
+      console.log('Falling back to hardcoded learning plan');
       plan = createFallbackPlan(skills, careerGoals, timelineMonths);
     }
 
     // Validate the plan structure
     if (!plan.quarters || !Array.isArray(plan.quarters)) {
+      console.warn('Invalid plan structure, using fallback');
       plan = createFallbackPlan(skills, careerGoals, timelineMonths);
     }
 
