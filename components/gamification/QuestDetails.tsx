@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -113,11 +113,7 @@ export default function QuestDetails({
   const questData = is_user_quest ? (quest as UserQuest).quest : (quest as Quest);
   const userQuestData = is_user_quest ? (quest as UserQuest) : null;
 
-  useEffect(() => {
-    fetchQuestDetails();
-  }, [questData.id]);
-
-  const fetchQuestDetails = async () => {
+  const fetchQuestDetails = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(`/api/quests/${questData.id}/details`, {
@@ -137,7 +133,11 @@ export default function QuestDetails({
     } finally {
       setLoading(false);
     }
-  };
+  }, [questData.id]);
+
+  useEffect(() => {
+    fetchQuestDetails();
+  }, [fetchQuestDetails]);
 
   const getQuestTypeIcon = (questType: string) => {
     switch (questType) {

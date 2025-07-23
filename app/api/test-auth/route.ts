@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
       success: true,
       hasSessionToken: !!sessionToken,
       sessionTokenLength: sessionToken?.length || 0,
-      cookies: Object.fromEntries(req.cookies.entries()),
+      cookies: Object.fromEntries(req.cookies.getAll().map(cookie => [cookie.name, cookie.value])),
       message: sessionToken ? 'User has session token' : 'No session token found - user needs to login'
     });
   } catch (error) {
