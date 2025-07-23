@@ -17,16 +17,27 @@ export class QuestService {
       // First, unlock any new quests the user may be eligible for
       await supabase.rpc('unlock_available_quests', { p_user_id: userId });
 
-      // Get available quests
+      // Get available quests for the user
+      const { data: userQuests, error: userQuestsError } = await supabase
+        .from('user_quests')
+        .select('quest_id')
+        .eq('user_id', userId)
+        .eq('status', 'available');
+
+      if (userQuestsError) {
+        throw new Error(`Failed to fetch user quests: ${userQuestsError.message}`);
+      }
+
+      if (!userQuests || userQuests.length === 0) {
+        return [];
+      }
+
+      // Get the actual quest data for available quests
+      const questIds = userQuests.map(uq => uq.quest_id);
       const { data: quests, error } = await supabase
         .from('quests')
         .select('*')
-        .eq('id', supabase
-          .from('user_quests')
-          .select('quest_id')
-          .eq('user_id', userId)
-          .eq('status', 'available')
-        );
+        .in('id', questIds);
 
       if (error) {
         throw new Error(`Failed to fetch available quests: ${error.message}`);

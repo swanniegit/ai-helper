@@ -1,5 +1,5 @@
 -- Complete Database Schema for AI Helper Learning Path System
--- This file contains all necessary tables for the application to function
+-- This file contains all necessary tables, views, and functions for the application to function
 
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -902,6 +902,321 @@ CREATE POLICY "Users can manage own daily challenges" ON public.daily_challenges
 -- Leaderboard entries policies
 CREATE POLICY "Users can view leaderboard entries" ON public.leaderboard_entries FOR SELECT USING (true);
 CREATE POLICY "Users can manage own leaderboard entries" ON public.leaderboard_entries FOR ALL USING (auth.uid() = user_id);
+
+-- ============================================================================
+-- AVATAR SYSTEM TABLES AND VIEWS
+-- ============================================================================
+
+-- Avatar cosmetic items
+CREATE TABLE IF NOT EXISTS public.avatar_cosmetic_items (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  item_key TEXT UNIQUE NOT NULL,
+  item_name TEXT NOT NULL,
+  item_description TEXT NOT NULL,
+  item_category TEXT NOT NULL CHECK (item_category IN ('hair_style', 'hair_color', 'clothing_style', 'clothing_color', 'accessories', 'background_theme')),
+  required_level INTEGER DEFAULT 1,
+  required_xp INTEGER DEFAULT 0,
+  required_achievement_id UUID,
+  required_skill_completion TEXT,
+  unlock_cost INTEGER DEFAULT 0,
+  rarity TEXT DEFAULT 'common' CHECK (rarity IN ('common', 'uncommon', 'rare', 'epic', 'legendary')),
+  is_default BOOLEAN DEFAULT false,
+  is_premium BOOLEAN DEFAULT false,
+  season_exclusive TEXT,
+  item_data JSONB NOT NULL,
+  preview_image TEXT,
+  sort_order INTEGER DEFAULT 0,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- User avatar items
+CREATE TABLE IF NOT EXISTS public.user_avatar_items (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES public.users(id) ON DELETE CASCADE,
+  item_id UUID REFERENCES public.avatar_cosmetic_items(id) ON DELETE CASCADE,
+  unlocked_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  unlock_method TEXT DEFAULT 'achievement',
+  UNIQUE(user_id, item_id)
+);
+
+-- Avatar presets
+CREATE TABLE IF NOT EXISTS public.avatar_presets (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  preset_key TEXT UNIQUE NOT NULL,
+  preset_name TEXT NOT NULL,
+  preset_description TEXT NOT NULL,
+  avatar_type TEXT NOT NULL CHECK (avatar_type IN ('developer', 'architect', 'specialist', 'mentor')),
+  default_customization JSONB NOT NULL,
+  required_level INTEGER DEFAULT 1,
+  required_skills TEXT[],
+  is_starter_preset BOOLEAN DEFAULT false,
+  display_order INTEGER DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Avatar titles
+CREATE TABLE IF NOT EXISTS public.avatar_titles (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  title_key TEXT UNIQUE NOT NULL,
+  title_name TEXT NOT NULL,
+  title_description TEXT NOT NULL,
+  title_type TEXT DEFAULT 'achievement' CHECK (title_type IN ('achievement', 'skill', 'seasonal', 'social', 'special')),
+  required_achievement_id UUID,
+  required_skill_path TEXT,
+  required_guild_rank INTEGER,
+  required_seasonal_event TEXT,
+  custom_requirement TEXT,
+  title_color TEXT DEFAULT 'blue',
+  title_rarity TEXT DEFAULT 'common' CHECK (title_rarity IN ('common', 'uncommon', 'rare', 'epic', 'legendary')),
+  title_icon TEXT DEFAULT 'award',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- User avatar titles
+CREATE TABLE IF NOT EXISTS public.user_avatar_titles (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES public.users(id) ON DELETE CASCADE,
+  title_id UUID REFERENCES public.avatar_titles(id) ON DELETE CASCADE,
+  earned_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  is_active BOOLEAN DEFAULT false,
+  UNIQUE(user_id, title_id)
+);
+
+-- Avatar interactions
+CREATE TABLE IF NOT EXISTS public.avatar_interactions (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  from_user_id UUID REFERENCES public.users(id) ON DELETE CASCADE,
+  to_user_id UUID REFERENCES public.users(id) ON DELETE CASCADE,
+  interaction_type TEXT NOT NULL CHECK (interaction_type IN ('wave', 'high_five', 'thumbs_up', 'clap', 'dance')),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Avatar system indexes
+CREATE INDEX IF NOT EXISTS idx_avatar_cosmetic_items_category ON public.avatar_cosmetic_items(item_category);
+CREATE INDEX IF NOT EXISTS idx_avatar_cosmetic_items_rarity ON public.avatar_cosmetic_items(rarity);
+CREATE INDEX IF NOT EXISTS idx_user_avatar_items_user ON public.user_avatar_items(user_id);
+CREATE INDEX IF NOT EXISTS idx_avatar_titles_type ON public.avatar_titles(title_type);
+CREATE INDEX IF NOT EXISTS idx_user_avatar_titles_user ON public.user_avatar_titles(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_avatar_titles_active ON public.user_avatar_titles(user_id, is_active) WHERE is_active = true;
+CREATE INDEX IF NOT EXISTS idx_avatar_interactions_from ON public.avatar_interactions(from_user_id);
+CREATE INDEX IF NOT EXISTS idx_avatar_interactions_to ON public.avatar_interactions(to_user_id);
+CREATE INDEX IF NOT EXISTS idx_avatar_interactions_created ON public.avatar_interactions(created_at);
+
+-- Avatar system RLS
+ALTER TABLE public.avatar_cosmetic_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_avatar_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.avatar_presets ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.avatar_titles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_avatar_titles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.avatar_interactions ENABLE ROW LEVEL SECURITY;
+
+-- Avatar system policies
+CREATE POLICY "Anyone can view cosmetic items" ON public.avatar_cosmetic_items FOR SELECT USING (true);
+CREATE POLICY "Users can manage their avatar items" ON public.user_avatar_items FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Anyone can view avatar presets" ON public.avatar_presets FOR SELECT USING (true);
+CREATE POLICY "Anyone can view avatar titles" ON public.avatar_titles FOR SELECT USING (true);
+CREATE POLICY "Users can manage their avatar titles" ON public.user_avatar_titles FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Users can view own avatar interactions" ON public.avatar_interactions FOR SELECT USING (auth.uid() = from_user_id OR auth.uid() = to_user_id);
+CREATE POLICY "Users can create avatar interactions" ON public.avatar_interactions FOR INSERT WITH CHECK (auth.uid() = from_user_id);
+
+-- Avatar system functions
+CREATE OR REPLACE FUNCTION unlock_cosmetic_items_for_user(p_user_id UUID)
+RETURNS VOID AS $$
+BEGIN
+  -- Unlock default items for new users
+  INSERT INTO user_avatar_items (user_id, item_id, unlock_method)
+  SELECT p_user_id, id, 'default'
+  FROM avatar_cosmetic_items
+  WHERE is_default = true
+  AND id NOT IN (
+    SELECT item_id FROM user_avatar_items WHERE user_id = p_user_id
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION calculate_avatar_level(p_total_xp INTEGER)
+RETURNS INTEGER AS $$
+BEGIN
+  -- Simple level calculation: every 1000 XP = 1 level
+  RETURN GREATEST(1, (p_total_xp / 1000) + 1);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION update_avatar_timestamp()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Avatar system triggers
+CREATE TRIGGER trigger_update_avatar_cosmetic_items_timestamp
+  BEFORE UPDATE ON public.avatar_cosmetic_items
+  FOR EACH ROW
+  EXECUTE FUNCTION update_avatar_timestamp();
+
+-- Avatar system views
+CREATE OR REPLACE VIEW user_avatar_complete AS
+SELECT 
+  u.id as user_id,
+  u.first_name,
+  u.last_name,
+  u.avatar_url,
+  ux.total_xp,
+  ux.current_level,
+  calculate_avatar_level(ux.total_xp) as avatar_level,
+  ua.title_id as active_title_id,
+  at.title_name as active_title_name,
+  at.title_color as active_title_color,
+  at.title_rarity as active_title_rarity,
+  at.title_icon as active_title_icon
+FROM users u
+LEFT JOIN user_xp ux ON u.id = ux.user_id
+LEFT JOIN user_avatar_titles ua ON u.id = ua.user_id AND ua.is_active = true
+LEFT JOIN avatar_titles at ON ua.title_id = at.id;
+
+CREATE OR REPLACE VIEW user_cosmetic_items_status AS
+SELECT 
+  aci.id,
+  aci.item_key,
+  aci.item_name,
+  aci.item_category,
+  aci.item_data,
+  aci.rarity,
+  aci.required_level,
+  aci.required_xp,
+  aci.is_default,
+  CASE 
+    WHEN uai.id IS NOT NULL THEN true
+    ELSE false
+  END as is_unlocked,
+  uai.unlocked_at,
+  uai.unlock_method,
+  CASE 
+    WHEN uai.id IS NOT NULL THEN true
+    WHEN ux.total_xp >= aci.required_xp AND ux.current_level >= aci.required_level THEN true
+    ELSE false
+  END as can_unlock
+FROM avatar_cosmetic_items aci
+LEFT JOIN user_avatar_items uai ON uai.item_id = aci.id
+LEFT JOIN user_xp ux ON uai.user_id = ux.user_id
+WHERE aci.is_active = true;
+
+-- Avatar system RPC function
+CREATE OR REPLACE FUNCTION get_user_cosmetic_items_status(p_user_id UUID)
+RETURNS TABLE (
+  id UUID,
+  item_key TEXT,
+  item_name TEXT,
+  item_category TEXT,
+  item_data JSONB,
+  rarity TEXT,
+  required_level INTEGER,
+  required_xp INTEGER,
+  is_unlocked BOOLEAN,
+  unlocked_at TIMESTAMP WITH TIME ZONE,
+  unlock_method TEXT,
+  can_unlock BOOLEAN
+) AS $$
+BEGIN
+  RETURN QUERY
+  SELECT 
+    aci.id,
+    aci.item_key,
+    aci.item_name,
+    aci.item_category,
+    aci.item_data,
+    aci.rarity,
+    aci.required_level,
+    aci.required_xp,
+    CASE WHEN uai.id IS NOT NULL THEN true ELSE false END as is_unlocked,
+    uai.unlocked_at,
+    uai.unlock_method,
+    CASE 
+      WHEN uai.id IS NOT NULL THEN true
+      WHEN ux.total_xp >= aci.required_xp AND ux.current_level >= aci.required_level THEN true
+      ELSE false
+    END as can_unlock
+  FROM avatar_cosmetic_items aci
+  LEFT JOIN user_avatar_items uai ON uai.item_id = aci.id AND uai.user_id = p_user_id
+  LEFT JOIN user_xp ux ON p_user_id = ux.user_id
+  WHERE aci.is_active = true;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- ============================================================================
+-- SKILL TREE VIEWS AND FUNCTIONS
+-- ============================================================================
+
+-- Skill nodes with prerequisites view
+CREATE OR REPLACE VIEW skill_nodes_with_prerequisites AS
+SELECT 
+  stn.id,
+  stn.node_key,
+  stn.node_name,
+  stn.node_description,
+  stn.skill_category,
+  stn.tree_path,
+  stn.tier,
+  stn.position_x,
+  stn.position_y,
+  stn.node_order,
+  stn.parent_node_id,
+  stn.required_xp,
+  stn.required_level,
+  stn.xp_reward,
+  stn.is_active,
+  stn.created_at,
+  stn.updated_at,
+  CASE 
+    WHEN stn.parent_node_id IS NOT NULL THEN 
+      json_build_object(
+        'node_key', parent.node_key,
+        'is_required', true
+      )
+    ELSE NULL
+  END as prerequisites
+FROM skill_tree_nodes stn
+LEFT JOIN skill_tree_nodes parent ON stn.parent_node_id = parent.id
+WHERE stn.is_active = true;
+
+-- ============================================================================
+-- QUEST SYSTEM FUNCTIONS
+-- ============================================================================
+
+-- Function to unlock available quests for a user
+CREATE OR REPLACE FUNCTION unlock_available_quests(p_user_id UUID)
+RETURNS VOID AS $$
+BEGIN
+  -- Insert available quests for user if they don't exist
+  INSERT INTO user_quests (user_id, quest_template_id, status, created_at, updated_at)
+  SELECT 
+    p_user_id,
+    qt.id,
+    'available',
+    NOW(),
+    NOW()
+  FROM quest_templates qt
+  WHERE qt.is_active = true
+  AND qt.id NOT IN (
+    SELECT quest_template_id FROM user_quests WHERE user_id = p_user_id
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Sample avatar data
+INSERT INTO public.avatar_cosmetic_items (item_key, item_name, item_description, item_category, rarity, is_default, item_data) VALUES
+('default_hair', 'Classic Hair', 'A simple, professional hairstyle', 'hair_style', 'common', true, '{"style": "classic", "color": "brown"}'),
+('default_clothing', 'Business Casual', 'Professional attire for the workplace', 'clothing_style', 'common', true, '{"style": "business_casual", "color": "navy"}'),
+('default_background', 'Office Space', 'A clean office environment', 'background_theme', 'common', true, '{"theme": "office", "lighting": "natural"}');
+
+INSERT INTO public.avatar_titles (title_key, title_name, title_description, title_type, title_color, title_rarity, title_icon) VALUES
+('code_apprentice', 'Code Apprentice', 'Just starting your coding journey', 'achievement', 'blue', 'common', 'star'),
+('skill_learner', 'Skill Learner', 'Completed your first skill', 'skill', 'green', 'uncommon', 'book'),
+('quiz_master', 'Quiz Master', 'Completed 10 quizzes', 'achievement', 'purple', 'rare', 'trophy');
 
 -- Success message
 SELECT 'Complete database schema setup completed successfully!' as status; 
