@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AuthService } from '../../../../lib/auth/authService';
 import { MentorService, MentorContext, MentorMessage } from '../../../../lib/mentor/mentorService';
+import { GamificationService } from '../../../../lib/gamification/gamificationService';
 import { createClient } from '@supabase/supabase-js';
 
 // Force dynamic rendering for this route
@@ -54,11 +55,10 @@ export async function POST(req: NextRequest) {
     switch (action) {
       case 'chat':
         return await handleChatMessage(message, context, result.user!.id);
-      case 'code-review':
-        return await handleCodeReview(message, context);
-
+      case 'interview-prep':
+        return await handleInterviewPrep(message, context, result.user!.id);
       case 'daily-motivation':
-        return await handleDailyMotivation(context);
+        return await handleDailyMotivation(context, result.user!.id);
       default:
         return await handleChatMessage(message, context, result.user!.id);
     }
@@ -185,6 +185,38 @@ async function handleChatMessage(message: string, context: MentorContext, userId
       }
     ]);
 
+    // Award XP for mentor chat interaction
+    try {
+      // Update mentor chat streak
+      await GamificationService.updateStreak(userId, 'mentor_chat');
+      
+      // Award XP for chat session
+      const xpAward = await GamificationService.awardXP(userId, {
+        action: 'mentor_chat_session',
+        metadata: {
+          message_length: message.length,
+          skill_mentioned: extractSkillMentioned(message),
+          career_path: context.careerPath,
+          confidence_level: response.confidence,
+          session_type: 'general_chat'
+        },
+        source_type: 'mentor_chat'
+      });
+
+      console.log(`Awarded ${xpAward.xp_amount} XP to user ${userId} for mentor chat`);
+      
+      // Add gamification data to response
+      (response as any).gamification = {
+        xp_awarded: xpAward.xp_amount,
+        level_up: xpAward.level_up,
+        achievements_unlocked: xpAward.achievements_unlocked,
+        new_total_xp: xpAward.new_total_xp
+      };
+    } catch (gamificationError) {
+      console.error('Gamification error during mentor chat:', gamificationError);
+      // Don&apos;t fail the chat if gamification fails
+    }
+
     return NextResponse.json({
       success: true,
       response,
@@ -204,31 +236,76 @@ async function handleChatMessage(message: string, context: MentorContext, userId
   }
 }
 
-async function handleCodeReview(message: string, context: MentorContext) {
+async function handleInterviewPrep(message: string, context: MentorContext, userId: string) {
   try {
-    // Extract code and language from message
-    const codeMatch = message.match(/```(\w+)?\n([\s\S]*?)```/);
-    if (!codeMatch) {
-      return NextResponse.json(
-        { error: 'Please provide code in a code block with language specification' },
-        { status: 400 }
-      );
+    // Generate interview prep response using existing mentor service
+    const response = await MentorService.generateResponse(
+      `Help me prepare for a ${context.careerPath} developer interview. ${message}`,
+      context,
+      []
+    );
+
+    // Save conversation to database
+    await supabase.from('mentor_conversations').insert([
+      {
+        user_id: userId,
+        role: 'user',
+        content: message,
+        context: { session_type: 'interview_prep' }
+      },
+      {
+        user_id: userId,
+        role: 'assistant',
+        content: response.message,
+        context: { 
+          skillFocus: response.skillFocus,
+          confidence: response.confidence,
+          session_type: 'interview_prep'
+        }
+      }
+    ]);
+
+    // Award XP for interview prep session
+    try {
+      const xpAward = await GamificationService.awardXP(userId, {
+        action: 'interview_prep_session',
+        metadata: {
+          career_path: context.careerPath,
+          current_level: context.currentLevel,
+          target_level: context.targetLevel,
+          confidence_level: response.confidence,
+          session_type: 'interview_prep'
+        },
+        source_type: 'mentor_chat'
+      });
+
+      console.log(`Awarded ${xpAward.xp_amount} XP to user ${userId} for interview prep`);
+      
+      // Add gamification data to response
+      (response as any).gamification = {
+        xp_awarded: xpAward.xp_amount,
+        level_up: xpAward.level_up,
+        achievements_unlocked: xpAward.achievements_unlocked,
+        new_total_xp: xpAward.new_total_xp
+      };
+    } catch (gamificationError) {
+      console.error('Gamification error during interview prep:', gamificationError);
     }
-
-    const language = (codeMatch[1] || 'PHP') as 'PHP' | 'SQL' | 'PL/SQL';
-    const code = codeMatch[2];
-
-    const review = await MentorService.reviewCode(code, language, context);
 
     return NextResponse.json({
       success: true,
-      review,
-      language
+      response,
+      context: {
+        careerPath: context.careerPath,
+        currentLevel: context.currentLevel,
+        targetLevel: context.targetLevel,
+        session_type: 'interview_prep'
+      }
     });
   } catch (error) {
-    console.error('Code review error:', error);
+    console.error('Interview prep error:', error);
     return NextResponse.json(
-      { error: 'Failed to review code' },
+      { error: 'Failed to generate interview prep' },
       { status: 500 }
     );
   }
@@ -236,9 +313,54 @@ async function handleCodeReview(message: string, context: MentorContext) {
 
 
 
-async function handleDailyMotivation(context: MentorContext) {
+async function handleDailyMotivation(context: MentorContext, userId: string) {
   try {
     const motivation = await MentorService.generateDailyMotivation(context);
+
+    // Save motivation session to database
+    await supabase.from('mentor_conversations').insert([
+      {
+        user_id: userId,
+        role: 'user',
+        content: 'Daily motivation request',
+        context: { session_type: 'daily_motivation' }
+      },
+      {
+        user_id: userId,
+        role: 'assistant',
+        content: motivation.message,
+        context: { 
+          session_type: 'daily_motivation',
+          motivation_type: motivation.type || 'general'
+        }
+      }
+    ]);
+
+    // Award XP for motivation session
+    try {
+      const xpAward = await GamificationService.awardXP(userId, {
+        action: 'motivation_session',
+        metadata: {
+          career_path: context.careerPath,
+          current_level: context.currentLevel,
+          progress_percentage: (context.learningProgress.completedMilestones / context.learningProgress.totalMilestones) * 100,
+          session_type: 'daily_motivation'
+        },
+        source_type: 'mentor_chat'
+      });
+
+      console.log(`Awarded ${xpAward.xp_amount} XP to user ${userId} for daily motivation`);
+      
+      // Add gamification data to response
+      (motivation as any).gamification = {
+        xp_awarded: xpAward.xp_amount,
+        level_up: xpAward.level_up,
+        achievements_unlocked: xpAward.achievements_unlocked,
+        new_total_xp: xpAward.new_total_xp
+      };
+    } catch (gamificationError) {
+      console.error('Gamification error during motivation session:', gamificationError);
+    }
 
     return NextResponse.json({
       success: true,

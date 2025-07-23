@@ -15,6 +15,7 @@ import {
   QuizType,
   QuestionType
 } from '../../types/quiz';
+import { GamificationService } from '../gamification/gamificationService';
 
 // Use service role key for server-side operations to bypass RLS
 const supabase = createClient(
@@ -36,17 +37,32 @@ export class QuizService {
     questions: QuizQuestion[];
     time_limit_minutes: number;
     total_questions: number;
+    session?: QuizSession;
   }> {
     try {
       // Handle template_id vs skill_category
       let skillCategory: string;
-      let template: QuizTemplate;
+      let template: QuizTemplate | undefined;
       
       if (request.template_id) {
-        // Load template from database (fallback since we're not using DB templates)
-        template = this.createFallbackTemplateFromId(request.template_id);
-        skillCategory = template.skill_category;
-        console.log(`Starting quiz generation from template ${request.template_id} for ${skillCategory}`);
+        // Use the provided template_id from the database
+        const { data: dbTemplate, error } = await supabase
+          .from('quiz_templates')
+          .select('*')
+          .eq('id', request.template_id)
+          .single();
+        
+        if (dbTemplate && !error) {
+          template = dbTemplate as QuizTemplate;
+          skillCategory = template.skill_category;
+          console.log(`Using database template ${request.template_id} for ${skillCategory}`);
+        } else {
+          console.log(`Template ${request.template_id} not found in database, creating fallback`);
+          template = this.createFallbackTemplateFromId(request.template_id);
+          skillCategory = template.skill_category;
+          // Use the actual template_id from the request
+          template.id = request.template_id;
+        }
       } else {
         skillCategory = request.skill_category;
         console.log(`Starting quiz generation for ${skillCategory}`);
@@ -227,6 +243,66 @@ export class QuizService {
           answers: request.answers
         })
         .eq('session_token', request.session_token);
+
+      // Award XP and update gamification
+      try {
+        // Update quiz streak
+        await GamificationService.updateStreak(userId, 'quiz');
+        
+        // Prepare XP metadata
+        const xpMetadata = {
+          quiz_id: result.id,
+          skill_category: result.skill_category,
+          difficulty_level: result.difficulty_level,
+          percentage_score: percentageScore,
+          is_perfect_score: percentageScore >= 100,
+          time_taken: request.time_taken_seconds,
+          completion_time: request.time_taken_seconds,
+          score_improvement: await this.calculateScoreImprovement(userId, result.skill_category, percentageScore)
+        };
+
+        // Award base completion XP
+        let xpAward = await GamificationService.awardXP(userId, {
+          action: 'quiz_completed',
+          metadata: xpMetadata,
+          source_id: result.id,
+          source_type: 'quiz'
+        });
+
+        // Award perfect score bonus if applicable
+        if (percentageScore >= 100) {
+          const perfectScoreAward = await GamificationService.awardXP(userId, {
+            action: 'perfect_quiz_score',
+            metadata: xpMetadata,
+            source_id: result.id,
+            source_type: 'quiz'
+          });
+          
+          // Combine XP awards for response
+          xpAward = {
+            ...perfectScoreAward,
+            xp_amount: xpAward.xp_amount + perfectScoreAward.xp_amount,
+            new_total_xp: perfectScoreAward.new_total_xp,
+            achievements_unlocked: [
+              ...(xpAward.achievements_unlocked || []),
+              ...(perfectScoreAward.achievements_unlocked || [])
+            ]
+          };
+        }
+
+        // Add gamification data to result
+        (result as any).gamification = {
+          xp_awarded: xpAward.xp_amount,
+          level_up: xpAward.level_up,
+          achievements_unlocked: xpAward.achievements_unlocked,
+          new_total_xp: xpAward.new_total_xp
+        };
+
+        console.log(`Awarded ${xpAward.xp_amount} XP to user ${userId} for quiz completion`);
+      } catch (gamificationError) {
+        console.error('Gamification error during quiz submission:', gamificationError);
+        // Don&apos;t fail the quiz submission if gamification fails
+      }
       
       return { result, feedback, analytics };
     } catch (error) {
@@ -680,6 +756,38 @@ export class QuizService {
         skill_gaps: [],
         estimated_improvement_time: '1-2 weeks'
       };
+    }
+  }
+
+  /**
+   * Calculate score improvement compared to previous attempts
+   */
+  private static async calculateScoreImprovement(
+    userId: string, 
+    skillCategory: string, 
+    currentScore: number
+  ): Promise<number> {
+    try {
+      // Get the most recent quiz result for this skill category
+      const { data: previousResults, error } = await supabase
+        .from('quiz_results')
+        .select('percentage_score')
+        .eq('user_id', userId)
+        .eq('skill_category', skillCategory)
+        .order('taken_at', { ascending: false })
+        .limit(2); // Get current and previous
+
+      if (error || !previousResults || previousResults.length < 2) {
+        return 0; // No previous result to compare
+      }
+
+      const previousScore = previousResults[1].percentage_score; // Second most recent
+      const improvement = currentScore - previousScore;
+      
+      return Math.max(0, improvement); // Only return positive improvements
+    } catch (error) {
+      console.error('Calculate score improvement error:', error);
+      return 0;
     }
   }
   

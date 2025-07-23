@@ -69,26 +69,45 @@ npm run docker:build
 
 # Run production Docker container
 npm run docker:run
+
+# Debug mode with inspector
+npm run dev:debug
+npm run docker:debug
+
+# View container logs
+npm run logs
+npm run logs:debug
 ```
 
 ## Architecture
 
 ### Tech Stack
-- **Next.js 14** with App Router
-- **TypeScript** for type safety
-- **Tailwind CSS** for styling
-- **Supabase** for database, authentication, and RLS
+- **Next.js 14** with App Router (standalone output for Docker)
+- **TypeScript** in strict mode for maximum type safety
+- **Tailwind CSS** with shadcn/ui component library
+- **Supabase** for database, authentication, storage, and RLS
 - **OpenAI GPT-4** for AI mentor functionality
-- **React 18** with modern hooks
-- **PostgreSQL** with Row Level Security policies
+- **React 18** with Server Components and Client Components
+- **PostgreSQL** with comprehensive Row Level Security policies
+- **Class Variance Authority (CVA)** for component variants
+- **Jest + React Testing Library** for testing
+- **Husky + lint-staged** for pre-commit hooks
 
 ### Key Directories
-- `app/` - Next.js 14 app directory with route groups
-- `components/` - Reusable React components
-- `lib/` - Utility functions and services
-- `types/` - TypeScript type definitions
-- `database/` - SQL schema and migrations
-- `docs/` - Documentation files
+- `app/` - Next.js 14 app directory with route groups:
+  - `(dashboard)/` - Protected dashboard pages with shared layout
+  - `api/` - API routes for auth, learning paths, mentor chat, quiz system
+  - `login/`, `logout/` - Authentication pages
+- `components/` - React components:
+  - `ui/` - shadcn/ui base components (Button, Card, Dialog, Input)
+  - Feature components (AIMentorChat, LearningPathWizard, Navigation)
+  - `quiz/` - Quiz system components
+- `lib/` - Business logic and services:
+  - `auth/` - Custom JWT authentication with React Context
+  - `mentor/`, `quiz/` - Feature-specific services
+  - `supabaseClient.ts` - Database configuration
+- `types/` - Comprehensive TypeScript interfaces
+- `database/` - PostgreSQL schema, migrations, and RLS fix scripts
 
 ### Authentication System
 - Uses Supabase auth with JWT session management
@@ -103,23 +122,34 @@ npm run docker:run
 - Multi-mode interactions (code review, interview prep, motivation)
 
 ### Learning Path System
-- 4-step wizard process for creating personalized learning paths
-- AI-powered plan generation with quarterly breakdowns
-- Skills assessment and progress tracking
-- Database schema supports complex learning structures
+- **4-step wizard process**: Skills assessment → Goal setting → AI plan generation → Progress tracking
+- **AI-powered plan generation** with OpenAI GPT-4 integration
+- **Quarterly breakdowns** with detailed milestones and timelines
+- **Complex database schema**: Multi-table structure with learning_plans, learning_plan_quarters, progress_tracking
+- **Skills assessment integration** with career framework mapping
+
+### Quiz System Architecture
+- **Comprehensive quiz engine** with templates, sessions, and analytics
+- **AI-powered question generation** using OpenAI
+- **Real-time progress tracking** with detailed feedback
+- **Multiple question types** and difficulty levels
+- **Session management** with database persistence
+- **Quiz templates** with fallback systems for reliability
 
 ## Database Schema
 
 ### Core Tables
-- `users` - User accounts and profiles
-- `user_sessions` - JWT session management
-- `skills_assessments` - User skills and levels
-- `user_goals` - Career goals and timelines
-- `learning_plans` - Generated learning plans
-- `learning_plan_quarters` - Quarterly plan breakdowns
-- `progress_tracking` - Milestone completion tracking
-- `quiz_results` - Assessment results
-- `conversation_history` - Chat message storage
+- `users` - User accounts and profiles with career framework data
+- `user_sessions` - JWT session management with database persistence
+- `skills_assessments` - User skills and proficiency levels
+- `user_goals` - Career goals with timelines and priorities
+- `learning_plans` - AI-generated learning plans with metadata
+- `learning_plan_quarters` - Quarterly breakdowns with milestones
+- `progress_tracking` - Milestone completion with timestamps
+- `quiz_templates` - Reusable quiz structures with fallback templates
+- `quiz_sessions` - Active quiz sessions with state management
+- `quiz_results` - Detailed assessment results and analytics
+- `conversation_history` - AI mentor chat message storage with context
 
 ### Important Notes
 - All tables have Row Level Security (RLS) enabled
@@ -180,9 +210,31 @@ JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
 - `POST /api/mentor/chat` - AI mentor conversations
 
 ### Quiz System
-- `POST /api/quiz/generate` - Generate assessment quizzes
-- `POST /api/quiz/submit` - Submit quiz responses
-- `GET /api/quiz/progress` - Track quiz progress
+- `POST /api/quiz/generate` - Generate assessment quizzes with AI integration
+- `POST /api/quiz/submit` - Submit quiz responses with validation
+- `GET /api/quiz/progress` - Track quiz progress and analytics
+- `GET /api/quiz/templates` - Retrieve quiz templates with fallbacks
+- `POST /api/quiz/session` - Manage quiz session state
+
+## Critical Configuration
+
+### Next.js Configuration (`next.config.mjs`)
+- **Standalone output** for Docker containerization
+- **Security headers**: CSP, X-Frame-Options, X-Content-Type-Options
+- **Server Components** with external packages configuration
+- **Environment variable exposure** for runtime configuration
+
+### Tailwind Configuration (`tailwind.config.ts`)
+- **CSS Variables**: HSL-based color system with semantic naming
+- **Custom Gradients**: `bg-gradient-metro` for brand consistency
+- **Animation System**: fadeIn, slideInLeft, slideInRight keyframes
+- **Dynamic Border Radius**: CSS custom properties for flexible theming
+- **Container System**: Centered layout with responsive max-widths
+
+### Package Configuration
+- **Pre-commit Hooks**: Husky + lint-staged for code quality
+- **Debug Support**: Node inspector integration for development
+- **Docker Compose**: Multi-service development environment
 
 ## Development Practices
 
@@ -204,10 +256,14 @@ Before committing code, always check:
 
 #### Build Validation
 ```bash
-# Always run before committing
+# Always run before committing (enforced by pre-commit hooks)
 npm run lint
 npm run type-check
 npm run build
+
+# Additional development checks
+npm run format:check
+npm test
 ```
 
 #### Common ESLint Fixes
