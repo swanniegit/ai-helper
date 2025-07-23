@@ -1,0 +1,628 @@
+-- Complete Database Schema for AI Helper Learning Path System
+-- This file contains all necessary tables for the application to function
+
+-- Enable UUID extension
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- ============================================================================
+-- AUTHENTICATION TABLES
+-- ============================================================================
+
+-- Users table
+CREATE TABLE IF NOT EXISTS public.users (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
+    avatar_url TEXT,
+    is_active BOOLEAN DEFAULT true,
+    email_verified BOOLEAN DEFAULT false,
+    email_verification_token VARCHAR(255),
+    password_reset_token VARCHAR(255),
+    password_reset_expires TIMESTAMP,
+    last_login TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- User sessions for authentication
+CREATE TABLE IF NOT EXISTS public.user_sessions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+    session_token VARCHAR(255) UNIQUE NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    ip_address INET,
+    user_agent TEXT,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ============================================================================
+-- LEARNING PATH SYSTEM TABLES
+-- ============================================================================
+
+-- Learning paths table
+CREATE TABLE IF NOT EXISTS public.learning_paths (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    career_path VARCHAR(50) CHECK (career_path IN ('PHP', 'Oracle')),
+    current_level VARCHAR(50) CHECK (current_level IN ('Junior', 'Intermediate', 'Senior')),
+    target_level VARCHAR(50) CHECK (target_level IN ('Junior', 'Intermediate', 'Senior')),
+    timeline_months INTEGER NOT NULL DEFAULT 12,
+    status VARCHAR(50) DEFAULT 'active' CHECK (status IN ('active', 'completed', 'paused', 'archived')),
+    is_public BOOLEAN DEFAULT false,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Skills assessment data
+CREATE TABLE IF NOT EXISTS public.skill_assessments (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    learning_path_id UUID NOT NULL REFERENCES public.learning_paths(id) ON DELETE CASCADE,
+    skill_name VARCHAR(255) NOT NULL,
+    skill_level VARCHAR(50) NOT NULL CHECK (skill_level IN ('beginner', 'intermediate', 'advanced')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Career goals
+CREATE TABLE IF NOT EXISTS public.career_goals (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    learning_path_id UUID NOT NULL REFERENCES public.learning_paths(id) ON DELETE CASCADE,
+    goal_text TEXT NOT NULL,
+    priority INTEGER DEFAULT 1,
+    is_completed BOOLEAN DEFAULT false,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Priority areas
+CREATE TABLE IF NOT EXISTS public.priority_areas (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    learning_path_id UUID NOT NULL REFERENCES public.learning_paths(id) ON DELETE CASCADE,
+    area_name VARCHAR(255) NOT NULL,
+    priority INTEGER DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Generated learning plans
+CREATE TABLE IF NOT EXISTS public.learning_plans (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    learning_path_id UUID NOT NULL REFERENCES public.learning_paths(id) ON DELETE CASCADE,
+    summary TEXT NOT NULL,
+    estimated_hours INTEGER NOT NULL,
+    plan_data JSONB NOT NULL, -- Stores the full generated plan structure
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Plan quarters
+CREATE TABLE IF NOT EXISTS public.plan_quarters (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    learning_plan_id UUID NOT NULL REFERENCES public.learning_plans(id) ON DELETE CASCADE,
+    quarter_number INTEGER NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    objectives JSONB NOT NULL, -- Array of objectives
+    resources JSONB NOT NULL, -- Array of resources
+    milestones JSONB NOT NULL, -- Array of milestones
+    estimated_hours INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Progress tracking
+CREATE TABLE IF NOT EXISTS public.progress_tracking (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    learning_path_id UUID NOT NULL REFERENCES public.learning_paths(id) ON DELETE CASCADE,
+    quarter_id UUID REFERENCES public.plan_quarters(id) ON DELETE SET NULL,
+    milestone_id VARCHAR(255), -- Reference to milestone in quarter
+    status VARCHAR(50) DEFAULT 'not_started' CHECK (status IN ('not_started', 'in_progress', 'completed')),
+    completion_percentage INTEGER DEFAULT 0 CHECK (completion_percentage >= 0 AND completion_percentage <= 100),
+    notes TEXT,
+    completed_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ============================================================================
+-- QUIZ SYSTEM TABLES
+-- ============================================================================
+
+-- Quiz templates table
+CREATE TABLE IF NOT EXISTS public.quiz_templates (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    name TEXT NOT NULL,
+    description TEXT,
+    quiz_type TEXT NOT NULL CHECK (quiz_type IN ('skills_assessment', 'progress_check', 'practice', 'certification')),
+    skill_category TEXT NOT NULL,
+    difficulty_level TEXT NOT NULL CHECK (difficulty_level IN ('beginner', 'intermediate', 'advanced')),
+    question_count INTEGER NOT NULL DEFAULT 15,
+    time_limit_minutes INTEGER DEFAULT 30,
+    passing_score INTEGER DEFAULT 70,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Question bank table
+CREATE TABLE IF NOT EXISTS public.quiz_questions (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    template_id UUID REFERENCES public.quiz_templates(id) ON DELETE CASCADE,
+    question_text TEXT NOT NULL,
+    question_type TEXT NOT NULL CHECK (question_type IN ('multiple_choice', 'true_false', 'fill_blank', 'code_snippet')),
+    options JSONB,
+    correct_answer TEXT NOT NULL,
+    explanation TEXT,
+    difficulty_level TEXT NOT NULL CHECK (difficulty_level IN ('beginner', 'intermediate', 'advanced')),
+    skill_tags TEXT[],
+    code_snippet TEXT,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Quiz results table
+CREATE TABLE IF NOT EXISTS public.quiz_results (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    user_id UUID REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
+    template_id UUID REFERENCES public.quiz_templates(id) ON DELETE CASCADE NOT NULL,
+    quiz_type TEXT NOT NULL CHECK (quiz_type IN ('skills_assessment', 'progress_check', 'practice', 'certification')),
+    questions JSONB NOT NULL,
+    user_answers JSONB NOT NULL,
+    correct_answers JSONB NOT NULL,
+    score INTEGER NOT NULL,
+    total_questions INTEGER NOT NULL,
+    percentage_score NUMERIC(5,2) NOT NULL,
+    time_taken_seconds INTEGER,
+    difficulty_level TEXT NOT NULL,
+    skill_category TEXT NOT NULL,
+    passed BOOLEAN NOT NULL,
+    feedback JSONB,
+    taken_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Quiz sessions table
+CREATE TABLE IF NOT EXISTS public.quiz_sessions (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    user_id UUID REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
+    template_id UUID REFERENCES public.quiz_templates(id) ON DELETE CASCADE NOT NULL,
+    session_token TEXT UNIQUE NOT NULL,
+    questions JSONB NOT NULL,
+    current_question_index INTEGER DEFAULT 0,
+    answers JSONB DEFAULT '[]',
+    start_time TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    end_time TIMESTAMP WITH TIME ZONE,
+    is_active BOOLEAN DEFAULT true,
+    expires_at TIMESTAMP WITH TIME ZONE DEFAULT (NOW() + INTERVAL '2 hours')
+);
+
+-- Quiz analytics table
+CREATE TABLE IF NOT EXISTS public.quiz_analytics (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    user_id UUID REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
+    quiz_result_id UUID REFERENCES public.quiz_results(id) ON DELETE CASCADE NOT NULL,
+    question_id UUID REFERENCES public.quiz_questions(id) ON DELETE CASCADE NOT NULL,
+    user_answer TEXT,
+    is_correct BOOLEAN NOT NULL,
+    time_spent_seconds INTEGER,
+    difficulty_level TEXT NOT NULL,
+    skill_tag TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- User quiz preferences table
+CREATE TABLE IF NOT EXISTS public.user_quiz_preferences (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    user_id UUID REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
+    preferred_difficulty TEXT DEFAULT 'intermediate' CHECK (preferred_difficulty IN ('beginner', 'intermediate', 'advanced')),
+    preferred_question_count INTEGER DEFAULT 15,
+    preferred_time_limit INTEGER DEFAULT 30,
+    notification_enabled BOOLEAN DEFAULT true,
+    auto_retake_failed BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    UNIQUE(user_id)
+);
+
+-- ============================================================================
+-- GAMIFICATION SYSTEM TABLES
+-- ============================================================================
+
+-- User XP and leveling system
+CREATE TABLE IF NOT EXISTS public.user_xp (
+    user_id UUID PRIMARY KEY REFERENCES public.users(id) ON DELETE CASCADE,
+    total_xp INTEGER DEFAULT 0 CHECK (total_xp >= 0),
+    current_level TEXT DEFAULT 'Code Apprentice' CHECK (current_level IN (
+        'Code Apprentice', 'Bug Hunter', 'Logic Architect', 'Code Wizard', 'Dev Sage'
+    )),
+    level_progress DECIMAL(5,2) DEFAULT 0.00 CHECK (level_progress >= 0 AND level_progress <= 100),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Badge definitions
+CREATE TABLE IF NOT EXISTS public.badge_definitions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name TEXT NOT NULL UNIQUE,
+    description TEXT NOT NULL,
+    icon_name TEXT NOT NULL,
+    category TEXT NOT NULL CHECK (category IN ('mastery', 'special', 'social', 'streak')),
+    xp_reward INTEGER DEFAULT 0 CHECK (xp_reward >= 0),
+    unlock_condition JSONB NOT NULL,
+    is_active BOOLEAN DEFAULT true,
+    sort_order INTEGER DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- User achievements
+CREATE TABLE IF NOT EXISTS public.user_achievements (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+    badge_id UUID NOT NULL REFERENCES public.badge_definitions(id) ON DELETE CASCADE,
+    earned_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    notification_sent BOOLEAN DEFAULT FALSE,
+    metadata JSONB DEFAULT '{}',
+    UNIQUE(user_id, badge_id)
+);
+
+-- XP transaction log
+CREATE TABLE IF NOT EXISTS public.xp_transactions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+    action TEXT NOT NULL,
+    xp_amount INTEGER NOT NULL CHECK (xp_amount > 0),
+    source_id UUID,
+    source_type TEXT,
+    metadata JSONB DEFAULT '{}',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- User streak tracking
+CREATE TABLE IF NOT EXISTS public.user_streaks (
+    user_id UUID PRIMARY KEY REFERENCES public.users(id) ON DELETE CASCADE,
+    quiz_streak INTEGER DEFAULT 0 CHECK (quiz_streak >= 0),
+    mentor_chat_streak INTEGER DEFAULT 0 CHECK (mentor_chat_streak >= 0),
+    daily_activity_streak INTEGER DEFAULT 0 CHECK (daily_activity_streak >= 0),
+    longest_quiz_streak INTEGER DEFAULT 0 CHECK (longest_quiz_streak >= 0),
+    longest_mentor_streak INTEGER DEFAULT 0 CHECK (longest_mentor_streak >= 0),
+    longest_daily_streak INTEGER DEFAULT 0 CHECK (longest_daily_streak >= 0),
+    last_quiz_date DATE,
+    last_mentor_date DATE,
+    last_activity_date DATE DEFAULT CURRENT_DATE,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- ============================================================================
+-- SOCIAL COMPETITION TABLES
+-- ============================================================================
+
+-- Anonymous leaderboard system
+CREATE TABLE IF NOT EXISTS public.leaderboards (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+    skill_category TEXT NOT NULL CHECK (skill_category IN ('PHP', 'Oracle', 'General', 'Database', 'Web Development')),
+    time_period TEXT NOT NULL CHECK (time_period IN ('daily', 'weekly', 'monthly', 'all_time')),
+    period_start DATE NOT NULL,
+    period_end DATE NOT NULL,
+    user_rank INTEGER NOT NULL CHECK (user_rank > 0),
+    user_score INTEGER NOT NULL CHECK (user_score >= 0),
+    anonymous_name TEXT NOT NULL,
+    xp_earned INTEGER DEFAULT 0 CHECK (xp_earned >= 0),
+    quizzes_completed INTEGER DEFAULT 0 CHECK (quizzes_completed >= 0),
+    perfect_scores INTEGER DEFAULT 0 CHECK (perfect_scores >= 0),
+    streak_days INTEGER DEFAULT 0 CHECK (streak_days >= 0),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    UNIQUE(user_id, skill_category, time_period, period_start)
+);
+
+-- Guild system
+CREATE TABLE IF NOT EXISTS public.guilds (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name TEXT NOT NULL UNIQUE,
+    display_name TEXT NOT NULL,
+    description TEXT,
+    skill_focus TEXT NOT NULL CHECK (skill_focus IN ('php', 'oracle', 'general', 'full_stack')),
+    guild_type TEXT DEFAULT 'study_squad' CHECK (guild_type IN ('study_squad', 'skill_guild', 'mentor_circle')),
+    max_members INTEGER DEFAULT 50 CHECK (max_members > 0),
+    current_members INTEGER DEFAULT 0 CHECK (current_members >= 0),
+    is_public BOOLEAN DEFAULT true,
+    join_code TEXT UNIQUE,
+    guild_level INTEGER DEFAULT 1 CHECK (guild_level > 0),
+    total_guild_xp INTEGER DEFAULT 0 CHECK (total_guild_xp >= 0),
+    created_by UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Guild membership management
+CREATE TABLE IF NOT EXISTS public.guild_memberships (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    guild_id UUID NOT NULL REFERENCES public.guilds(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+    role TEXT DEFAULT 'member' CHECK (role IN ('member', 'moderator', 'leader', 'founder')),
+    joined_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    contribution_xp INTEGER DEFAULT 0 CHECK (contribution_xp >= 0),
+    last_active_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    is_active BOOLEAN DEFAULT true,
+    UNIQUE(guild_id, user_id)
+);
+
+-- Challenge templates
+CREATE TABLE IF NOT EXISTS public.challenge_templates (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    challenge_type TEXT NOT NULL CHECK (challenge_type IN (
+        'quick_learner', 'mentor_session', 'interview_prep', 'daily_motivation', 
+        'perfect_score', 'streak_maintainer', 'skill_explorer', 'guild_contributor',
+        'social_learner', 'consistency_champion'
+    )),
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    xp_reward INTEGER NOT NULL CHECK (xp_reward > 0),
+    badge_reward UUID REFERENCES public.badge_definitions(id),
+    target_value INTEGER DEFAULT 1 CHECK (target_value > 0),
+    difficulty_level TEXT DEFAULT 'easy' CHECK (difficulty_level IN ('easy', 'medium', 'hard')),
+    skill_category TEXT CHECK (skill_category IN ('PHP', 'Oracle', 'General')),
+    is_social BOOLEAN DEFAULT false,
+    frequency TEXT DEFAULT 'daily' CHECK (frequency IN ('daily', 'weekly', 'special')),
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- User daily challenges
+CREATE TABLE IF NOT EXISTS public.user_daily_challenges (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+    template_id UUID NOT NULL REFERENCES public.challenge_templates(id) ON DELETE CASCADE,
+    current_progress INTEGER DEFAULT 0 CHECK (current_progress >= 0),
+    target_progress INTEGER NOT NULL CHECK (target_progress > 0),
+    completed_at TIMESTAMP WITH TIME ZONE,
+    assigned_date DATE DEFAULT CURRENT_DATE,
+    expires_at TIMESTAMP WITH TIME ZONE DEFAULT (CURRENT_DATE + INTERVAL '1 day'),
+    guild_challenge BOOLEAN DEFAULT false,
+    guild_id UUID REFERENCES public.guilds(id) ON DELETE SET NULL,
+    bonus_xp INTEGER DEFAULT 0 CHECK (bonus_xp >= 0),
+    UNIQUE(user_id, template_id, assigned_date)
+);
+
+-- Anonymous names for leaderboards
+CREATE TABLE IF NOT EXISTS public.anonymous_names (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+    skill_category TEXT NOT NULL CHECK (skill_category IN ('PHP', 'Oracle', 'General', 'Database', 'Web Development')),
+    anonymous_name TEXT NOT NULL,
+    name_seed INTEGER NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    UNIQUE(user_id, skill_category)
+);
+
+-- ============================================================================
+-- SEASONAL EVENTS SYSTEM TABLES
+-- ============================================================================
+
+-- Seasonal events
+CREATE TABLE IF NOT EXISTS public.seasonal_events (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    event_key VARCHAR(100) NOT NULL UNIQUE,
+    title VARCHAR(200) NOT NULL,
+    description TEXT,
+    event_type VARCHAR(50) NOT NULL, -- 'individual_goal', 'community_goal', 'special_challenge'
+    starts_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    ends_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    xp_multiplier DECIMAL(3,2) DEFAULT 1.0,
+    focus_skill_category VARCHAR(50),
+    special_rewards JSONB,
+    community_target INTEGER,
+    community_progress INTEGER DEFAULT 0,
+    theme_color VARCHAR(7),
+    icon_name VARCHAR(50),
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- User seasonal progress
+CREATE TABLE IF NOT EXISTS public.user_seasonal_progress (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+    seasonal_event_id UUID NOT NULL REFERENCES public.seasonal_events(id) ON DELETE CASCADE,
+    xp_earned INTEGER DEFAULT 0,
+    challenges_completed INTEGER DEFAULT 0,
+    participation_score INTEGER DEFAULT 0,
+    special_rewards JSONB,
+    joined_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    last_activity_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    UNIQUE(user_id, seasonal_event_id)
+);
+
+-- ============================================================================
+-- INDEXES FOR PERFORMANCE
+-- ============================================================================
+
+-- Authentication indexes
+CREATE INDEX IF NOT EXISTS idx_users_email ON public.users(email);
+CREATE INDEX IF NOT EXISTS idx_user_sessions_user_id ON public.user_sessions(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_sessions_token ON public.user_sessions(session_token);
+
+-- Learning path indexes
+CREATE INDEX IF NOT EXISTS idx_learning_paths_user_id ON public.learning_paths(user_id);
+CREATE INDEX IF NOT EXISTS idx_learning_paths_career_path ON public.learning_paths(career_path);
+CREATE INDEX IF NOT EXISTS idx_skill_assessments_learning_path_id ON public.skill_assessments(learning_path_id);
+CREATE INDEX IF NOT EXISTS idx_career_goals_learning_path_id ON public.career_goals(learning_path_id);
+CREATE INDEX IF NOT EXISTS idx_priority_areas_learning_path_id ON public.priority_areas(learning_path_id);
+CREATE INDEX IF NOT EXISTS idx_learning_plans_learning_path_id ON public.learning_plans(learning_path_id);
+CREATE INDEX IF NOT EXISTS idx_plan_quarters_learning_plan_id ON public.plan_quarters(learning_plan_id);
+CREATE INDEX IF NOT EXISTS idx_progress_tracking_learning_path_id ON public.progress_tracking(learning_path_id);
+
+-- Quiz indexes
+CREATE INDEX IF NOT EXISTS idx_quiz_templates_skill_category ON public.quiz_templates(skill_category);
+CREATE INDEX IF NOT EXISTS idx_quiz_templates_difficulty ON public.quiz_templates(difficulty_level);
+CREATE INDEX IF NOT EXISTS idx_quiz_questions_template_id ON public.quiz_questions(template_id);
+CREATE INDEX IF NOT EXISTS idx_quiz_questions_difficulty ON public.quiz_questions(difficulty_level);
+CREATE INDEX IF NOT EXISTS idx_quiz_questions_skill_tags ON public.quiz_questions USING GIN(skill_tags);
+CREATE INDEX IF NOT EXISTS idx_quiz_results_user_id ON public.quiz_results(user_id);
+CREATE INDEX IF NOT EXISTS idx_quiz_results_template_id ON public.quiz_results(template_id);
+CREATE INDEX IF NOT EXISTS idx_quiz_results_skill_category ON public.quiz_results(skill_category);
+CREATE INDEX IF NOT EXISTS idx_quiz_sessions_user_id ON public.quiz_sessions(user_id);
+CREATE INDEX IF NOT EXISTS idx_quiz_sessions_token ON public.quiz_sessions(session_token);
+CREATE INDEX IF NOT EXISTS idx_quiz_analytics_user_id ON public.quiz_analytics(user_id);
+CREATE INDEX IF NOT EXISTS idx_quiz_analytics_quiz_result_id ON public.quiz_analytics(quiz_result_id);
+
+-- Gamification indexes
+CREATE INDEX IF NOT EXISTS idx_user_xp_level ON public.user_xp(current_level);
+CREATE INDEX IF NOT EXISTS idx_user_achievements_user_id ON public.user_achievements(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_achievements_badge_id ON public.user_achievements(badge_id);
+CREATE INDEX IF NOT EXISTS idx_user_achievements_earned_at ON public.user_achievements(earned_at DESC);
+CREATE INDEX IF NOT EXISTS idx_xp_transactions_user_id ON public.xp_transactions(user_id);
+CREATE INDEX IF NOT EXISTS idx_xp_transactions_action ON public.xp_transactions(action);
+CREATE INDEX IF NOT EXISTS idx_xp_transactions_created_at ON public.xp_transactions(created_at DESC);
+
+-- Social competition indexes
+CREATE INDEX IF NOT EXISTS idx_leaderboards_skill_period ON public.leaderboards(skill_category, time_period, period_start);
+CREATE INDEX IF NOT EXISTS idx_leaderboards_rank ON public.leaderboards(user_rank);
+CREATE INDEX IF NOT EXISTS idx_leaderboards_score ON public.leaderboards(user_score DESC);
+CREATE INDEX IF NOT EXISTS idx_guild_memberships_guild_id ON public.guild_memberships(guild_id);
+CREATE INDEX IF NOT EXISTS idx_guild_memberships_user_id ON public.guild_memberships(user_id);
+CREATE INDEX IF NOT EXISTS idx_guild_memberships_active ON public.guild_memberships(is_active, last_active_at);
+CREATE INDEX IF NOT EXISTS idx_user_daily_challenges_user_date ON public.user_daily_challenges(user_id, assigned_date);
+CREATE INDEX IF NOT EXISTS idx_user_daily_challenges_guild ON public.user_daily_challenges(guild_id, assigned_date) WHERE guild_challenge = true;
+CREATE INDEX IF NOT EXISTS idx_anonymous_names_user_category ON public.anonymous_names(user_id, skill_category);
+
+-- Seasonal events indexes
+CREATE INDEX IF NOT EXISTS idx_seasonal_events_active ON public.seasonal_events(is_active, starts_at, ends_at);
+CREATE INDEX IF NOT EXISTS idx_seasonal_events_type ON public.seasonal_events(event_type);
+CREATE INDEX IF NOT EXISTS idx_user_seasonal_progress_user_id ON public.user_seasonal_progress(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_seasonal_progress_event_id ON public.user_seasonal_progress(seasonal_event_id);
+CREATE INDEX IF NOT EXISTS idx_user_seasonal_progress_joined_at ON public.user_seasonal_progress(joined_at DESC);
+
+-- ============================================================================
+-- TRIGGERS FOR UPDATED_AT
+-- ============================================================================
+
+-- Create updated_at trigger function
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+-- Create triggers for updated_at
+CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON public.users FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_user_sessions_updated_at BEFORE UPDATE ON public.user_sessions FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_learning_paths_updated_at BEFORE UPDATE ON public.learning_paths FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_career_goals_updated_at BEFORE UPDATE ON public.career_goals FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_progress_tracking_updated_at BEFORE UPDATE ON public.progress_tracking FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_quiz_templates_updated_at BEFORE UPDATE ON public.quiz_templates FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_quiz_questions_updated_at BEFORE UPDATE ON public.quiz_questions FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_user_quiz_preferences_updated_at BEFORE UPDATE ON public.user_quiz_preferences FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_user_xp_updated_at BEFORE UPDATE ON public.user_xp FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_user_streaks_updated_at BEFORE UPDATE ON public.user_streaks FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_leaderboards_updated_at BEFORE UPDATE ON public.leaderboards FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_guilds_updated_at BEFORE UPDATE ON public.guilds FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_seasonal_events_updated_at BEFORE UPDATE ON public.seasonal_events FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- ============================================================================
+-- ROW LEVEL SECURITY (RLS) POLICIES
+-- ============================================================================
+
+-- Enable RLS on all tables
+ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_sessions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.learning_paths ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.skill_assessments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.career_goals ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.priority_areas ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.learning_plans ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.plan_quarters ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.progress_tracking ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.quiz_templates ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.quiz_questions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.quiz_results ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.quiz_sessions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.quiz_analytics ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_quiz_preferences ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_xp ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.badge_definitions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_achievements ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.xp_transactions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_streaks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.leaderboards ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.guilds ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.guild_memberships ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.challenge_templates ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_daily_challenges ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.anonymous_names ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.seasonal_events ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_seasonal_progress ENABLE ROW LEVEL SECURITY;
+
+-- Users can only access their own data
+CREATE POLICY "Users can view own profile" ON public.users FOR SELECT USING (auth.uid() = id);
+CREATE POLICY "Users can update own profile" ON public.users FOR UPDATE USING (auth.uid() = id);
+
+-- Sessions policies
+CREATE POLICY "Users can manage own sessions" ON public.user_sessions FOR ALL USING (auth.uid() = user_id);
+
+-- Learning paths policies
+CREATE POLICY "Users can view own learning paths" ON public.learning_paths FOR SELECT USING (auth.uid() = user_id OR is_public = true);
+CREATE POLICY "Users can create own learning paths" ON public.learning_paths FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own learning paths" ON public.learning_paths FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Users can delete own learning paths" ON public.learning_paths FOR DELETE USING (auth.uid() = user_id);
+
+-- Related tables policies (cascade from learning_paths)
+CREATE POLICY "Users can manage own skill assessments" ON public.skill_assessments FOR ALL USING (
+    EXISTS (SELECT 1 FROM public.learning_paths WHERE learning_paths.id = skill_assessments.learning_path_id AND learning_paths.user_id = auth.uid())
+);
+
+CREATE POLICY "Users can manage own career goals" ON public.career_goals FOR ALL USING (
+    EXISTS (SELECT 1 FROM public.learning_paths WHERE learning_paths.id = career_goals.learning_path_id AND learning_paths.user_id = auth.uid())
+);
+
+CREATE POLICY "Users can manage own priority areas" ON public.priority_areas FOR ALL USING (
+    EXISTS (SELECT 1 FROM public.learning_paths WHERE learning_paths.id = priority_areas.learning_path_id AND learning_paths.user_id = auth.uid())
+);
+
+CREATE POLICY "Users can manage own learning plans" ON public.learning_plans FOR ALL USING (
+    EXISTS (SELECT 1 FROM public.learning_paths WHERE learning_paths.id = learning_plans.learning_path_id AND learning_paths.user_id = auth.uid())
+);
+
+CREATE POLICY "Users can manage own plan quarters" ON public.plan_quarters FOR ALL USING (
+    EXISTS (SELECT 1 FROM public.learning_plans lp JOIN public.learning_paths lpath ON lp.learning_path_id = lpath.id WHERE lp.id = plan_quarters.learning_plan_id AND lpath.user_id = auth.uid())
+);
+
+CREATE POLICY "Users can manage own progress tracking" ON public.progress_tracking FOR ALL USING (
+    EXISTS (SELECT 1 FROM public.learning_paths WHERE learning_paths.id = progress_tracking.learning_path_id AND learning_paths.user_id = auth.uid())
+);
+
+-- Quiz policies
+CREATE POLICY "Users can view quiz templates" ON public.quiz_templates FOR SELECT USING (true);
+CREATE POLICY "Users can view quiz questions" ON public.quiz_questions FOR SELECT USING (true);
+CREATE POLICY "Users can manage own quiz results" ON public.quiz_results FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Users can manage own quiz sessions" ON public.quiz_sessions FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Users can manage own quiz analytics" ON public.quiz_analytics FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Users can manage own quiz preferences" ON public.user_quiz_preferences FOR ALL USING (auth.uid() = user_id);
+
+-- Gamification policies
+CREATE POLICY "Users can view badge definitions" ON public.badge_definitions FOR SELECT USING (true);
+CREATE POLICY "Users can manage own XP" ON public.user_xp FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Users can manage own achievements" ON public.user_achievements FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Users can manage own XP transactions" ON public.xp_transactions FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Users can manage own streaks" ON public.user_streaks FOR ALL USING (auth.uid() = user_id);
+
+-- Social competition policies
+CREATE POLICY "Users can view leaderboards" ON public.leaderboards FOR SELECT USING (true);
+CREATE POLICY "Users can manage own leaderboard entries" ON public.leaderboards FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Users can view public guilds" ON public.guilds FOR SELECT USING (is_public = true);
+CREATE POLICY "Users can manage own guild memberships" ON public.guild_memberships FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Users can view challenge templates" ON public.challenge_templates FOR SELECT USING (true);
+CREATE POLICY "Users can manage own daily challenges" ON public.user_daily_challenges FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Users can manage own anonymous names" ON public.anonymous_names FOR ALL USING (auth.uid() = user_id);
+
+-- Seasonal events policies
+CREATE POLICY "Users can view active seasonal events" ON public.seasonal_events FOR SELECT USING (is_active = true);
+CREATE POLICY "Users can manage own seasonal progress" ON public.user_seasonal_progress FOR ALL USING (auth.uid() = user_id);
+
+-- Success message
+SELECT 'Complete database schema setup completed successfully!' as status; 

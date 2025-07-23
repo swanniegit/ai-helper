@@ -29,7 +29,12 @@
       "Bash(docker run:*)",
       "Bash(docker rm:*)",
       "Bash(docker logs:*)",
-      "Bash(docker stop:*)"
+      "Bash(docker stop:*)",
+      "Bash(npm ls:*)",
+      "Bash(npm cache clean:*)",
+      "Bash(cp:*)",
+      "Bash(pkill:*)",
+      "Bash(true)"
     ],
     "deny": []
   }

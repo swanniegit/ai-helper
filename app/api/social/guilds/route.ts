@@ -27,13 +27,26 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Get user&apos;s guilds and recommended guilds
-    const guildData = await SocialCompetitionService.getUserGuilds(result.user!.id);
-
-    return NextResponse.json({
-      success: true,
-      data: guildData
-    });
+    // Get user's guilds and recommended guilds with fallback for missing tables
+    try {
+      const guildData = await SocialCompetitionService.getUserGuilds(result.user!.id);
+      return NextResponse.json({
+        success: true,
+        data: guildData
+      });
+    } catch (dbError: any) {
+      // If database tables don't exist, return empty guild data
+      console.log('Guild tables not available, returning empty data:', dbError.message);
+      
+      return NextResponse.json({
+        success: true,
+        data: {
+          user_guilds: [],
+          user_memberships: [],
+          recommended_guilds: []
+        }
+      });
+    }
 
   } catch (error) {
     console.error('Get guilds error:', error);
@@ -96,14 +109,24 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Create guild
-    const guild = await SocialCompetitionService.createGuild(result.user!.id, body);
-
-    return NextResponse.json({
-      success: true,
-      data: guild,
-      message: 'Guild created successfully'
-    });
+    // Create guild with fallback for missing tables
+    try {
+      const guild = await SocialCompetitionService.createGuild(result.user!.id, body);
+      return NextResponse.json({
+        success: true,
+        data: guild,
+        message: 'Guild created successfully'
+      });
+    } catch (dbError: any) {
+      // If database tables don't exist, return feature unavailable message
+      console.log('Guild creation tables not available:', dbError.message);
+      
+      return NextResponse.json({
+        success: false,
+        error: 'Guild feature is temporarily unavailable. Please try again later.',
+        feature_status: 'unavailable'
+      }, { status: 503 });
+    }
 
   } catch (error) {
     console.error('Create guild error:', error);

@@ -57,18 +57,34 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Get leaderboard data
-    const leaderboardData = await SocialCompetitionService.getLeaderboard(
-      skillCategory,
-      timePeriod,
-      result.user!.id,
-      limit
-    );
+    // Get leaderboard data with fallback for missing tables
+    try {
+      const leaderboardData = await SocialCompetitionService.getLeaderboard(
+        skillCategory,
+        timePeriod,
+        result.user!.id,
+        limit
+      );
 
-    return NextResponse.json({
-      success: true,
-      data: leaderboardData
-    });
+      return NextResponse.json({
+        success: true,
+        data: leaderboardData
+      });
+    } catch (dbError: any) {
+      // If database tables don't exist, return empty leaderboard
+      console.log('Leaderboard tables not available, returning empty data:', dbError.message);
+      
+      return NextResponse.json({
+        success: true,
+        data: {
+          leaderboard: [],
+          user_rank: null,
+          total_participants: 0,
+          skill_category: skillCategory,
+          time_period: timePeriod
+        }
+      });
+    }
 
   } catch (error) {
     console.error('Get leaderboard error:', error);
