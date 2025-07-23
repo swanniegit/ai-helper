@@ -847,26 +847,18 @@ export type AvatarCustomization = {
 };
 
 export interface UserAvatar {
-  id: string;
   user_id: string;
-  avatar_name: string;
-  avatar_title?: string; // Special titles earned through achievements
-  
-  // Customization
-  customization: AvatarCustomization;
-  
-  // Progression
+  first_name: string;
+  last_name: string;
+  avatar_url: string;
+  total_xp: number;
+  current_level: DevLevel;
   avatar_level: number;
-  avatar_xp: number;
-  unlocked_items: string[]; // Cosmetic items unlocked through progression
-  
-  // Display preferences
-  is_active: boolean;
-  show_in_leaderboard: boolean;
-  show_achievements: boolean;
-  
-  created_at: string;
-  updated_at: string;
+  active_title_id: string | null;
+  active_title_name: string | null;
+  active_title_color: string | null;
+  active_title_rarity: string | null;
+  active_title_icon: string | null;
 }
 
 // Component Props for Phase 3 Features

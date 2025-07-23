@@ -103,14 +103,32 @@ export class AvatarService {
 
       // Calculate avatar stats
       const avatarStats = {
-        avatar_level: avatarData.calculated_avatar_level || 1,
+        avatar_level: avatarData.avatar_level || 1,
         total_xp: avatarData.total_xp || 0,
-        unlocked_items_count: avatarData.unlocked_items_count || 0,
-        active_title: avatarData.active_title
+        unlocked_items_count: formattedUnlockedItems.length,
+        active_title: avatarData.active_title_id ? {
+          title_name: avatarData.active_title_name,
+          title_color: avatarData.active_title_color,
+          title_rarity: avatarData.active_title_rarity,
+          title_icon: avatarData.active_title_icon
+        } : undefined
       };
 
       return {
-        avatar: avatarData,
+        avatar: {
+          user_id: avatarData.user_id,
+          first_name: avatarData.first_name,
+          last_name: avatarData.last_name,
+          avatar_url: avatarData.avatar_url,
+          total_xp: avatarData.total_xp,
+          current_level: avatarData.current_level,
+          avatar_level: avatarData.avatar_level,
+          active_title_id: avatarData.active_title_id,
+          active_title_name: avatarData.active_title_name,
+          active_title_color: avatarData.active_title_color,
+          active_title_rarity: avatarData.active_title_rarity,
+          active_title_icon: avatarData.active_title_icon
+        },
         unlocked_items: formattedUnlockedItems,
         available_items: availableItems || [],
         avatar_stats: avatarStats
@@ -127,43 +145,24 @@ export class AvatarService {
    */
   static async createDefaultAvatar(userId: string): Promise<UserAvatar> {
     try {
-      // Get beginner developer preset
-      const { data: preset, error: presetError } = await supabase
-        .from('avatar_presets')
-        .select('*')
-        .eq('preset_key', 'beginner_dev')
-        .single();
-
-      if (presetError) {
-        throw new Error(`Failed to fetch default preset: ${presetError.message}`);
-      }
-
-      // Create avatar with default customization
-      const { data: newAvatar, error: createError } = await supabase
-        .from('user_avatars')
-        .insert({
-          user_id: userId,
-          avatar_name: 'My Avatar',
-          avatar_title: null,
-          customization: preset.default_customization,
-          avatar_level: 1,
-          avatar_xp: 0,
-          unlocked_items: [],
-          is_active: true,
-          show_in_leaderboard: true,
-          show_achievements: true
-        })
-        .select()
-        .single();
-
-      if (createError) {
-        throw new Error(`Failed to create avatar: ${createError.message}`);
-      }
-
       // Unlock default cosmetic items
       await AvatarService.unlockDefaultItems(userId);
 
-      return newAvatar;
+      // Return a default avatar structure
+      return {
+        user_id: userId,
+        first_name: '',
+        last_name: '',
+        avatar_url: '',
+        total_xp: 0,
+        current_level: 'Code Apprentice',
+        avatar_level: 1,
+        active_title_id: null,
+        active_title_name: null,
+        active_title_color: null,
+        active_title_rarity: null,
+        active_title_icon: null
+      };
 
     } catch (error) {
       console.error('Create default avatar error:', error);
@@ -179,45 +178,36 @@ export class AvatarService {
     request: CustomizeAvatarRequest
   ): Promise<UserAvatar> {
     try {
-      // Get current avatar
-      const { data: currentAvatar, error: fetchError } = await supabase
-        .from('user_avatars')
+      // For now, return the current avatar data since we don't have a user_avatars table
+      // This method would need to be updated when the avatar customization system is fully implemented
+      const { data: avatarData, error: fetchError } = await supabase
+        .from('user_avatar_complete')
         .select('*')
         .eq('user_id', userId)
         .single();
 
-      if (fetchError) {
+      if (fetchError && fetchError.code !== 'PGRST116') {
         throw new Error(`Failed to fetch current avatar: ${fetchError.message}`);
       }
 
-      // Merge customization changes
-      const updatedCustomization = {
-        ...currentAvatar.customization,
-        ...request.customization
-      };
-
-      // Update avatar
-      const updates: Partial<UserAvatar> = {
-        customization: updatedCustomization,
-        updated_at: new Date().toISOString()
-      };
-
-      if (request.avatar_name) {
-        updates.avatar_name = request.avatar_name;
+      if (!avatarData) {
+        throw new Error('Avatar not found');
       }
 
-      const { data: updatedAvatar, error: updateError } = await supabase
-        .from('user_avatars')
-        .update(updates)
-        .eq('user_id', userId)
-        .select()
-        .single();
-
-      if (updateError) {
-        throw new Error(`Failed to update avatar: ${updateError.message}`);
-      }
-
-      return updatedAvatar;
+      return {
+        user_id: avatarData.user_id,
+        first_name: avatarData.first_name,
+        last_name: avatarData.last_name,
+        avatar_url: avatarData.avatar_url,
+        total_xp: avatarData.total_xp,
+        current_level: avatarData.current_level,
+        avatar_level: avatarData.avatar_level,
+        active_title_id: avatarData.active_title_id,
+        active_title_name: avatarData.active_title_name,
+        active_title_color: avatarData.active_title_color,
+        active_title_rarity: avatarData.active_title_rarity,
+        active_title_icon: avatarData.active_title_icon
+      };
 
     } catch (error) {
       console.error('Customize avatar error:', error);
@@ -457,35 +447,36 @@ export class AvatarService {
    */
   static async updateAvatarXP(userId: string, xpGained: number): Promise<void> {
     try {
-      const { data: currentAvatar, error: fetchError } = await supabase
-        .from('user_avatars')
-        .select('avatar_xp, avatar_level')
+      // Update user XP in the user_xp table instead
+      const { data: currentXP, error: fetchError } = await supabase
+        .from('user_xp')
+        .select('total_xp')
         .eq('user_id', userId)
         .single();
 
       if (fetchError && fetchError.code !== 'PGRST116') {
-        throw new Error(`Failed to fetch avatar: ${fetchError.message}`);
+        throw new Error(`Failed to fetch user XP: ${fetchError.message}`);
       }
 
-      if (!currentAvatar) {
-        await AvatarService.createDefaultAvatar(userId);
-        return AvatarService.updateAvatarXP(userId, xpGained);
+      const currentTotalXP = currentXP?.total_xp || 0;
+      const newTotalXP = currentTotalXP + xpGained;
+      const newAvatarLevel = AvatarService.calculateAvatarLevel(newTotalXP);
+
+      // Update user XP
+      const { error: updateError } = await supabase
+        .from('user_xp')
+        .upsert({
+          user_id: userId,
+          total_xp: newTotalXP,
+          current_level: AvatarService.getLevelFromXP(newTotalXP)
+        });
+
+      if (updateError) {
+        throw new Error(`Failed to update user XP: ${updateError.message}`);
       }
-
-      const newAvatarXP = (currentAvatar.avatar_xp || 0) + xpGained;
-      const newAvatarLevel = AvatarService.calculateAvatarLevel(newAvatarXP);
-
-      await supabase
-        .from('user_avatars')
-        .update({
-          avatar_xp: newAvatarXP,
-          avatar_level: newAvatarLevel,
-          updated_at: new Date().toISOString()
-        })
-        .eq('user_id', userId);
 
       // Check for new item unlocks if level increased
-      if (newAvatarLevel > (currentAvatar.avatar_level || 1)) {
+      if (newAvatarLevel > AvatarService.calculateAvatarLevel(currentTotalXP)) {
         await supabase.rpc('unlock_cosmetic_items_for_user', { p_user_id: userId });
       }
 
@@ -523,6 +514,17 @@ export class AvatarService {
     };
     
     return levelMap[devLevel as keyof typeof levelMap] || 1;
+  }
+
+  /**
+   * Helper: Get level name from XP
+   */
+  private static getLevelFromXP(xp: number): string {
+    if (xp >= 5000) return 'Dev Sage';
+    if (xp >= 4000) return 'Code Wizard';
+    if (xp >= 3200) return 'Logic Architect';
+    if (xp >= 2500) return 'Bug Hunter';
+    return 'Code Apprentice';
   }
 
   /**
