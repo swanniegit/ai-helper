@@ -471,13 +471,19 @@ export class SocialCompetitionService {
       const userGuildIds = userGuilds.map(g => g.id);
 
       // Get recommended guilds (public guilds user hasn't joined)
-      const { data: recommendedGuilds, error: recommendedError } = await supabase
+      let recommendedGuildsQuery = supabase
         .from('guilds')
         .select('*')
         .eq('is_public', true)
-        .not('id', 'in', `(${userGuildIds.join(',') || 'null'})`)
         .order('current_members', { ascending: false })
         .limit(10);
+
+      // Only add the NOT IN clause if user has guilds
+      if (userGuildIds.length > 0) {
+        recommendedGuildsQuery = recommendedGuildsQuery.not('id', 'in', `(${userGuildIds.join(',')})`);
+      }
+
+      const { data: recommendedGuilds, error: recommendedError } = await recommendedGuildsQuery;
 
       if (recommendedError) {
         throw recommendedError;

@@ -40,5 +40,34 @@ INSERT INTO public.seasonal_events (event_key, title, description, event_type, s
 ('summer_coding_2024', 'Summer Coding Sprint', 'Intensive coding challenge with community milestones and special badges', 'community_goal', '2024-06-01 00:00:00+00', '2024-08-31 23:59:59+00', 1.3, 'General', '[{"type": "badge", "value": "Summer Coder", "requirement": "Participate in community goal"}]', 500, '#06b6d4', 'sun', true)
 ON CONFLICT (event_key) DO NOTHING;
 
+-- Insert some sample guilds (only if users exist)
+INSERT INTO public.guilds (name, display_name, description, skill_focus, guild_type, max_members, current_members, is_public, guild_level, total_guild_xp, created_by) 
+SELECT 
+  'php-masters', 'PHP Masters Guild', 'Advanced PHP development and best practices', 'php', 'skill_guild', 30, 5, true, 3, 1500, u.id
+FROM public.users u 
+LIMIT 1
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.guilds (name, display_name, description, skill_focus, guild_type, max_members, current_members, is_public, guild_level, total_guild_xp, created_by) 
+SELECT 
+  'oracle-experts', 'Oracle Database Experts', 'Oracle database administration and optimization', 'oracle', 'skill_guild', 25, 3, true, 2, 800, u.id
+FROM public.users u 
+LIMIT 1
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.guilds (name, display_name, description, skill_focus, guild_type, max_members, current_members, is_public, guild_level, total_guild_xp, created_by) 
+SELECT 
+  'fullstack-dev', 'Full Stack Developers', 'Complete web development from frontend to backend', 'full_stack', 'study_squad', 40, 8, true, 4, 2200, u.id
+FROM public.users u 
+LIMIT 1
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.guilds (name, display_name, description, skill_focus, guild_type, max_members, current_members, is_public, guild_level, total_guild_xp, created_by) 
+SELECT 
+  'general-learners', 'General Programming', 'General programming concepts and problem solving', 'general', 'mentor_circle', 35, 6, true, 2, 1200, u.id
+FROM public.users u 
+LIMIT 1
+ON CONFLICT DO NOTHING;
+
 -- Success message
 SELECT 'Complete database setup with initial data completed successfully!' as status; 

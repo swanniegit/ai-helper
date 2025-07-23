@@ -55,31 +55,31 @@ export default function GamificationPage() {
 
       {/* Gamification Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 bg-card/20 backdrop-blur-sm">
-          <TabsTrigger value="overview" className="flex items-center gap-2">
-            <Trophy className="w-4 h-4" />
-            <span className="hidden sm:inline">Overview</span>
-          </TabsTrigger>
-          <TabsTrigger value="events" className="flex items-center gap-2">
-            <Calendar className="w-4 h-4" />
-            <span className="hidden sm:inline">Events</span>
-          </TabsTrigger>
-          <TabsTrigger value="achievements" className="flex items-center gap-2">
-            <Award className="w-4 h-4" />
-            <span className="hidden sm:inline">Achievements</span>
-          </TabsTrigger>
-          <TabsTrigger value="leaderboard" className="flex items-center gap-2">
-            <TrendingUp className="w-4 h-4" />
-            <span className="hidden sm:inline">Leaderboard</span>
-          </TabsTrigger>
-          <TabsTrigger value="guilds" className="flex items-center gap-2">
-            <Users className="w-4 h-4" />
-            <span className="hidden sm:inline">Guilds</span>
-          </TabsTrigger>
-          <TabsTrigger value="challenges" className="flex items-center gap-2">
-            <Target className="w-4 h-4" />
-            <span className="hidden sm:inline">Challenges</span>
-          </TabsTrigger>
+                 <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 bg-card/20 backdrop-blur-sm">
+           <TabsTrigger value="overview" className="flex items-center gap-2 text-white font-medium hover:text-white hover:bg-white/10 data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:font-semibold">
+             <Trophy className="w-4 h-4" />
+             <span className="hidden sm:inline">Overview</span>
+           </TabsTrigger>
+           <TabsTrigger value="events" className="flex items-center gap-2 text-white font-medium hover:text-white hover:bg-white/10 data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:font-semibold">
+             <Calendar className="w-4 h-4" />
+             <span className="hidden sm:inline">Events</span>
+           </TabsTrigger>
+           <TabsTrigger value="achievements" className="flex items-center gap-2 text-white font-medium hover:text-white hover:bg-white/10 data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:font-semibold">
+             <Award className="w-4 h-4" />
+             <span className="hidden sm:inline">Achievements</span>
+           </TabsTrigger>
+           <TabsTrigger value="leaderboard" className="flex items-center gap-2 text-white font-medium hover:text-white hover:bg-white/10 data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:font-semibold">
+             <TrendingUp className="w-4 h-4" />
+             <span className="hidden sm:inline">Leaderboard</span>
+           </TabsTrigger>
+           <TabsTrigger value="guilds" className="flex items-center gap-2 text-white font-medium hover:text-white hover:bg-white/10 data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:font-semibold">
+             <Users className="w-4 h-4" />
+             <span className="hidden sm:inline">Guilds</span>
+           </TabsTrigger>
+           <TabsTrigger value="challenges" className="flex items-center gap-2 text-white font-medium hover:text-white hover:bg-white/10 data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:font-semibold">
+             <Target className="w-4 h-4" />
+             <span className="hidden sm:inline">Challenges</span>
+           </TabsTrigger>
         </TabsList>
 
         {/* Overview Tab */}
