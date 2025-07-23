@@ -331,7 +331,7 @@ async function handleDailyMotivation(context: MentorContext, userId: string) {
         content: motivation.message,
         context: { 
           session_type: 'daily_motivation',
-          motivation_type: motivation.type || 'general'
+          focus_area: motivation.focusArea || 'general'
         }
       }
     ]);

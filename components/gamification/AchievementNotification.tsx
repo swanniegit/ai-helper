@@ -14,6 +14,13 @@ const AchievementNotification: React.FC<AchievementNotificationProps> = ({
   const [isVisible, setIsVisible] = useState(false);
   const [isLeaving, setIsLeaving] = useState(false);
 
+  const handleClose = () => {
+    setIsLeaving(true);
+    setTimeout(() => {
+      onClose();
+    }, 300);
+  };
+
   useEffect(() => {
     // Trigger entrance animation
     setTimeout(() => setIsVisible(true), 100);
@@ -26,14 +33,7 @@ const AchievementNotification: React.FC<AchievementNotificationProps> = ({
 
       return () => clearTimeout(timer);
     }
-  }, [autoClose, duration]);
-
-  const handleClose = () => {
-    setIsLeaving(true);
-    setTimeout(() => {
-      onClose();
-    }, 300);
-  };
+  }, [autoClose, duration, handleClose]);
 
   // Get the appropriate Lucide icon for the badge
   const getIcon = (iconName: string) => {
