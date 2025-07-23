@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Remove standalone output for Vercel deployment
-  // output: 'standalone', // Only use for Docker
+  // Enable standalone output for Docker
+  output: 'standalone',
   
   // Experimental features
   experimental: {

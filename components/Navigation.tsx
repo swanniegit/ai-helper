@@ -14,6 +14,10 @@ export default function Navigation() {
 
   const navItems = [
     { key: 'progress', href: '/dashboard', label: 'My Progress' },
+    { key: 'gamification', href: '/gamification', label: '🎮 DevPath Chronicles' },
+    { key: 'quests', href: '/quests', label: '📜 Quest Log' },
+    { key: 'skill-trees', href: '/skill-trees', label: '🌳 Skill Trees' },
+    { key: 'avatar', href: '/avatar', label: '👤 My Avatar' },
     { key: 'quiz', href: '/quiz', label: 'Quiz Center' },
     { key: 'mentor', href: '/mentor-chat', label: 'AI Mentor' },
     { key: 'learning', href: '/learning-paths', label: 'Learning Paths' },

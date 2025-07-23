@@ -46,7 +46,9 @@ export default function LearningPathsPage() {
 
   const fetchLearningPaths = async () => {
     try {
-      const response = await fetch('/api/learning-paths');
+      const response = await fetch('/api/learning-paths', {
+        credentials: 'include'
+      });
       
       if (!response.ok) {
         if (response.status === 401) {

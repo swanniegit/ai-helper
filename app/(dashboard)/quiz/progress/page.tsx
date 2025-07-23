@@ -17,7 +17,9 @@ export default function QuizProgressPage() {
   const loadProgress = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/quiz/progress');
+      const response = await fetch('/api/quiz/progress', {
+        credentials: 'include'
+      });
       const data = await response.json();
       
       if (data.success) {

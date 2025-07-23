@@ -45,6 +45,7 @@ export const LearningPlanGeneration: React.FC<LearningPlanGenerationProps> = ({
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({
           skills: skillsData.skills,
           skillLevels: skillsData.skillLevels,
@@ -70,6 +71,7 @@ export const LearningPlanGeneration: React.FC<LearningPlanGenerationProps> = ({
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({
           title: `${skillsData.careerPath || 'Custom'} Learning Path`,
           description: `Personalized learning path for ${skillsData.careerPath || 'your career goals'}`,

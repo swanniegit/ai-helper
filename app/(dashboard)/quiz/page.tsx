@@ -24,7 +24,9 @@ export default function QuizPage() {
       setLoading(true);
       
       // Load templates
-      const templatesResponse = await fetch('/api/quiz/templates');
+      const templatesResponse = await fetch('/api/quiz/templates', {
+        credentials: 'include'
+      });
       const templatesData = await templatesResponse.json();
       
       if (templatesData.success) {
@@ -32,7 +34,9 @@ export default function QuizPage() {
       }
       
       // Load progress
-      const progressResponse = await fetch('/api/quiz/progress');
+      const progressResponse = await fetch('/api/quiz/progress', {
+        credentials: 'include'
+      });
       const progressData = await progressResponse.json();
       
       if (progressData.success) {

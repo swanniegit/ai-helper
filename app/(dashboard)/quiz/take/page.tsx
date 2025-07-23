@@ -31,7 +31,9 @@ function TakeQuizContent() {
       
       if (sessionToken) {
         // Load existing session
-        response = await fetch(`/api/quiz/session?token=${sessionToken}`);
+        response = await fetch(`/api/quiz/session?token=${sessionToken}`, {
+          credentials: 'include'
+        });
       } else if (templateId) {
         // Generate new session from template
         response = await fetch('/api/quiz/generate', {
@@ -39,6 +41,7 @@ function TakeQuizContent() {
           headers: {
             'Content-Type': 'application/json',
           },
+          credentials: 'include',
           body: JSON.stringify({
             template_id: templateId,
             question_count: 10,
@@ -86,6 +89,7 @@ function TakeQuizContent() {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({
           session_token: sessionToken || quizSession?.session_token,
           answers: answers,

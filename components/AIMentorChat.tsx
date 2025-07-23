@@ -89,6 +89,7 @@ export default function AIMentorChat() {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({
           message,
           action
