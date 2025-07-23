@@ -49,6 +49,7 @@ export interface XPTransaction {
 
 // Achievement System Types
 export type BadgeCategory = 'mastery' | 'special' | 'social' | 'streak';
+export type BadgeRarity = 'common' | 'rare' | 'epic' | 'legendary';
 
 export interface BadgeDefinition {
   id: string;
@@ -145,7 +146,12 @@ export interface UserDailyChallenge {
   completed_at?: string;
   assigned_date: string;
   expires_at: string;
-  challenge?: DailyChallenge; // Populated via join
+  guild_challenge?: boolean;
+  guild_id?: string;
+  bonus_xp?: number;
+  template?: ChallengeTemplate; // Populated via join
+  guild?: Guild; // Populated via join if guild_challenge
+  challenge?: DailyChallenge; // Populated via join (legacy support)
 }
 
 // Comprehensive User Progress Types
@@ -195,11 +201,7 @@ export interface BadgeDisplayProps {
   show_description?: boolean;
 }
 
-export interface DailyChallengeCardProps {
-  challenge: UserDailyChallenge;
-  onComplete?: (challengeId: string) => void;
-  show_progress?: boolean;
-}
+// Removed duplicate - using enhanced version below
 
 export interface LevelUpModalProps {
   old_level: DevLevel;
@@ -404,6 +406,7 @@ export interface ChallengeTemplate {
 export interface EnhancedUserDailyChallenge {
   id: string;
   user_id: string;
+  challenge_id: string;
   template_id: string;
   current_progress: number;
   target_progress: number;
@@ -455,7 +458,7 @@ export interface SocialUserGamificationData extends UserGamificationData {
       [key in LeaderboardPeriod]?: LeaderboardEntry;
     };
   };
-  social_challenges: EnhancedUserDailyChallenge[];
+  social_challenges: UserDailyChallenge[];
   guild_challenges: GuildChallenge[];
   anonymous_names: AnonymousName[];
   social_stats: {
@@ -483,7 +486,7 @@ export interface GuildCardProps {
 }
 
 export interface DailyChallengeCardProps {
-  challenge: EnhancedUserDailyChallenge;
+  challenge: UserDailyChallenge;
   onComplete?: (challengeId: string) => void;
   show_progress?: boolean;
   show_guild_info?: boolean;

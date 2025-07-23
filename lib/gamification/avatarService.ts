@@ -92,12 +92,12 @@ export class AvatarService {
       }
 
       // Format unlocked items
-      const formattedUnlockedItems = (unlockedItems || []).map(item => ({
-        id: item.avatar_cosmetic_items.id,
-        item_key: item.avatar_cosmetic_items.item_key,
-        item_name: item.avatar_cosmetic_items.item_name,
-        item_category: item.avatar_cosmetic_items.item_category,
-        item_data: item.avatar_cosmetic_items.item_data,
+      const formattedUnlockedItems = (unlockedItems || []).map((item: any) => ({
+        id: item.avatar_cosmetic_items?.id || item.id,
+        item_key: item.avatar_cosmetic_items?.item_key || item.item_key,
+        item_name: item.avatar_cosmetic_items?.item_name || item.item_name,
+        item_category: item.avatar_cosmetic_items?.item_category || item.item_category,
+        item_data: item.avatar_cosmetic_items?.item_data || item.item_data,
         unlocked_at: item.unlocked_at
       }));
 
@@ -401,14 +401,14 @@ export class AvatarService {
         throw new Error(`Failed to fetch user titles: ${error.message}`);
       }
 
-      return (titles || []).map(title => ({
+      return (titles || []).map((title: any) => ({
         id: title.id,
-        title_key: title.avatar_titles.title_key,
-        title_name: title.avatar_titles.title_name,
-        title_description: title.avatar_titles.title_description,
-        title_color: title.avatar_titles.title_color,
-        title_rarity: title.avatar_titles.title_rarity,
-        title_icon: title.avatar_titles.title_icon,
+        title_key: title.avatar_titles?.title_key || title.title_key,
+        title_name: title.avatar_titles?.title_name || title.title_name,
+        title_description: title.avatar_titles?.title_description || title.title_description,
+        title_color: title.avatar_titles?.title_color || title.title_color,
+        title_rarity: title.avatar_titles?.title_rarity || title.title_rarity,
+        title_icon: title.avatar_titles?.title_icon || title.title_icon,
         earned_at: title.earned_at,
         is_active: title.is_active
       }));

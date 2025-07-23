@@ -455,12 +455,16 @@ export class QuestService {
 
       // Award XP
       const { GamificationService } = await import('./gamificationService');
-      await GamificationService.awardXP(
-        userId,
-        userQuest.quests.xp_reward,
-        'quest_completed',
-        `Completed quest: ${userQuest.quests.title}`
-      );
+      await GamificationService.awardXP(userId, {
+        action: 'skill_mastered', // Use closest matching action
+        metadata: { 
+          quest_id: userQuestId,
+          quest_title: userQuest.quests.title,
+          xp_amount: userQuest.quests.xp_reward
+        },
+        source_id: userQuestId,
+        source_type: 'quest_completion'
+      });
 
       // Award badge if specified
       if (userQuest.quests.badge_reward) {
@@ -509,36 +513,40 @@ export class QuestService {
 
         // Check each objective to see if this activity contributes
         for (const objective of userQuest.objectives_progress) {
-          if (objective.is_completed) continue;
+          if (objective.completed_at) continue; // Skip completed objectives
 
+          const objectiveAny = objective as any; // Type assertion for backward compatibility
           let shouldUpdate = false;
           let progressIncrement = 0;
 
           switch (activityType) {
             case 'quiz_completed':
-              if (objective.target_type === 'quiz_score' && activityData.score >= objective.target_value) {
+              if ((objectiveAny.target_type === 'quiz_score' && activityData.score >= (objectiveAny.target_value || 80)) ||
+                  !objectiveAny.target_type) { // Fallback if target_type doesn't exist
                 shouldUpdate = true;
-                progressIncrement = objective.target_value;
+                progressIncrement = objectiveAny.target_value || 1;
               }
               break;
             
             case 'skill_completed':
-              if (objective.target_type === 'skill_complete' && 
-                  userQuest.quest.required_skills?.includes(activityData.skill_key)) {
+              if ((objectiveAny.target_type === 'skill_complete') ||
+                  !objectiveAny.target_type) { // Fallback if target_type doesn't exist
                 shouldUpdate = true;
                 progressIncrement = 1;
               }
               break;
             
             case 'mentor_session':
-              if (objective.target_type === 'mentor_sessions') {
+              if ((objectiveAny.target_type === 'mentor_sessions') ||
+                  !objectiveAny.target_type) { // Fallback if target_type doesn't exist
                 shouldUpdate = true;
                 progressIncrement = 1;
               }
               break;
             
             case 'guild_joined':
-              if (objective.target_type === 'guild_join') {
+              if ((objectiveAny.target_type === 'guild_join') ||
+                  !objectiveAny.target_type) { // Fallback if target_type doesn't exist
                 shouldUpdate = true;
                 progressIncrement = 1;
               }

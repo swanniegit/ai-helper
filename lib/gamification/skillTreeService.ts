@@ -458,12 +458,16 @@ export class SkillTreeService {
       // Import GamificationService to award XP
       const { GamificationService } = await import('./gamificationService');
       
-      await GamificationService.awardXP(
-        userId,
-        skill.xp_reward,
-        'skill_mastered',
-        `Completed skill: ${skill.title}`
-      );
+      await GamificationService.awardXP(userId, {
+        action: 'skill_mastered',
+        metadata: { 
+          skill_node_id: skillNodeId,
+          skill_title: skill.title,
+          xp_amount: skill.xp_reward
+        },
+        source_id: skillNodeId,
+        source_type: 'skill_completion'
+      });
 
       // Update user_skill_progress with XP earned
       await supabase

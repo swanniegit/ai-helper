@@ -223,7 +223,7 @@ export default function QuestLog({
                   <CheckCircle 
                     className={cn(
                       "w-3 h-3",
-                      userQuestData?.objectives_progress?.find(p => p.objective_id === objective.id)?.current_progress >= objective.target_value
+                      (userQuestData?.objectives_progress?.find(p => p.objective_id === objective.id)?.current_progress || 0) >= objective.target_value
                         ? "text-green-600" 
                         : "text-gray-300"
                     )} 

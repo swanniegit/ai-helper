@@ -88,7 +88,7 @@ const DailyChallengeCard: React.FC<DailyChallengeCardProps> = ({
       consistency_champion: <Award className="w-5 h-5" />
     };
 
-    return iconMap[challenge.template.challenge_type] || <Target className="w-5 h-5" />;
+    return challenge.template?.challenge_type ? iconMap[challenge.template.challenge_type] : <Target className="w-5 h-5" />;
   };
 
   return (
@@ -209,11 +209,11 @@ const DailyChallengeCard: React.FC<DailyChallengeCardProps> = ({
             <div className="flex items-center gap-1 text-primary font-medium">
               <Star className="w-3 h-3" />
               <span>
-                {(challenge.template?.xp_reward || 0) + challenge.bonus_xp} XP
+                {(challenge.template?.xp_reward || 0) + (challenge.bonus_xp || 0)} XP
               </span>
-              {challenge.bonus_xp > 0 && (
+              {(challenge.bonus_xp || 0) > 0 && (
                 <span className="text-xs text-blue-600">
-                  (+{challenge.bonus_xp} bonus)
+                  (+{challenge.bonus_xp || 0} bonus)
                 </span>
               )}
             </div>
@@ -255,11 +255,11 @@ const DailyChallengeCard: React.FC<DailyChallengeCardProps> = ({
             <p className="text-sm text-green-600">
               You earned{' '}
               <span className="font-medium">
-                {(challenge.template?.xp_reward || 0) + challenge.bonus_xp} XP
+                {(challenge.template?.xp_reward || 0) + (challenge.bonus_xp || 0)} XP
               </span>
-              {challenge.bonus_xp > 0 && (
+              {(challenge.bonus_xp || 0) > 0 && (
                 <span className="text-blue-600">
-                  {' '}(+{challenge.bonus_xp} guild bonus)
+                  {' '}(+{challenge.bonus_xp || 0} guild bonus)
                 </span>
               )}
             </p>
