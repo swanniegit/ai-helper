@@ -1,16 +1,21 @@
 {
-  "name": "AI Career Mentor Platform",
-  "short_name": "AI Mentor",
-  "description": "AI-powered career mentor with personalized learning paths and interactive guidance",
-  "start_url": "/",
+  "name": "DevPath Chronicles - AI Career Mentor",
+  "short_name": "DevPath Chronicles",
+  "description": "AI-powered career mentor with gamified learning paths, interactive quests, and personalized skill development for PHP and Oracle developers",
+  "start_url": "/dashboard",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#4a7c59",
+  "background_color": "#1a1a1a",
+  "theme_color": "#22c55e",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en-US",
+  "categories": ["education", "productivity", "lifestyle"],
   "icons": [
     {
       "src": "/favicon.svg",
       "sizes": "any",
-      "type": "image/svg+xml"
+      "type": "image/svg+xml",
+      "purpose": "any"
     },
     {
       "src": "/images/ai-mentor-logo.svg", 
@@ -18,5 +23,50 @@
       "type": "image/svg+xml",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "shortcuts": [
+    {
+      "name": "Take Quiz",
+      "short_name": "Quiz",
+      "description": "Start a new skill assessment quiz",
+      "url": "/quiz",
+      "icons": [
+        {
+          "src": "/favicon.svg",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "AI Mentor Chat",
+      "short_name": "Mentor",
+      "description": "Chat with your AI career mentor",
+      "url": "/mentor-chat",
+      "icons": [
+        {
+          "src": "/favicon.svg",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "DevPath Chronicles",
+      "short_name": "Chronicles",
+      "description": "View your gamification progress",
+      "url": "/gamification",
+      "icons": [
+        {
+          "src": "/favicon.svg",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  }
 }

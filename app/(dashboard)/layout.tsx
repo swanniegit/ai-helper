@@ -9,10 +9,14 @@ export default function DashboardLayout({
 }) {
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gradient-metro flex">
+      <div className="min-h-screen bg-gradient-metro">
         <Navigation />
-        <div className="flex-grow animate-fadeIn">
-          {children}
+        {/* Main Content Area with Mobile Padding */}
+        <div className="md:flex">
+          {/* Content Container */}
+          <main className="flex-grow pt-16 md:pt-0 animate-fadeIn">
+            {children}
+          </main>
         </div>
       </div>
     </ProtectedRoute>
